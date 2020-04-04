@@ -1,7 +1,7 @@
 # Description
 
-The idea of this repo is to make a macOS screensaver out of my [solid-light-works](https://github.com/taylorjg/solid-light-works) project
-which is three.js/WebGL based. I intend to write the screensaver in Swift using Metal. 
+The idea of this repo is to make a macOS screensaver out of my [solid-light-works](https://github.com/taylorjg/solid-light-works) repo which is an attempt to render some of Anthony McCall's solid light works using three.js and WebGL.
+I intend to write the screensaver in Swift using Metal. 
 
 # Basic Screensaver
 
