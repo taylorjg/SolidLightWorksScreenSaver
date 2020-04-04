@@ -26,7 +26,7 @@
 		C3504DC5242D74FE00C03609 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		C3504DC6242D74FE00C03609 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		C3504DC7242D74FF00C03609 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolidLightWorksShell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3504DCC242D74FF00C03609 /* SolidLightWorksApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolidLightWorksApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3504DCE242D74FF00C03609 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3504DD0242D74FF00C03609 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		C3504DD3242D74FF00C03609 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -54,7 +54,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C3504DC3242D74FE00C03609 /* SolidLightWorksShell Shared */ = {
+		C3504DC3242D74FE00C03609 /* SolidLightWorksShared */ = {
 			isa = PBXGroup;
 			children = (
 				C3504DC4242D74FE00C03609 /* Shaders.metal */,
@@ -62,10 +62,10 @@
 				C3504DC6242D74FE00C03609 /* ShaderTypes.h */,
 				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
 			);
-			path = "SolidLightWorksShell Shared";
+			path = SolidLightWorksShared;
 			sourceTree = "<group>";
 		};
-		C3504DCD242D74FF00C03609 /* SolidLightWorksShell macOS */ = {
+		C3504DCD242D74FF00C03609 /* SolidLightWorksApp */ = {
 			isa = PBXGroup;
 			children = (
 				C3504DCE242D74FF00C03609 /* AppDelegate.swift */,
@@ -73,15 +73,15 @@
 				C3504DD2242D74FF00C03609 /* Main.storyboard */,
 				C3504DD5242D74FF00C03609 /* Info.plist */,
 			);
-			path = "SolidLightWorksShell macOS";
+			path = SolidLightWorksApp;
 			sourceTree = "<group>";
 		};
 		C3C9508E242C1BA400E775BD = {
 			isa = PBXGroup;
 			children = (
 				C3C9509A242C1BA400E775BD /* SolidLightWorks */,
-				C3504DC3242D74FE00C03609 /* SolidLightWorksShell Shared */,
-				C3504DCD242D74FF00C03609 /* SolidLightWorksShell macOS */,
+				C3504DC3242D74FE00C03609 /* SolidLightWorksShared */,
+				C3504DCD242D74FF00C03609 /* SolidLightWorksApp */,
 				C3C95099242C1BA400E775BD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,7 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C95098242C1BA400E775BD /* SolidLightWorks.saver */,
-				C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */,
+				C3504DCC242D74FF00C03609 /* SolidLightWorksApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,9 +117,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		C3504DCB242D74FF00C03609 /* SolidLightWorksShell macOS */ = {
+		C3504DCB242D74FF00C03609 /* SolidLightWorksApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksShell macOS" */;
+			buildConfigurationList = C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksApp" */;
 			buildPhases = (
 				C3504DC8242D74FF00C03609 /* Sources */,
 				C3504DC9242D74FF00C03609 /* Frameworks */,
@@ -129,9 +129,9 @@
 			);
 			dependencies = (
 			);
-			name = "SolidLightWorksShell macOS";
-			productName = "SolidLightWorksShell macOS";
-			productReference = C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */;
+			name = SolidLightWorksApp;
+			productName = SolidLightWorksApp;
+			productReference = C3504DCC242D74FF00C03609 /* SolidLightWorksApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C3C95097242C1BA400E775BD /* SolidLightWorks */ = {
@@ -185,7 +185,7 @@
 			projectRoot = "";
 			targets = (
 				C3C95097242C1BA400E775BD /* SolidLightWorks */,
-				C3504DCB242D74FF00C03609 /* SolidLightWorksShell macOS */,
+				C3504DCB242D74FF00C03609 /* SolidLightWorksApp */,
 			);
 		};
 /* End PBXProject section */
@@ -254,17 +254,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "SolidLightWorksShell macOS/Info.plist";
+				INFOPLIST_FILE = SolidLightWorksApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksShell;
-				PRODUCT_NAME = SolidLightWorksShell;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksApp;
+				PRODUCT_NAME = SolidLightWorksApp;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OBJC_BRIDGING_HEADER = SolidLightWorksShared/ShaderTypes.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -276,17 +276,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "SolidLightWorksShell macOS/Info.plist";
+				INFOPLIST_FILE = SolidLightWorksApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksShell;
-				PRODUCT_NAME = SolidLightWorksShell;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksApp;
+				PRODUCT_NAME = SolidLightWorksApp;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OBJC_BRIDGING_HEADER = SolidLightWorksShared/ShaderTypes.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -416,7 +416,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorks;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OBJC_BRIDGING_HEADER = SolidLightWorksShared/ShaderTypes.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
@@ -438,7 +438,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorks;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OBJC_BRIDGING_HEADER = SolidLightWorksShared/ShaderTypes.h;
 				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
@@ -447,7 +447,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksShell macOS" */ = {
+		C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3504DDB242D74FF00C03609 /* Debug */,

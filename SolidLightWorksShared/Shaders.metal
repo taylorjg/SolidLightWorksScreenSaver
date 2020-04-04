@@ -1,6 +1,6 @@
 //
 //  Shaders.metal
-//  SolidLightWorksShell Shared
+//  SolidLightWorksShared
 //
 //  Created by Administrator on 26/03/2020.
 //  Copyright © 2020 Jon Taylor. All rights reserved.

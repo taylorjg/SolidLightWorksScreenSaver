@@ -1,6 +1,6 @@
 //
 //  GameViewController.swift
-//  SolidLightWorksShell macOS
+//  SolidLightWorksApp
 //
 //  Created by Administrator on 26/03/2020.
 //  Copyright © 2020 Jon Taylor. All rights reserved.
