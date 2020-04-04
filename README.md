@@ -26,10 +26,10 @@ alert.runModal()
 ```
 
 This allowed me to pinpoint where the problem was occurring. The call to `device.makeDefaultLibrary()` was returning `nil`.
-I figured out this was a bundling issue - the main bundle was for `/Applications/System Preferences.app` rather than my screensaver's bundle. I fixed this by explicltly loading my bundle using [`init(identifier:)`](https://developer.apple.com/documentation/foundation/bundle/1411929-init).
+I figured out this was a bundling issue - the main bundle was for `/Applications/System Preferences.app` rather than my screensaver's bundle. I fixed this by explicltly loading my bundle using [`init(for:)`](https://developer.apple.com/documentation/foundation/bundle/1417717-init).
 
 ```
-let bundle = Bundle(identifier: "com.example.taylorjg.SolidLightWorks")
+let bundle = Bundle(for: SolidLightWorksView.self)
 ```
 
 # Links

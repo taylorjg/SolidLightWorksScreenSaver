@@ -29,7 +29,7 @@ class SolidLightWorksView: ScreenSaverView {
         mtkView = MTKView(frame: subviewFrame, device: device)
         self.addSubview(mtkView)
 
-        let bundle = Bundle(identifier: "com.example.taylorjg.SolidLightWorks")
+        let bundle = Bundle(for: SolidLightWorksView.self)
 
         guard let newRenderer = Renderer(metalKitView: mtkView, bundle: bundle) else {
             print("Renderer cannot be initialized")
