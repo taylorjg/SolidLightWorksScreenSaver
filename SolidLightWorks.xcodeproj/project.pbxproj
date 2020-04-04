@@ -1,0 +1,480 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C32DDEDE24368FB500FB4CB4 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC4242D74FE00C03609 /* Shaders.metal */; };
+		C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC5242D74FE00C03609 /* Renderer.swift */; };
+		C32DDEE02437ECF700FB4CB4 /* ShaderTypes.h in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC6242D74FE00C03609 /* ShaderTypes.h */; };
+		C32DDEE22437FCC900FB4CB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC7242D74FF00C03609 /* Assets.xcassets */; };
+		C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DCE242D74FF00C03609 /* AppDelegate.swift */; };
+		C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DD0242D74FF00C03609 /* GameViewController.swift */; };
+		C3504DD4242D74FF00C03609 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3504DD2242D74FF00C03609 /* Main.storyboard */; };
+		C3504DD6242D74FF00C03609 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC4242D74FE00C03609 /* Shaders.metal */; };
+		C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC5242D74FE00C03609 /* Renderer.swift */; };
+		C3504DD8242D74FF00C03609 /* ShaderTypes.h in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC6242D74FE00C03609 /* ShaderTypes.h */; };
+		C3504DD9242D74FF00C03609 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC7242D74FF00C03609 /* Assets.xcassets */; };
+		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C3504DC4242D74FE00C03609 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		C3504DC5242D74FE00C03609 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		C3504DC6242D74FE00C03609 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		C3504DC7242D74FF00C03609 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SolidLightWorksShell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3504DCE242D74FF00C03609 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C3504DD0242D74FF00C03609 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		C3504DD3242D74FF00C03609 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C3504DD5242D74FF00C03609 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3504DC9242D74FF00C03609 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3C95095242C1BA400E775BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C3504DC3242D74FE00C03609 /* SolidLightWorksShell Shared */ = {
+			isa = PBXGroup;
+			children = (
+				C3504DC4242D74FE00C03609 /* Shaders.metal */,
+				C3504DC5242D74FE00C03609 /* Renderer.swift */,
+				C3504DC6242D74FE00C03609 /* ShaderTypes.h */,
+				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
+			);
+			path = "SolidLightWorksShell Shared";
+			sourceTree = "<group>";
+		};
+		C3504DCD242D74FF00C03609 /* SolidLightWorksShell macOS */ = {
+			isa = PBXGroup;
+			children = (
+				C3504DCE242D74FF00C03609 /* AppDelegate.swift */,
+				C3504DD0242D74FF00C03609 /* GameViewController.swift */,
+				C3504DD2242D74FF00C03609 /* Main.storyboard */,
+				C3504DD5242D74FF00C03609 /* Info.plist */,
+			);
+			path = "SolidLightWorksShell macOS";
+			sourceTree = "<group>";
+		};
+		C3C9508E242C1BA400E775BD = {
+			isa = PBXGroup;
+			children = (
+				C3C9509A242C1BA400E775BD /* SolidLightWorks */,
+				C3504DC3242D74FE00C03609 /* SolidLightWorksShell Shared */,
+				C3504DCD242D74FF00C03609 /* SolidLightWorksShell macOS */,
+				C3C95099242C1BA400E775BD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C3C95099242C1BA400E775BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3C95098242C1BA400E775BD /* SolidLightWorks.saver */,
+				C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C3C9509A242C1BA400E775BD /* SolidLightWorks */ = {
+			isa = PBXGroup;
+			children = (
+				C3C9509F242C1BA400E775BD /* Info.plist */,
+				C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */,
+			);
+			path = SolidLightWorks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C3C95093242C1BA400E775BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		C3504DCB242D74FF00C03609 /* SolidLightWorksShell macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksShell macOS" */;
+			buildPhases = (
+				C3504DC8242D74FF00C03609 /* Sources */,
+				C3504DC9242D74FF00C03609 /* Frameworks */,
+				C3504DCA242D74FF00C03609 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SolidLightWorksShell macOS";
+			productName = "SolidLightWorksShell macOS";
+			productReference = C3504DCC242D74FF00C03609 /* SolidLightWorksShell.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C3C95097242C1BA400E775BD /* SolidLightWorks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3C950A2242C1BA400E775BD /* Build configuration list for PBXNativeTarget "SolidLightWorks" */;
+			buildPhases = (
+				C3C95093242C1BA400E775BD /* Headers */,
+				C3C95094242C1BA400E775BD /* Sources */,
+				C3C95095242C1BA400E775BD /* Frameworks */,
+				C3C95096242C1BA400E775BD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SolidLightWorks;
+			productName = SolidLightWorks;
+			productReference = C3C95098242C1BA400E775BD /* SolidLightWorks.saver */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C3C9508F242C1BA400E775BD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1130;
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = "Jon Taylor";
+				TargetAttributes = {
+					C3504DCB242D74FF00C03609 = {
+						CreatedOnToolsVersion = 11.3;
+					};
+					C3C95097242C1BA400E775BD = {
+						CreatedOnToolsVersion = 11.3;
+						LastSwiftMigration = 1130;
+					};
+				};
+			};
+			buildConfigurationList = C3C95092242C1BA400E775BD /* Build configuration list for PBXProject "SolidLightWorks" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C3C9508E242C1BA400E775BD;
+			productRefGroup = C3C95099242C1BA400E775BD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C3C95097242C1BA400E775BD /* SolidLightWorks */,
+				C3504DCB242D74FF00C03609 /* SolidLightWorksShell macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C3504DCA242D74FF00C03609 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3504DD4242D74FF00C03609 /* Main.storyboard in Resources */,
+				C3504DD9242D74FF00C03609 /* Assets.xcassets in Resources */,
+				C3504DD8242D74FF00C03609 /* ShaderTypes.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3C95096242C1BA400E775BD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C32DDEE22437FCC900FB4CB4 /* Assets.xcassets in Resources */,
+				C32DDEE02437ECF700FB4CB4 /* ShaderTypes.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C3504DC8242D74FF00C03609 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3504DD6242D74FF00C03609 /* Shaders.metal in Sources */,
+				C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */,
+				C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */,
+				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3C95094242C1BA400E775BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C32DDEDE24368FB500FB4CB4 /* Shaders.metal in Sources */,
+				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
+				C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C3504DD2242D74FF00C03609 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3504DD3242D74FF00C03609 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C3504DDB242D74FF00C03609 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "SolidLightWorksShell macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksShell;
+				PRODUCT_NAME = SolidLightWorksShell;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C3504DDC242D74FF00C03609 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "SolidLightWorksShell macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorksShell;
+				PRODUCT_NAME = SolidLightWorksShell;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C3C950A0242C1BA400E775BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C3C950A1242C1BA400E775BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C3C950A3242C1BA400E775BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SolidLightWorks/Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorks;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = saver;
+			};
+			name = Debug;
+		};
+		C3C950A4242C1BA400E775BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = SolidLightWorks/Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.taylorjg.SolidLightWorks;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "SolidLightWorksShell Shared/ShaderTypes.h";
+				SWIFT_VERSION = 5.0;
+				WRAPPER_EXTENSION = saver;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C3504DDA242D74FF00C03609 /* Build configuration list for PBXNativeTarget "SolidLightWorksShell macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3504DDB242D74FF00C03609 /* Debug */,
+				C3504DDC242D74FF00C03609 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3C95092242C1BA400E775BD /* Build configuration list for PBXProject "SolidLightWorks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3C950A0242C1BA400E775BD /* Debug */,
+				C3C950A1242C1BA400E775BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3C950A2242C1BA400E775BD /* Build configuration list for PBXNativeTarget "SolidLightWorks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3C950A3242C1BA400E775BD /* Debug */,
+				C3C950A4242C1BA400E775BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C3C9508F242C1BA400E775BD /* Project object */;
+}
