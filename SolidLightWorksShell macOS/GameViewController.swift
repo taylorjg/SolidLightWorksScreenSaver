@@ -19,8 +19,6 @@ class GameViewController: NSViewController {
         super.viewDidLoad()
 
         print(FileManager.default.temporaryDirectory)
-//        let tempFileName = FileManager.default.temporaryFileURL(fileName: "screensaver.log")
-//        print(tempFileName)
 
         guard let mtkView = self.view as? MTKView else {
             print("View attached to GameViewController is not an MTKView")

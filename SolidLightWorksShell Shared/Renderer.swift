@@ -44,7 +44,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     var mesh: MTKMesh
     
-    init?(metalKitView: MTKView) {
+    init?(metalKitView: MTKView, bundle: Bundle? = nil) {
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
@@ -67,7 +67,8 @@ class Renderer: NSObject, MTKViewDelegate {
         do {
             pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
                                                                        metalKitView: metalKitView,
-                                                                       mtlVertexDescriptor: mtlVertexDescriptor)
+                                                                       mtlVertexDescriptor: mtlVertexDescriptor,
+            bundle: bundle)
         } catch {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
@@ -87,13 +88,8 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         do {
-            colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap")
+            colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap", bundle: bundle)
         } catch {
-            let alert = NSAlert()
-            alert.informativeText = "Unable to load texture. Error info: \(error)"
-            alert.addButton(withTitle: "OK")
-            alert.runModal()
-
             print("Unable to load texture. Error info: \(error)")
             return nil
         }
@@ -129,16 +125,16 @@ class Renderer: NSObject, MTKViewDelegate {
     
     class func buildRenderPipelineWithDevice(device: MTLDevice,
                                              metalKitView: MTKView,
-                                             mtlVertexDescriptor: MTLVertexDescriptor) throws -> MTLRenderPipelineState {
+                                             mtlVertexDescriptor: MTLVertexDescriptor,
+                                             bundle: Bundle?) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
         
-        
-//        let library = device.makeDefaultLibrary()
-        let bundle = Bundle(identifier: "com.example.taylorjg.SolidLightWorks")
-        let library = try device.makeDefaultLibrary(bundle: bundle!)
+        let library = bundle != nil
+            ? try device.makeDefaultLibrary(bundle: bundle!)
+            : device.makeDefaultLibrary()
 
-        let vertexFunction = library.makeFunction(name: "vertexShader")
-        let fragmentFunction = library.makeFunction(name: "fragmentShader")
+        let vertexFunction = library?.makeFunction(name: "vertexShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentShader")
 
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
@@ -180,7 +176,8 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     class func loadTexture(device: MTLDevice,
-                           textureName: String) throws -> MTLTexture {
+                           textureName: String,
+                           bundle: Bundle?) throws -> MTLTexture {
         /// Load texture data with optimal parameters for sampling
         
         let textureLoader = MTKTextureLoader(device: device)
@@ -190,11 +187,6 @@ class Renderer: NSObject, MTKViewDelegate {
             MTKTextureLoader.Option.textureStorageMode: NSNumber(value: MTLStorageMode.`private`.rawValue)
         ]
         
-//        return try textureLoader.newTexture(name: textureName,
-//                                            scaleFactor: 1.0,
-//                                            bundle: nil,
-//                                            options: textureLoaderOptions)
-        let bundle = Bundle(identifier: "com.example.taylorjg.SolidLightWorks")
         return try textureLoader.newTexture(name: textureName,
                                             scaleFactor: 1.0,
                                             bundle: bundle,
