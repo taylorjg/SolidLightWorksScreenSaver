@@ -27,15 +27,17 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var dynamicUniformBuffer: MTLBuffer
     var pipelineState: MTLRenderPipelineState
-    var depthState: MTLDepthStencilState
+    
+    var flatPipelineState: MTLRenderPipelineState
+    var flatUniformBuffer: MTLBuffer
+    var flatUniforms: UnsafeMutablePointer<FlatUniforms>
+
     var colorMap: MTLTexture
     
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
     
     var uniformBufferOffset = 0
-    
     var uniformBufferIndex = 0
-    
     var uniforms: UnsafeMutablePointer<Uniforms>
     
     var projectionMatrix: matrix_float4x4 = matrix_float4x4()
@@ -58,27 +60,33 @@ class Renderer: NSObject, MTKViewDelegate {
         
         uniforms = UnsafeMutableRawPointer(dynamicUniformBuffer.contents()).bindMemory(to:Uniforms.self, capacity:1)
         
-        metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
-        metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
-        metalKitView.sampleCount = 1
-        
         let mtlVertexDescriptor = Renderer.buildMetalVertexDescriptor()
         
         do {
             pipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
                                                                        metalKitView: metalKitView,
                                                                        mtlVertexDescriptor: mtlVertexDescriptor,
-            bundle: bundle)
+                                                                       bundle: bundle)
         } catch {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
         }
         
-        let depthStateDesciptor = MTLDepthStencilDescriptor()
-        depthStateDesciptor.depthCompareFunction = MTLCompareFunction.less
-        depthStateDesciptor.isDepthWriteEnabled = true
-        guard let state = device.makeDepthStencilState(descriptor:depthStateDesciptor) else { return nil }
-        depthState = state
+        let flatUniformBufferSize = MemoryLayout<FlatUniforms>.size
+        guard let buffer2 = self.device.makeBuffer(length:flatUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
+        flatUniformBuffer = buffer2
+        flatUniforms = UnsafeMutableRawPointer(flatUniformBuffer.contents()).bindMemory(to: FlatUniforms.self, capacity: 1)
+        let mtlFlatVertexDescriptor = Renderer.buildMetalFlatVertexDescriptor()
+        
+        do {
+            flatPipelineState = try Renderer.buildRenderFlatPipelineWithDevice(device: device,
+                                                                               metalKitView: metalKitView,
+                                                                               mtlVertexDescriptor: mtlFlatVertexDescriptor,
+                                                                               bundle: bundle)
+        } catch {
+            print("Unable to compile render flat pipeline state.  Error info: \(error)")
+            return nil
+        }
         
         do {
             mesh = try Renderer.buildMesh(device: device, mtlVertexDescriptor: mtlVertexDescriptor)
@@ -95,7 +103,6 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         super.init()
-        
     }
     
     class func buildMetalVertexDescriptor() -> MTLVertexDescriptor {
@@ -123,6 +130,23 @@ class Renderer: NSObject, MTKViewDelegate {
         return mtlVertexDescriptor
     }
     
+    class func buildMetalFlatVertexDescriptor() -> MTLVertexDescriptor {
+        // Creete a Metal vertex descriptor specifying how vertices will by laid out for input into our render
+        //   pipeline and how we'll layout our Model IO vertices
+        
+        let mtlVertexDescriptor = MTLVertexDescriptor()
+        
+        mtlVertexDescriptor.attributes[0].format = MTLVertexFormat.float3
+        mtlVertexDescriptor.attributes[0].offset = 0
+        mtlVertexDescriptor.attributes[0].bufferIndex = 0
+        
+        mtlVertexDescriptor.layouts[0].stride = 12
+        mtlVertexDescriptor.layouts[0].stepRate = 1
+        mtlVertexDescriptor.layouts[0].stepFunction = MTLVertexStepFunction.perVertex
+        
+        return mtlVertexDescriptor
+    }
+    
     class func buildRenderPipelineWithDevice(device: MTLDevice,
                                              metalKitView: MTKView,
                                              mtlVertexDescriptor: MTLVertexDescriptor,
@@ -132,20 +156,57 @@ class Renderer: NSObject, MTKViewDelegate {
         let library = bundle != nil
             ? try device.makeDefaultLibrary(bundle: bundle!)
             : device.makeDefaultLibrary()
-
+        
         let vertexFunction = library?.makeFunction(name: "vertexShader")
         let fragmentFunction = library?.makeFunction(name: "fragmentShader")
-
+        
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
-        pipelineDescriptor.sampleCount = metalKitView.sampleCount
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = mtlVertexDescriptor
         
-        pipelineDescriptor.colorAttachments[0].pixelFormat = metalKitView.colorPixelFormat
-        pipelineDescriptor.depthAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
-        pipelineDescriptor.stencilAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
+        let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
+        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
+        colorAttachments0.isBlendingEnabled = true
+        colorAttachments0.rgbBlendOperation = .add
+        colorAttachments0.alphaBlendOperation = .add
+        colorAttachments0.sourceRGBBlendFactor = .sourceAlpha
+        colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
+        colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
+        colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        
+        return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+    }
+    
+    class func buildRenderFlatPipelineWithDevice(device: MTLDevice,
+                                                 metalKitView: MTKView,
+                                                 mtlVertexDescriptor: MTLVertexDescriptor,
+                                                 bundle: Bundle?) throws -> MTLRenderPipelineState {
+        /// Build a render state pipeline object
+        
+        let library = bundle != nil
+            ? try device.makeDefaultLibrary(bundle: bundle!)
+            : device.makeDefaultLibrary()
+        
+        let vertexFunction = library?.makeFunction(name: "vertexFlatShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentFlatShader")
+        
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.label = "RenderPipeline"
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+        pipelineDescriptor.vertexDescriptor = mtlVertexDescriptor
+        
+        let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
+        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
+        colorAttachments0.isBlendingEnabled = true
+        colorAttachments0.rgbBlendOperation = .add
+        colorAttachments0.alphaBlendOperation = .add
+        colorAttachments0.sourceRGBBlendFactor = .sourceAlpha
+        colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
+        colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
+        colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
         
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
@@ -213,6 +274,10 @@ class Renderer: NSObject, MTKViewDelegate {
         let viewMatrix = matrix4x4_translation(0.0, 0.0, -8.0)
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
         rotation += 0.01
+        
+        flatUniforms[0].projectionMatrix = projectionMatrix
+        flatUniforms[0].modelViewMatrix = matrix4x4_translation(0.0, 0.0, -12.0)
+        flatUniforms[0].flatColour = SIMD4<Float>(0xc0/0xff, 0xc0/0xff, 0xc0/0xff, 0.2)
     }
     
     func draw(in view: MTKView) {
@@ -239,16 +304,10 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 /// Final pass rendering code here
                 renderEncoder.label = "Primary Render Encoder"
-                
                 renderEncoder.pushDebugGroup("Draw Box")
-                
-                renderEncoder.setCullMode(.back)
-                
+                // renderEncoder.setCullMode(.back)
                 renderEncoder.setFrontFacing(.counterClockwise)
-                
                 renderEncoder.setRenderPipelineState(pipelineState)
-                
-                renderEncoder.setDepthStencilState(depthState)
                 
                 renderEncoder.setVertexBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
                 renderEncoder.setFragmentBuffer(dynamicUniformBuffer, offset:uniformBufferOffset, index: BufferIndex.uniforms.rawValue)
@@ -272,9 +331,24 @@ class Renderer: NSObject, MTKViewDelegate {
                                                         indexType: submesh.indexType,
                                                         indexBuffer: submesh.indexBuffer.buffer,
                                                         indexBufferOffset: submesh.indexBuffer.offset)
-                    
                 }
                 
+                renderEncoder.popDebugGroup()
+                
+                renderEncoder.pushDebugGroup("Draw Screen")
+                renderEncoder.setRenderPipelineState(flatPipelineState)
+                let screenVertices: [Float] = [
+                    -8, 0, 0,
+                    8, 0, 0,
+                    -8, 6, 0,
+                    -8, 6, 0,
+                    8, 0, 0,
+                    8, 6, 0
+                ]
+                renderEncoder.setVertexBytes(screenVertices, length: screenVertices.count * MemoryLayout<Float>.stride, index: 0)
+                renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
+                renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.endEncoding()
@@ -292,7 +366,10 @@ class Renderer: NSObject, MTKViewDelegate {
         /// Respond to drawable size or orientation changes here
         
         let aspect = Float(size.width) / Float(size.height)
-        projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65), aspectRatio:aspect, nearZ: 0.1, farZ: 100.0)
+        projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65),
+                                                         aspectRatio:aspect,
+                                                         nearZ: 0.1,
+                                                         farZ: 100.0)
     }
 }
 

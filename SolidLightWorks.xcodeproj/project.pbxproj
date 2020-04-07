@@ -18,6 +18,8 @@
 		C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC5242D74FE00C03609 /* Renderer.swift */; };
 		C3504DD8242D74FF00C03609 /* ShaderTypes.h in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC6242D74FE00C03609 /* ShaderTypes.h */; };
 		C3504DD9242D74FF00C03609 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC7242D74FF00C03609 /* Assets.xcassets */; };
+		C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E18243B9EC7004A2A82 /* FlatShaders.metal */; };
+		C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E18243B9EC7004A2A82 /* FlatShaders.metal */; };
 		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +33,7 @@
 		C3504DD0242D74FF00C03609 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		C3504DD3242D74FF00C03609 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C3504DD5242D74FF00C03609 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3880E18243B9EC7004A2A82 /* FlatShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FlatShaders.metal; sourceTree = "<group>"; };
 		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
@@ -61,6 +64,7 @@
 				C3504DC5242D74FE00C03609 /* Renderer.swift */,
 				C3504DC6242D74FE00C03609 /* ShaderTypes.h */,
 				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
+				C3880E18243B9EC7004A2A82 /* FlatShaders.metal */,
 			);
 			path = SolidLightWorksShared;
 			sourceTree = "<group>";
@@ -219,6 +223,7 @@
 			files = (
 				C3504DD6242D74FF00C03609 /* Shaders.metal in Sources */,
 				C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */,
+				C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */,
 				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
 			);
@@ -230,6 +235,7 @@
 			files = (
 				C32DDEDE24368FB500FB4CB4 /* Shaders.metal in Sources */,
 				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
+				C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
