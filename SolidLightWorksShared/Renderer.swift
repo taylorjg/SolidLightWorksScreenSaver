@@ -271,13 +271,13 @@ class Renderer: NSObject, MTKViewDelegate {
         
         let rotationAxis = SIMD3<Float>(1, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
-        let viewMatrix = matrix4x4_translation(0.0, 0.0, -8.0)
+        let viewMatrix = matrix4x4_translation(-3.0, -3.0, -15.0)
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
         rotation += 0.01
         
         flatUniforms[0].projectionMatrix = projectionMatrix
-        flatUniforms[0].modelViewMatrix = matrix4x4_translation(0.0, 0.0, -12.0)
-        flatUniforms[0].flatColour = SIMD4<Float>(0xc0/0xff, 0xc0/0xff, 0xc0/0xff, 0.2)
+//        flatUniforms[0].modelViewMatrix = matrix4x4_translation(-3.0, -3.0, -12.0)
+        flatUniforms[0].modelViewMatrix = viewMatrix
     }
     
     func draw(in view: MTKView) {
@@ -337,18 +337,32 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 renderEncoder.pushDebugGroup("Draw Screen")
                 renderEncoder.setRenderPipelineState(flatPipelineState)
-                let screenVertices: [Float] = [
-                    -8, 0, 0,
-                    8, 0, 0,
-                    -8, 6, 0,
-                    -8, 6, 0,
-                    8, 0, 0,
-                    8, 6, 0
+                let grey = Float(0xc0) / Float(0xff)
+                let screenVertexData: [Float] = [
+                    -8, 0, 0, grey, grey, grey, 0.2,
+                    8, 0, 0, grey, grey, grey, 0.2,
+                    -8, 6, 0, grey, grey, grey, 0.2,
+                    -8, 6, 0, grey, grey, grey, 0.2,
+                    8, 0, 0, grey, grey, grey, 0.2,
+                    8, 6, 0, grey, grey, grey, 0.2
                 ]
-                renderEncoder.setVertexBytes(screenVertices, length: screenVertices.count * MemoryLayout<Float>.stride, index: 0)
+                renderEncoder.setVertexBytes(screenVertexData, length: screenVertexData.count * MemoryLayout<Float>.stride, index: 0)
                 renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+                renderEncoder.popDebugGroup()
+                
+                renderEncoder.pushDebugGroup("Draw Axes")
+                let axesVertexData: [Float] = [
+                    0, 0, 0, 1.0, 0.0, 0.0, 1.0,
+                    8, 0, 0, 1.0, 0.0, 0.0, 1.0,
+                    0, 0, 0, 0.0, 1.0, 0.0, 1.0,
+                    0, 6, 0, 0.0, 1.0, 0.0, 1.0,
+                    0, 0, 0, 0.0, 0.0, 1.0, 1.0,
+                    0, 0, 8, 0.0, 0.0, 1.0, 1.0
+                ]
+                renderEncoder.setVertexBytes(axesVertexData, length: axesVertexData.count * MemoryLayout<Float>.stride, index: 0)
+                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 6)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.endEncoding()
