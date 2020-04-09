@@ -21,6 +21,36 @@ enum RendererError: Error {
     case badVertexDescriptor
 }
 
+struct FlatVertex {
+    let position: SIMD3<Float>
+    let color: SIMD4<Float>
+}
+
+let screenGrey = Float(0xc0) / Float(0xff)
+let screenColor = SIMD4<Float>(screenGrey, screenGrey, screenGrey, 0.2)
+
+let screenVertices: [FlatVertex] = [
+    FlatVertex(position: SIMD3<Float>(-8, 0, 0), color: screenColor),
+    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: screenColor),
+    FlatVertex(position: SIMD3<Float>(-8, 6, 0), color: screenColor),
+    FlatVertex(position: SIMD3<Float>(-8, 6, 0), color: screenColor),
+    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: screenColor),
+    FlatVertex(position: SIMD3<Float>(8, 6, 0), color: screenColor)
+]
+
+let xAxisColor = SIMD4<Float>(1, 0, 0, 1)
+let yAxisColor = SIMD4<Float>(0, 1, 0, 1)
+let zAxisColor = SIMD4<Float>(0, 0, 1, 1)
+
+let axesVertices: [FlatVertex] = [
+    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: xAxisColor),
+    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: xAxisColor),
+    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: yAxisColor),
+    FlatVertex(position: SIMD3<Float>(0, 6, 0), color: yAxisColor),
+    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: zAxisColor),
+    FlatVertex(position: SIMD3<Float>(0, 0, 8), color: zAxisColor)
+]
+
 class Renderer: NSObject, MTKViewDelegate {
     
     public let device: MTLDevice
@@ -76,12 +106,10 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let buffer2 = self.device.makeBuffer(length:flatUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
         flatUniformBuffer = buffer2
         flatUniforms = UnsafeMutableRawPointer(flatUniformBuffer.contents()).bindMemory(to: FlatUniforms.self, capacity: 1)
-        let mtlFlatVertexDescriptor = Renderer.buildMetalFlatVertexDescriptor()
         
         do {
             flatPipelineState = try Renderer.buildRenderFlatPipelineWithDevice(device: device,
                                                                                metalKitView: metalKitView,
-                                                                               mtlVertexDescriptor: mtlFlatVertexDescriptor,
                                                                                bundle: bundle)
         } catch {
             print("Unable to compile render flat pipeline state.  Error info: \(error)")
@@ -130,23 +158,6 @@ class Renderer: NSObject, MTKViewDelegate {
         return mtlVertexDescriptor
     }
     
-    class func buildMetalFlatVertexDescriptor() -> MTLVertexDescriptor {
-        // Creete a Metal vertex descriptor specifying how vertices will by laid out for input into our render
-        //   pipeline and how we'll layout our Model IO vertices
-        
-        let mtlVertexDescriptor = MTLVertexDescriptor()
-        
-        mtlVertexDescriptor.attributes[0].format = MTLVertexFormat.float3
-        mtlVertexDescriptor.attributes[0].offset = 0
-        mtlVertexDescriptor.attributes[0].bufferIndex = 0
-        
-        mtlVertexDescriptor.layouts[0].stride = 12
-        mtlVertexDescriptor.layouts[0].stepRate = 1
-        mtlVertexDescriptor.layouts[0].stepFunction = MTLVertexStepFunction.perVertex
-        
-        return mtlVertexDescriptor
-    }
-    
     class func buildRenderPipelineWithDevice(device: MTLDevice,
                                              metalKitView: MTKView,
                                              mtlVertexDescriptor: MTLVertexDescriptor,
@@ -181,7 +192,6 @@ class Renderer: NSObject, MTKViewDelegate {
     
     class func buildRenderFlatPipelineWithDevice(device: MTLDevice,
                                                  metalKitView: MTKView,
-                                                 mtlVertexDescriptor: MTLVertexDescriptor,
                                                  bundle: Bundle?) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
         
@@ -196,7 +206,6 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineDescriptor.label = "RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = mtlVertexDescriptor
         
         let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
         colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
@@ -267,16 +276,14 @@ class Renderer: NSObject, MTKViewDelegate {
     private func updateGameState() {
         /// Update any game state before rendering
         
-        uniforms[0].projectionMatrix = projectionMatrix
-        
         let rotationAxis = SIMD3<Float>(1, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(-3.0, -3.0, -15.0)
+        uniforms[0].projectionMatrix = projectionMatrix
         uniforms[0].modelViewMatrix = simd_mul(viewMatrix, modelMatrix)
         rotation += 0.01
         
         flatUniforms[0].projectionMatrix = projectionMatrix
-//        flatUniforms[0].modelViewMatrix = matrix4x4_translation(-3.0, -3.0, -12.0)
         flatUniforms[0].modelViewMatrix = viewMatrix
     }
     
@@ -337,31 +344,14 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 renderEncoder.pushDebugGroup("Draw Screen")
                 renderEncoder.setRenderPipelineState(flatPipelineState)
-                let grey = Float(0xc0) / Float(0xff)
-                let screenVertexData: [Float] = [
-                    -8, 0, 0, grey, grey, grey, 0.2,
-                    8, 0, 0, grey, grey, grey, 0.2,
-                    -8, 6, 0, grey, grey, grey, 0.2,
-                    -8, 6, 0, grey, grey, grey, 0.2,
-                    8, 0, 0, grey, grey, grey, 0.2,
-                    8, 6, 0, grey, grey, grey, 0.2
-                ]
-                renderEncoder.setVertexBytes(screenVertexData, length: screenVertexData.count * MemoryLayout<Float>.stride, index: 0)
+                renderEncoder.setVertexBytes(screenVertices, length: screenVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
                 renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.pushDebugGroup("Draw Axes")
-                let axesVertexData: [Float] = [
-                    0, 0, 0, 1.0, 0.0, 0.0, 1.0,
-                    8, 0, 0, 1.0, 0.0, 0.0, 1.0,
-                    0, 0, 0, 0.0, 1.0, 0.0, 1.0,
-                    0, 6, 0, 0.0, 1.0, 0.0, 1.0,
-                    0, 0, 0, 0.0, 0.0, 1.0, 1.0,
-                    0, 0, 8, 0.0, 0.0, 1.0, 1.0
-                ]
-                renderEncoder.setVertexBytes(axesVertexData, length: axesVertexData.count * MemoryLayout<Float>.stride, index: 0)
+                renderEncoder.setVertexBytes(axesVertices, length: axesVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
                 renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 6)
                 renderEncoder.popDebugGroup()
                 
