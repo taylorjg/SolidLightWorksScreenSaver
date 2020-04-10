@@ -22,34 +22,41 @@ enum RendererError: Error {
 }
 
 struct FlatVertex {
-    let position: SIMD3<Float>
-    let color: SIMD4<Float>
+    let position: simd_float3
+    let color: simd_float4
 }
 
 let screenGrey = Float(0xc0) / Float(0xff)
-let screenColor = SIMD4<Float>(screenGrey, screenGrey, screenGrey, 0.2)
+let screenColor = simd_float4(screenGrey, screenGrey, screenGrey, 0.2)
 
 let screenVertices: [FlatVertex] = [
-    FlatVertex(position: SIMD3<Float>(-8, 0, 0), color: screenColor),
-    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: screenColor),
-    FlatVertex(position: SIMD3<Float>(-8, 6, 0), color: screenColor),
-    FlatVertex(position: SIMD3<Float>(-8, 6, 0), color: screenColor),
-    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: screenColor),
-    FlatVertex(position: SIMD3<Float>(8, 6, 0), color: screenColor)
+    FlatVertex(position: simd_float3(-8, 0, 0), color: screenColor),
+    FlatVertex(position: simd_float3(8, 0, 0), color: screenColor),
+    FlatVertex(position: simd_float3(-8, 6, 0), color: screenColor),
+    FlatVertex(position: simd_float3(-8, 6, 0), color: screenColor),
+    FlatVertex(position: simd_float3(8, 0, 0), color: screenColor),
+    FlatVertex(position: simd_float3(8, 6, 0), color: screenColor)
 ]
 
-let xAxisColor = SIMD4<Float>(1, 0, 0, 1)
-let yAxisColor = SIMD4<Float>(0, 1, 0, 1)
-let zAxisColor = SIMD4<Float>(0, 0, 1, 1)
+let xAxisColor = simd_float4(1, 0, 0, 1)
+let yAxisColor = simd_float4(0, 1, 0, 1)
+let zAxisColor = simd_float4(0, 0, 1, 1)
 
 let axesVertices: [FlatVertex] = [
-    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: xAxisColor),
-    FlatVertex(position: SIMD3<Float>(8, 0, 0), color: xAxisColor),
-    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: yAxisColor),
-    FlatVertex(position: SIMD3<Float>(0, 6, 0), color: yAxisColor),
-    FlatVertex(position: SIMD3<Float>(0, 0, 0), color: zAxisColor),
-    FlatVertex(position: SIMD3<Float>(0, 0, 8), color: zAxisColor)
+    FlatVertex(position: simd_float3(0, 0, 0), color: xAxisColor),
+    FlatVertex(position: simd_float3(8, 0, 0), color: xAxisColor),
+    FlatVertex(position: simd_float3(0, 0, 0), color: yAxisColor),
+    FlatVertex(position: simd_float3(0, 6, 0), color: yAxisColor),
+    FlatVertex(position: simd_float3(0, 0, 0), color: zAxisColor),
+    FlatVertex(position: simd_float3(0, 0, 8), color: zAxisColor)
 ]
+
+let linePoints = [
+    simd_float2(-6, 4),
+    simd_float2(-3, 2),
+    simd_float2(0, 4)
+]
+let lineVertices = makeLine2DVertices(linePoints, 0.1)
 
 class Renderer: NSObject, MTKViewDelegate {
     
@@ -61,6 +68,10 @@ class Renderer: NSObject, MTKViewDelegate {
     var flatPipelineState: MTLRenderPipelineState
     var flatUniformBuffer: MTLBuffer
     var flatUniforms: UnsafeMutablePointer<FlatUniforms>
+
+    var line2DPipelineState: MTLRenderPipelineState
+    var line2DUniformBuffer: MTLBuffer
+    var line2DUniforms: UnsafeMutablePointer<Line2DUniforms>
 
     var colorMap: MTLTexture
     
@@ -77,6 +88,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var mesh: MTKMesh
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
+        print(lineVertices)
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
@@ -116,27 +128,41 @@ class Renderer: NSObject, MTKViewDelegate {
             return nil
         }
         
+        let line2DUniformBufferSize = MemoryLayout<Line2DUniforms>.size
+        guard let buffer3 = self.device.makeBuffer(length:line2DUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
+        line2DUniformBuffer = buffer3
+        line2DUniforms = UnsafeMutableRawPointer(line2DUniformBuffer.contents()).bindMemory(to: Line2DUniforms.self, capacity: 1)
+
+        do {
+            line2DPipelineState = try Renderer.buildRenderLine2DPipelineWithDevice(device: device,
+                                                                                   metalKitView: metalKitView,
+                                                                                   bundle: bundle)
+        } catch {
+            print("Unable to compile render line2D pipeline state.  Error info: \(error)")
+            return nil
+        }
+
         do {
             mesh = try Renderer.buildMesh(device: device, mtlVertexDescriptor: mtlVertexDescriptor)
         } catch {
             print("Unable to build MetalKit Mesh. Error info: \(error)")
             return nil
         }
-        
+
         do {
             colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap", bundle: bundle)
         } catch {
             print("Unable to load texture. Error info: \(error)")
             return nil
         }
-        
+
         super.init()
     }
-    
+
     class func buildMetalVertexDescriptor() -> MTLVertexDescriptor {
         // Creete a Metal vertex descriptor specifying how vertices will by laid out for input into our render
         //   pipeline and how we'll layout our Model IO vertices
-        
+
         let mtlVertexDescriptor = MTLVertexDescriptor()
         
         mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = MTLVertexFormat.float3
@@ -220,14 +246,44 @@ class Renderer: NSObject, MTKViewDelegate {
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
+    class func buildRenderLine2DPipelineWithDevice(device: MTLDevice,
+                                                   metalKitView: MTKView,
+                                                   bundle: Bundle?) throws -> MTLRenderPipelineState {
+        /// Build a render state pipeline object
+
+        let library = bundle != nil
+            ? try device.makeDefaultLibrary(bundle: bundle!)
+            : device.makeDefaultLibrary()
+
+        let vertexFunction = library?.makeFunction(name: "vertexLine2DShader")
+        let fragmentFunction = library?.makeFunction(name: "fragmentLine2DShader")
+
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        pipelineDescriptor.label = "RenderPipeline"
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+
+        let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
+        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
+        colorAttachments0.isBlendingEnabled = true
+        colorAttachments0.rgbBlendOperation = .add
+        colorAttachments0.alphaBlendOperation = .add
+        colorAttachments0.sourceRGBBlendFactor = .sourceAlpha
+        colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
+        colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
+        colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+
+        return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+    }
+
     class func buildMesh(device: MTLDevice,
                          mtlVertexDescriptor: MTLVertexDescriptor) throws -> MTKMesh {
         /// Create and condition mesh data to feed into a pipeline using the given vertex descriptor
         
         let metalAllocator = MTKMeshBufferAllocator(device: device)
         
-        let mdlMesh = MDLMesh.newBox(withDimensions: SIMD3<Float>(4, 4, 4),
-                                     segments: SIMD3<UInt32>(2, 2, 2),
+        let mdlMesh = MDLMesh.newBox(withDimensions: simd_float3(4, 4, 4),
+                                     segments: simd_uint3(2, 2, 2),
                                      geometryType: MDLGeometryType.triangles,
                                      inwardNormals:false,
                                      allocator: metalAllocator)
@@ -276,7 +332,7 @@ class Renderer: NSObject, MTKViewDelegate {
     private func updateGameState() {
         /// Update any game state before rendering
         
-        let rotationAxis = SIMD3<Float>(1, 1, 0)
+        let rotationAxis = simd_float3(1, 1, 0)
         let modelMatrix = matrix4x4_rotation(radians: rotation, axis: rotationAxis)
         let viewMatrix = matrix4x4_translation(-3.0, -3.0, -15.0)
         uniforms[0].projectionMatrix = projectionMatrix
@@ -285,6 +341,10 @@ class Renderer: NSObject, MTKViewDelegate {
         
         flatUniforms[0].projectionMatrix = projectionMatrix
         flatUniforms[0].modelViewMatrix = viewMatrix
+
+        line2DUniforms[0].projectionMatrix = projectionMatrix
+        line2DUniforms[0].modelViewMatrix = viewMatrix
+        line2DUniforms[0].color = simd_float4(1, 1, 1, 1)
     }
     
     func draw(in view: MTKView) {
@@ -347,12 +407,20 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setVertexBytes(screenVertices, length: screenVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
                 renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
-                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.pushDebugGroup("Draw Axes")
                 renderEncoder.setVertexBytes(axesVertices, length: axesVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
-                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: 6)
+                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
+                renderEncoder.popDebugGroup()
+
+                renderEncoder.pushDebugGroup("Draw Line")
+                renderEncoder.setRenderPipelineState(line2DPipelineState)
+                renderEncoder.setVertexBytes(lineVertices, length: lineVertices.count * MemoryLayout<simd_float3>.stride, index: 0)
+                renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
+                renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: lineVertices.count)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.endEncoding()
@@ -378,7 +446,7 @@ class Renderer: NSObject, MTKViewDelegate {
 }
 
 // Generic matrix math utility functions
-func matrix4x4_rotation(radians: Float, axis: SIMD3<Float>) -> matrix_float4x4 {
+func matrix4x4_rotation(radians: Float, axis: simd_float3) -> matrix_float4x4 {
     let unitAxis = normalize(axis)
     let ct = cosf(radians)
     let st = sinf(radians)

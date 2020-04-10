@@ -45,12 +45,21 @@ typedef struct
     matrix_float4x4 modelViewMatrix;
 } Uniforms;
 
-// Flat shaders
+// FlatShaders
 
 typedef struct
 {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
 } FlatUniforms;
+
+// Line2DShaders
+
+typedef struct
+{
+    matrix_float4x4 projectionMatrix;
+    matrix_float4x4 modelViewMatrix;
+    vector_float4 color;
+} Line2DUniforms;
 
 #endif /* ShaderTypes_h */
