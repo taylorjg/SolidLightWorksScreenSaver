@@ -54,9 +54,10 @@ let axesVertices: [FlatVertex] = [
 let linePoints = [
     simd_float2(-6, 4),
     simd_float2(-3, 2),
-    simd_float2(0, 4)
+    simd_float2(0, 4),
+    simd_float2(3, 2)
 ]
-let lineVertices = makeLine2DVertices(linePoints, 0.1)
+let (lineVertices, lineIndices) = makeLine2DVertices(linePoints, 0.1)
 
 class Renderer: NSObject, MTKViewDelegate {
     
@@ -68,11 +69,12 @@ class Renderer: NSObject, MTKViewDelegate {
     var flatPipelineState: MTLRenderPipelineState
     var flatUniformBuffer: MTLBuffer
     var flatUniforms: UnsafeMutablePointer<FlatUniforms>
-
+    
     var line2DPipelineState: MTLRenderPipelineState
     var line2DUniformBuffer: MTLBuffer
     var line2DUniforms: UnsafeMutablePointer<Line2DUniforms>
-
+    var line2dIndexBuffer: MTLBuffer
+    
     var colorMap: MTLTexture
     
     let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
@@ -88,7 +90,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var mesh: MTKMesh
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
-        print(lineVertices)
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
@@ -132,7 +133,10 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let buffer3 = self.device.makeBuffer(length:line2DUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
         line2DUniformBuffer = buffer3
         line2DUniforms = UnsafeMutableRawPointer(line2DUniformBuffer.contents()).bindMemory(to: Line2DUniforms.self, capacity: 1)
-
+        line2dIndexBuffer = device.makeBuffer(bytes: lineIndices,
+                                              length: MemoryLayout<UInt16>.stride * lineIndices.count,
+                                              options: [])!
+        
         do {
             line2DPipelineState = try Renderer.buildRenderLine2DPipelineWithDevice(device: device,
                                                                                    metalKitView: metalKitView,
@@ -141,28 +145,28 @@ class Renderer: NSObject, MTKViewDelegate {
             print("Unable to compile render line2D pipeline state.  Error info: \(error)")
             return nil
         }
-
+        
         do {
             mesh = try Renderer.buildMesh(device: device, mtlVertexDescriptor: mtlVertexDescriptor)
         } catch {
             print("Unable to build MetalKit Mesh. Error info: \(error)")
             return nil
         }
-
+        
         do {
             colorMap = try Renderer.loadTexture(device: device, textureName: "ColorMap", bundle: bundle)
         } catch {
             print("Unable to load texture. Error info: \(error)")
             return nil
         }
-
+        
         super.init()
     }
-
+    
     class func buildMetalVertexDescriptor() -> MTLVertexDescriptor {
         // Creete a Metal vertex descriptor specifying how vertices will by laid out for input into our render
         //   pipeline and how we'll layout our Model IO vertices
-
+        
         let mtlVertexDescriptor = MTLVertexDescriptor()
         
         mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = MTLVertexFormat.float3
@@ -250,19 +254,19 @@ class Renderer: NSObject, MTKViewDelegate {
                                                    metalKitView: MTKView,
                                                    bundle: Bundle?) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
-
+        
         let library = bundle != nil
             ? try device.makeDefaultLibrary(bundle: bundle!)
             : device.makeDefaultLibrary()
-
+        
         let vertexFunction = library?.makeFunction(name: "vertexLine2DShader")
         let fragmentFunction = library?.makeFunction(name: "fragmentLine2DShader")
-
+        
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-
+        
         let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
         colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
         colorAttachments0.isBlendingEnabled = true
@@ -272,10 +276,10 @@ class Renderer: NSObject, MTKViewDelegate {
         colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
         colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
         colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
-
+        
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
-
+    
     class func buildMesh(device: MTLDevice,
                          mtlVertexDescriptor: MTLVertexDescriptor) throws -> MTKMesh {
         /// Create and condition mesh data to feed into a pipeline using the given vertex descriptor
@@ -341,7 +345,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         flatUniforms[0].projectionMatrix = projectionMatrix
         flatUniforms[0].modelViewMatrix = viewMatrix
-
+        
         line2DUniforms[0].projectionMatrix = projectionMatrix
         line2DUniforms[0].modelViewMatrix = viewMatrix
         line2DUniforms[0].color = simd_float4(1, 1, 1, 1)
@@ -404,7 +408,9 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 renderEncoder.pushDebugGroup("Draw Screen")
                 renderEncoder.setRenderPipelineState(flatPipelineState)
-                renderEncoder.setVertexBytes(screenVertices, length: screenVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
+                renderEncoder.setVertexBytes(screenVertices,
+                                             length: MemoryLayout<FlatVertex>.stride * screenVertices.count,
+                                             index: 0)
                 renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
                 renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
@@ -414,13 +420,17 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.setVertexBytes(axesVertices, length: axesVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
                 renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
                 renderEncoder.popDebugGroup()
-
+                
                 renderEncoder.pushDebugGroup("Draw Line")
                 renderEncoder.setRenderPipelineState(line2DPipelineState)
                 renderEncoder.setVertexBytes(lineVertices, length: lineVertices.count * MemoryLayout<simd_float3>.stride, index: 0)
                 renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
-                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: lineVertices.count)
+                renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                                    indexCount: lineIndices.count,
+                                                    indexType: .uint16,
+                                                    indexBuffer: line2dIndexBuffer,
+                                                    indexBufferOffset: 0)
                 renderEncoder.popDebugGroup()
                 
                 renderEncoder.endEncoding()

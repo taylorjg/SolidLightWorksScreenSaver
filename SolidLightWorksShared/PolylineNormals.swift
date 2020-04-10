@@ -10,35 +10,39 @@ import Foundation
 import simd
 
 // https://github.com/mattdesl/three-line-2d/blob/master/index.js
-func makeLine2DVertices(_ points: [simd_float2], _ thickness: Float) -> [simd_float3] {
+func makeLine2DVertices(_ points: [simd_float2], _ thickness: Float) -> ([simd_float3], [UInt16]) {
     if points.isEmpty {
-        return []
+        return ([], [])
     }
     let normals = getNormals(points)
+    let pointCount = points.count
+    let segmentCount = pointCount - 1
     var vertices = [simd_float3]()
-    let segmentCount = points.count - 1
-    vertices.reserveCapacity(segmentCount * 6)
-    for index in 0..<segmentCount {
-        let p0 = points[index]
-        let p1 = points[index + 1]
-        let (miter0, miterLen0) = normals[index]
-        let (miter1, miterLen1) = normals[index + 1]
-        let n0 = miter0 * thickness / 2 * -miterLen0
-        let n1 = miter0 * thickness / 2 * miterLen0
-        let n2 = miter1 * thickness / 2 * -miterLen1
-        let n3 = miter1 * thickness / 2 * miterLen1
-        let v0 = simd_float3(p0.x, p0.y, 0) + simd_float3(n0.x, n0.y, 0)
-        let v1 = simd_float3(p0.x, p0.y, 0) + simd_float3(n1.x, n1.y, 0)
-        let v2 = simd_float3(p1.x, p1.y, 0) + simd_float3(n2.x, n2.y, 0)
-        let v3 = simd_float3(p1.x, p1.y, 0) + simd_float3(n3.x, n3.y, 0)
-        vertices.append(v0)
-        vertices.append(v1)
-        vertices.append(v2)
-        vertices.append(v2)
-        vertices.append(v1)
-        vertices.append(v3)
+    var indices = [UInt16]()
+    vertices.reserveCapacity(pointCount * 2)
+    indices.reserveCapacity(segmentCount * 6)
+    var vertexIndex = UInt16(0)
+    for index in 0..<points.count {
+        let p = points[index]
+        let (miter, miterLen) = normals[index]
+        let term = miter * thickness / 2
+        let n0 = term * -miterLen
+        let n1 = term * +miterLen
+        let v0 = p + n0
+        let v1 = p + n1
+        vertices.append(simd_float3(v0, 0))
+        vertices.append(simd_float3(v1, 0))
+        if index < segmentCount {
+            indices.append(vertexIndex + 0)
+            indices.append(vertexIndex + 1)
+            indices.append(vertexIndex + 2)
+            indices.append(vertexIndex + 2)
+            indices.append(vertexIndex + 1)
+            indices.append(vertexIndex + 3)
+        }
+        vertexIndex += 2
     }
-    return vertices
+    return (vertices, indices)
 }
 
 // https://github.com/mattdesl/polyline-normals/blob/master/index.js
