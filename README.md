@@ -38,17 +38,19 @@ I have only just started this project. At the moment, all I have done is take th
 
 * ~~Draw screen~~
 * ~~Draw axes~~
-* Implement camera lookat
-* Implement rotating camera
-* Port [three-line-2d](https://github.com/mattdesl/three-line-2d) to Metal
-* Draw the first simple shape: ellipse
+* ~~Port [three-line-2d](https://github.com/mattdesl/three-line-2d) to Metal~~
+* ~~Draw the first simple shape: wave~~
 * Draw the remaining shapes: line, wave, circle wave
 * Draw a moving shape: travelling wave
 * Implement first of the forms (without membrane): Doubling Back
-* Port the membrane geometry to Metal
-* Randomly switch between camera positions
-* Implement the remaining forms
+* Implement the remaining forms (without membrane)
 * Randomly switch between forms
+* Port the membrane geometry to Metal
+* Implement first of the forms (with membrane): Doubling Back
+* Implement the remaining forms (with membrane)
+* Randomly switch between camera positions
+* Implement camera lookat
+* Implement rotating camera
 * Add a screensaver configuration sheet with option to show forms without membranes
 
 # Links

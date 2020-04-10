@@ -51,13 +51,17 @@ let axesVertices: [FlatVertex] = [
     FlatVertex(position: simd_float3(0, 0, 8), color: zAxisColor)
 ]
 
-let linePoints = [
-    simd_float2(-6, 4),
-    simd_float2(-3, 2),
-    simd_float2(0, 4),
-    simd_float2(3, 2)
-]
-let (lineVertices, lineIndices) = makeLine2DVertices(linePoints, 0.1)
+let waveDivisions = 128
+let waveWidth = Float(4)
+let dx = waveWidth / Float(waveDivisions)
+let da = 2 * Float.pi / Float(waveDivisions)
+let wavePoints = (0..<waveDivisions).map { n -> simd_float2 in
+    let x = Float(n) * dx - waveWidth / 2
+    let a = Float(n) * da
+    let y = 2 * sin(a) + 3
+    return simd_float2(x, y)
+}
+let (lineVertices, lineIndices) = makeLine2DVertices(wavePoints, 0.1)
 
 class Renderer: NSObject, MTKViewDelegate {
     
