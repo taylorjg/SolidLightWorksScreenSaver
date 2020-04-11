@@ -51,16 +51,8 @@ let axesVertices: [FlatVertex] = [
     FlatVertex(position: simd_float3(0, 0, 8), color: zAxisColor)
 ]
 
-let waveDivisions = 128
-let waveWidth = Float(4)
-let dx = waveWidth / Float(waveDivisions)
-let da = 2 * Float.pi / Float(waveDivisions)
-let wavePoints = (0..<waveDivisions).map { n -> simd_float2 in
-    let x = Float(n) * dx - waveWidth / 2
-    let a = Float(n) * da
-    let y = 2 * sin(a) + 3
-    return simd_float2(x, y)
-}
+let travellingWave = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: false)
+let wavePoints = travellingWave.getPoints(divisions: 127, tick: 0)
 let (lineVertices, lineIndices) = makeLine2DVertices(wavePoints, 0.1)
 
 class Renderer: NSObject, MTKViewDelegate {
@@ -134,38 +126,6 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         super.init()
-    }
-    
-    class func buildRenderPipelineWithDevice(device: MTLDevice,
-                                             metalKitView: MTKView,
-                                             mtlVertexDescriptor: MTLVertexDescriptor,
-                                             bundle: Bundle?) throws -> MTLRenderPipelineState {
-        /// Build a render state pipeline object
-        
-        let library = bundle != nil
-            ? try device.makeDefaultLibrary(bundle: bundle!)
-            : device.makeDefaultLibrary()
-        
-        let vertexFunction = library?.makeFunction(name: "vertexShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentShader")
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.label = "RenderPipeline"
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = mtlVertexDescriptor
-        
-        let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
-        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
-        colorAttachments0.isBlendingEnabled = true
-        colorAttachments0.rgbBlendOperation = .add
-        colorAttachments0.alphaBlendOperation = .add
-        colorAttachments0.sourceRGBBlendFactor = .sourceAlpha
-        colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
-        colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
-        colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        
-        return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
     class func buildRenderFlatPipelineWithDevice(device: MTLDevice,
