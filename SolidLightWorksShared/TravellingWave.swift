@@ -18,6 +18,7 @@ class TravellingWave {
     let k: Float = 1
     let omega: Float = 1
     let phase: Float
+    let speed: Float = 0.0005
     
     init(cx: Float, cy: Float, width: Float, height: Float, vertical: Bool) {
         self.cx = cx
@@ -32,7 +33,7 @@ class TravellingWave {
         let dx = width / Float(divisions)
         return (0...divisions).map { index ->simd_float2 in
             let x = dx * Float(index)
-            let y = height / 2 * sin(k * x - omega * Float(tick) * 0.0005 + phase)
+            let y = height / 2 * sin(k * x - omega * Float(tick) * speed + phase)
             return simd_float2(cx - width / 2 + x, cy + y)
         }
     }
@@ -41,7 +42,7 @@ class TravellingWave {
         let dx = height / Float(divisions)
         return (0...divisions).map { index ->simd_float2 in
             let x = dx * Float(index)
-            let y = height / 2 * sin(k * x - omega * Float(tick) * 0.0005 + phase)
+            let y = height / 2 * sin(k * x - omega * Float(tick) * speed + phase)
             return simd_float2(cx + y, cy - height / 2 + x)
         }
     }

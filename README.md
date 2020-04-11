@@ -39,10 +39,10 @@ I have only just started this project. At the moment, all I have done is take th
 * ~~Draw screen~~
 * ~~Draw axes~~
 * ~~Port [three-line-2d](https://github.com/mattdesl/three-line-2d) to Metal~~
-* ~~Draw the first simple shape: wave~~
-* Draw the remaining shapes: line, wave, circle wave
-* Draw a moving shape: travelling wave
-* Implement first of the forms (without membrane): Doubling Back
+* ~~Draw a static wave~~
+* ~~Draw a travelling wave~~
+* ~~Implement first of the forms (without membrane): Doubling Back~~
+* Draw the remaining vocabulary: ellipse, line, circle wave
 * Implement the remaining forms (without membrane)
 * Randomly switch between forms
 * Port the membrane geometry to Metal
