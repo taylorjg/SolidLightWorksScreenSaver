@@ -7,32 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C32DDEDE24368FB500FB4CB4 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC4242D74FE00C03609 /* Shaders.metal */; };
 		C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC5242D74FE00C03609 /* Renderer.swift */; };
 		C32DDEE02437ECF700FB4CB4 /* ShaderTypes.h in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC6242D74FE00C03609 /* ShaderTypes.h */; };
 		C32DDEE22437FCC900FB4CB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC7242D74FF00C03609 /* Assets.xcassets */; };
 		C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DCE242D74FF00C03609 /* AppDelegate.swift */; };
 		C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DD0242D74FF00C03609 /* GameViewController.swift */; };
 		C3504DD4242D74FF00C03609 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3504DD2242D74FF00C03609 /* Main.storyboard */; };
-		C3504DD6242D74FF00C03609 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC4242D74FE00C03609 /* Shaders.metal */; };
 		C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3504DC5242D74FE00C03609 /* Renderer.swift */; };
 		C3504DD8242D74FF00C03609 /* ShaderTypes.h in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC6242D74FE00C03609 /* ShaderTypes.h */; };
 		C3504DD9242D74FF00C03609 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3504DC7242D74FF00C03609 /* Assets.xcassets */; };
 		C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E18243B9EC7004A2A82 /* FlatShaders.metal */; };
 		C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E18243B9EC7004A2A82 /* FlatShaders.metal */; };
-		C3880E21243FDCF3004A2A82 /* PolylineNormals.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E20243FDCF3004A2A82 /* PolylineNormals.swift */; };
-		C3880E22243FDCF3004A2A82 /* PolylineNormals.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E20243FDCF3004A2A82 /* PolylineNormals.swift */; };
+		C3880E21243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */; };
+		C3880E22243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */; };
 		C3880E262440BD25004A2A82 /* Line2DShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E252440BD25004A2A82 /* Line2DShaders.metal */; };
 		C3880E272440BD25004A2A82 /* Line2DShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E252440BD25004A2A82 /* Line2DShaders.metal */; };
 		C3880E292441B8E5004A2A82 /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E282441B8E5004A2A82 /* MathUtils.swift */; };
 		C3880E2A2441B8E5004A2A82 /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E282441B8E5004A2A82 /* MathUtils.swift */; };
 		C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */; };
 		C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */; };
+		C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
+		C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
+		C3880E322442F5BF004A2A82 /* Line2DShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = C3880E312442F5BF004A2A82 /* Line2DShaders.h */; };
 		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C3504DC4242D74FE00C03609 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		C3504DC5242D74FE00C03609 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		C3504DC6242D74FE00C03609 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		C3504DC7242D74FF00C03609 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -43,10 +43,13 @@
 		C3504DD5242D74FF00C03609 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3880E18243B9EC7004A2A82 /* FlatShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FlatShaders.metal; sourceTree = "<group>"; };
 		C3880E1D243DB89C004A2A82 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		C3880E20243FDCF3004A2A82 /* PolylineNormals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolylineNormals.swift; sourceTree = "<group>"; };
+		C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Line2DGeometry.swift; sourceTree = "<group>"; };
 		C3880E252440BD25004A2A82 /* Line2DShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Line2DShaders.metal; sourceTree = "<group>"; };
 		C3880E282441B8E5004A2A82 /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
 		C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravellingWave.swift; sourceTree = "<group>"; };
+		C3880E2E244284DF004A2A82 /* CircleWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleWave.swift; sourceTree = "<group>"; };
+		C3880E312442F5BF004A2A82 /* Line2DShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Line2DShaders.h; sourceTree = "<group>"; };
+		C3880E332442F68D004A2A82 /* FlatShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlatShaders.h; sourceTree = "<group>"; };
 		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
@@ -73,15 +76,17 @@
 		C3504DC3242D74FE00C03609 /* SolidLightWorksShared */ = {
 			isa = PBXGroup;
 			children = (
-				C3880E252440BD25004A2A82 /* Line2DShaders.metal */,
-				C3880E282441B8E5004A2A82 /* MathUtils.swift */,
-				C3880E20243FDCF3004A2A82 /* PolylineNormals.swift */,
-				C3504DC4242D74FE00C03609 /* Shaders.metal */,
-				C3504DC5242D74FE00C03609 /* Renderer.swift */,
 				C3504DC6242D74FE00C03609 /* ShaderTypes.h */,
-				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
+				C3880E332442F68D004A2A82 /* FlatShaders.h */,
 				C3880E18243B9EC7004A2A82 /* FlatShaders.metal */,
+				C3880E312442F5BF004A2A82 /* Line2DShaders.h */,
+				C3880E252440BD25004A2A82 /* Line2DShaders.metal */,
+				C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */,
+				C3880E282441B8E5004A2A82 /* MathUtils.swift */,
 				C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */,
+				C3880E2E244284DF004A2A82 /* CircleWave.swift */,
+				C3504DC5242D74FE00C03609 /* Renderer.swift */,
+				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
 			);
 			path = SolidLightWorksShared;
 			sourceTree = "<group>";
@@ -141,6 +146,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3880E322442F5BF004A2A82 /* Line2DShaders.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,13 +253,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3504DD6242D74FF00C03609 /* Shaders.metal in Sources */,
 				C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */,
 				C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3880E272440BD25004A2A82 /* Line2DShaders.metal in Sources */,
 				C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */,
 				C3880E2A2441B8E5004A2A82 /* MathUtils.swift in Sources */,
-				C3880E22243FDCF3004A2A82 /* PolylineNormals.swift in Sources */,
+				C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */,
+				C3880E22243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
 				C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 			);
@@ -264,13 +270,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3880E292441B8E5004A2A82 /* MathUtils.swift in Sources */,
-				C32DDEDE24368FB500FB4CB4 /* Shaders.metal in Sources */,
+				C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */,
 				C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
 				C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */,
 				C3880E262440BD25004A2A82 /* Line2DShaders.metal in Sources */,
-				C3880E21243FDCF3004A2A82 /* PolylineNormals.swift in Sources */,
+				C3880E21243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

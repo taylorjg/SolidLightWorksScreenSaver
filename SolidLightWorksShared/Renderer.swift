@@ -12,11 +12,6 @@ import Metal
 import MetalKit
 import simd
 
-// The 256 byte aligned size of our uniform structure
-let alignedUniformsSize = (MemoryLayout<Uniforms>.size + 0xFF) & -0x100
-
-let maxBuffersInFlight = 3
-
 enum RendererError: Error {
     case badVertexDescriptor
 }
@@ -56,9 +51,6 @@ class Renderer: NSObject, MTKViewDelegate {
     public let device: MTLDevice
     let commandQueue: MTLCommandQueue
     
-    let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
-    var dynamicUniformBuffer: MTLBuffer
-    
     var flatPipelineState: MTLRenderPipelineState
     var flatUniformBuffer: MTLBuffer
     var flatUniforms: UnsafeMutablePointer<FlatUniforms>
@@ -68,10 +60,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var line2DUniforms: UnsafeMutablePointer<Line2DUniforms>
     let travellingWaveRight = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: false)
     let travellingWaveUp = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: true)
-    
-    var uniformBufferOffset = 0
-    var uniformBufferIndex = 0
-    var uniforms: UnsafeMutablePointer<Uniforms>
+    let circleWaveOuter = CircleWave(R: 2, A: 0.4, F: 3.5, S: 0.001, f: 0.001, rotationPhase: 0, oscillationPhase: 0)
+    let circleWaveInner = CircleWave(R: 1, A: 0.4, F: 3.5, S: -0.001, f: -0.001, rotationPhase: Float.pi / 2, oscillationPhase: 0)
     
     var projectionMatrix: matrix_float4x4 = matrix_float4x4()
     
@@ -82,15 +72,6 @@ class Renderer: NSObject, MTKViewDelegate {
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
-        
-        let uniformBufferSize = alignedUniformsSize * maxBuffersInFlight
-        
-        guard let buffer = self.device.makeBuffer(length:uniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
-        dynamicUniformBuffer = buffer
-        
-        self.dynamicUniformBuffer.label = "UniformBuffer"
-        
-        uniforms = UnsafeMutableRawPointer(dynamicUniformBuffer.contents()).bindMemory(to:Uniforms.self, capacity:1)
         
         let flatUniformBufferSize = MemoryLayout<FlatUniforms>.size
         guard let buffer2 = self.device.makeBuffer(length:flatUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
@@ -183,14 +164,6 @@ class Renderer: NSObject, MTKViewDelegate {
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
-    private func updateDynamicBufferState() {
-        /// Update the state of our uniform buffers before rendering
-        
-        uniformBufferIndex = (uniformBufferIndex + 1) % maxBuffersInFlight
-        uniformBufferOffset = alignedUniformsSize * uniformBufferIndex
-        uniforms = UnsafeMutableRawPointer(dynamicUniformBuffer.contents() + uniformBufferOffset).bindMemory(to:Uniforms.self, capacity:1)
-    }
-    
     private func updateGameState() {
         /// Update any game state before rendering
         
@@ -207,22 +180,18 @@ class Renderer: NSObject, MTKViewDelegate {
     func draw(in view: MTKView) {
         /// Per frame updates hare
         
-        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             
-            let semaphore = inFlightSemaphore
-            commandBuffer.addCompletedHandler { (_ commandBuffer) -> Swift.Void in
-                semaphore.signal()
-            }
-            
-            self.updateDynamicBufferState()
             self.updateGameState()
             
-            let wavePointsRight = travellingWaveRight.getPoints(divisions: 127, tick: tick)
-            let wavePointsUp = travellingWaveUp.getPoints(divisions: 127, tick: tick)
-            tick += 1
+            let divisions = 127
             let lineThickness: Float = 0.05
+
+            let wavePointsRight = travellingWaveRight.getPoints(divisions: divisions, tick: tick)
+            let wavePointsUp = travellingWaveUp.getPoints(divisions: divisions, tick: tick)
+            // let wavePointsRight = circleWaveOuter.getPoints(divisions: divisions, tick: tick)
+            // let wavePointsUp = circleWaveInner.getPoints(divisions: divisions, tick: tick)
+            tick += 1
             let (waveVerticesRight, waveIndicesRight) = makeLine2DVertices(wavePointsRight, lineThickness)
             let (waveVerticesUp, waveIndicesUp) = makeLine2DVertices(wavePointsUp, lineThickness)
             let waveIndicesRightBuffer = device.makeBuffer(bytes: waveIndicesRight,

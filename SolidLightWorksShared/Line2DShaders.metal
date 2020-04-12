@@ -16,21 +16,12 @@ typedef struct
     float3 position;
 } Line2DVertex;
 
-typedef struct
+vertex float4 vertexLine2DShader(uint vertexID [[vertex_id]],
+                                 constant Line2DVertex *vertices [[buffer(0)]],
+                                 constant Line2DUniforms &uniforms [[buffer(1)]])
 {
-    float4 position [[position]];
-} Line2DInOut;
-
-vertex Line2DInOut vertexLine2DShader(uint vertexID [[vertex_id]],
-                                      constant Line2DVertex *vertices [[buffer(0)]],
-                                      constant Line2DUniforms &uniforms [[buffer(1)]])
-{
-    Line2DInOut out;
-
     float4 position = float4(vertices[vertexID].position, 1.0);
-    out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
-
-    return out;
+    return uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
 }
 
 fragment float4 fragmentLine2DShader(constant Line2DUniforms &uniforms [[buffer(1)]])
