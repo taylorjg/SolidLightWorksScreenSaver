@@ -13,13 +13,16 @@
 
 typedef struct {
     vector_float3 position;
-    vector_float2 texCoord;
+    vector_float3 normal;
+    vector_float2 uv;
 } MembraneVertex;
 
 typedef struct
 {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
+    matrix_float3x3 normalMatrix;
+    vector_float3 projector;
 } MembraneUniforms;
 
 #endif /* MembraneShaderTypes_h */
