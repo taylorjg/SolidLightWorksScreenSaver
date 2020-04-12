@@ -21,7 +21,8 @@
 
 #include <simd/simd.h>
 
-#include "FlatShaders.h"
-#include "Line2DShaders.h"
+#include "FlatShaderTypes.h"
+#include "Line2DShaderTypes.h"
+#include "MembraneShaderTypes.h"
 
 #endif /* ShaderTypes_h */

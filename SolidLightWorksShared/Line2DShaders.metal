@@ -11,11 +11,6 @@ using namespace metal;
 
 #import "ShaderTypes.h"
 
-typedef struct
-{
-    float3 position;
-} Line2DVertex;
-
 vertex float4 vertexLine2DShader(uint vertexID [[vertex_id]],
                                  constant Line2DVertex *vertices [[buffer(0)]],
                                  constant Line2DUniforms &uniforms [[buffer(1)]])

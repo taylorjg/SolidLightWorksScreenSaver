@@ -14,12 +14,6 @@ using namespace metal;
 
 typedef struct
 {
-    float3 position;
-    float4 color;
-} FlatVertex;
-
-typedef struct
-{
     float4 position [[position]];
     float4 color;
 } FlatInOut;

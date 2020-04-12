@@ -16,15 +16,10 @@ enum RendererError: Error {
     case badVertexDescriptor
 }
 
-struct FlatVertex {
-    let position: simd_float3
-    let color: simd_float4
-}
-
 let screenGrey = Float(0xc0) / Float(0xff)
 let screenColor = simd_float4(screenGrey, screenGrey, screenGrey, 0.2)
 
-let screenVertices: [FlatVertex] = [
+let screenVertices = [
     FlatVertex(position: simd_float3(-8, 0, 0), color: screenColor),
     FlatVertex(position: simd_float3(8, 0, 0), color: screenColor),
     FlatVertex(position: simd_float3(-8, 6, 0), color: screenColor),
@@ -37,7 +32,7 @@ let xAxisColor = simd_float4(1, 0, 0, 1)
 let yAxisColor = simd_float4(0, 1, 0, 1)
 let zAxisColor = simd_float4(0, 0, 1, 1)
 
-let axesVertices: [FlatVertex] = [
+let axesVertices = [
     FlatVertex(position: simd_float3(0, 0, 0), color: xAxisColor),
     FlatVertex(position: simd_float3(8, 0, 0), color: xAxisColor),
     FlatVertex(position: simd_float3(0, 0, 0), color: yAxisColor),
@@ -67,6 +62,8 @@ class Renderer: NSObject, MTKViewDelegate {
     
     var rotation: Float = 0
     var tick = 0
+    
+    var hazeTexture: MTLTexture
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
         self.device = metalKitView.device!
@@ -98,6 +95,13 @@ class Renderer: NSObject, MTKViewDelegate {
                                                                                    bundle: bundle)
         } catch {
             print("Unable to compile render line2D pipeline state.  Error info: \(error)")
+            return nil
+        }
+        
+        do {
+            hazeTexture = try Renderer.loadTexture(device: device, textureName: "Haze", bundle: bundle)
+        } catch {
+            print("Unable to load haze texture. Error info: \(error)")
             return nil
         }
         
@@ -164,6 +168,24 @@ class Renderer: NSObject, MTKViewDelegate {
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
     
+    class func loadTexture(device: MTLDevice,
+                           textureName: String,
+                           bundle: Bundle?) throws -> MTLTexture {
+        /// Load texture data with optimal parameters for sampling
+        
+        let textureLoader = MTKTextureLoader(device: device)
+        
+        let textureLoaderOptions = [
+            MTKTextureLoader.Option.textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
+            MTKTextureLoader.Option.textureStorageMode: NSNumber(value: MTLStorageMode.`private`.rawValue)
+        ]
+        
+        return try textureLoader.newTexture(name: textureName,
+                                            scaleFactor: 1.0,
+                                            bundle: bundle,
+                                            options: textureLoaderOptions)
+    }
+    
     private func updateGameState() {
         /// Update any game state before rendering
         
@@ -186,7 +208,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             let divisions = 127
             let lineThickness: Float = 0.05
-
+            
             let wavePointsRight = travellingWaveRight.getPoints(divisions: divisions, tick: tick)
             let wavePointsUp = travellingWaveUp.getPoints(divisions: divisions, tick: tick)
             // let wavePointsRight = circleWaveOuter.getPoints(divisions: divisions, tick: tick)
@@ -225,7 +247,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 renderEncoder.pushDebugGroup("Draw Tavelling Wave Right")
                 renderEncoder.setRenderPipelineState(line2DPipelineState)
                 renderEncoder.setVertexBytes(waveVerticesRight,
-                                             length: MemoryLayout<simd_float3>.stride * waveVerticesRight.count,
+                                             length: MemoryLayout<Line2DVertex>.stride * waveVerticesRight.count,
                                              index: 0)
                 renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
                 renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
@@ -238,7 +260,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 
                 renderEncoder.pushDebugGroup("Draw Tavelling Wave Up")
                 renderEncoder.setVertexBytes(waveVerticesUp,
-                                             length: MemoryLayout<simd_float3>.stride * waveVerticesUp.count,
+                                             length: MemoryLayout<Line2DVertex>.stride * waveVerticesUp.count,
                                              index: 0)
                 renderEncoder.drawIndexedPrimitives(type: .triangle,
                                                     indexCount: waveIndicesUp.count,

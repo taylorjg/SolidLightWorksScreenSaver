@@ -10,14 +10,14 @@ import Foundation
 import simd
 
 // https://github.com/mattdesl/three-line-2d/blob/master/index.js
-func makeLine2DVertices(_ points: [simd_float2], _ thickness: Float) -> ([simd_float3], [UInt16]) {
+func makeLine2DVertices(_ points: [simd_float2], _ thickness: Float) -> ([Line2DVertex], [UInt16]) {
     if points.isEmpty {
         return ([], [])
     }
     let normals = getNormals(points)
     let pointCount = points.count
     let segmentCount = pointCount - 1
-    var vertices = [simd_float3]()
+    var vertices = [Line2DVertex]()
     var indices = [UInt16]()
     vertices.reserveCapacity(pointCount * 2)
     indices.reserveCapacity(segmentCount * 6)
@@ -30,8 +30,8 @@ func makeLine2DVertices(_ points: [simd_float2], _ thickness: Float) -> ([simd_f
         let n1 = term * +miterLen
         let v0 = p + n0
         let v1 = p + n1
-        vertices.append(simd_float3(v0, 0))
-        vertices.append(simd_float3(v1, 0))
+        vertices.append(Line2DVertex(position: simd_float3(v0, 0)))
+        vertices.append(Line2DVertex(position: simd_float3(v1, 0)))
         if index < segmentCount {
             indices.append(vertexIndex + 0)
             indices.append(vertexIndex + 1)

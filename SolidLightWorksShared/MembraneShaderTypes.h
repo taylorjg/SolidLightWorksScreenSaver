@@ -1,21 +1,25 @@
 //
-//  Line2DShaders.h
+//  MembraneShaderTypes.h
 //  SolidLightWorksShared
 //
 //  Created by Administrator on 12/04/2020.
 //  Copyright © 2020 Jon Taylor. All rights reserved.
 //
 
-#ifndef Line2DShaders_h
-#define Line2DShaders_h
+#ifndef MembraneShaderTypes_h
+#define MembraneShaderTypes_h
 
 #include <simd/simd.h>
+
+typedef struct {
+    vector_float3 position;
+    vector_float2 texCoord;
+} MembraneVertex;
 
 typedef struct
 {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 modelViewMatrix;
-    vector_float4 color;
-} Line2DUniforms;
+} MembraneUniforms;
 
-#endif /* Line2DShaders_h */
+#endif /* MembraneShaderTypes_h */

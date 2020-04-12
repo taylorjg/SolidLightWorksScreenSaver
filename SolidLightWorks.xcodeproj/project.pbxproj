@@ -28,7 +28,12 @@
 		C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */; };
 		C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
 		C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
-		C3880E322442F5BF004A2A82 /* Line2DShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = C3880E312442F5BF004A2A82 /* Line2DShaders.h */; };
+		C3880E322442F5BF004A2A82 /* Line2DShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C3880E312442F5BF004A2A82 /* Line2DShaderTypes.h */; };
+		C3880E352443491C004A2A82 /* MembraneShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C3880E342443491C004A2A82 /* MembraneShaderTypes.h */; };
+		C3880E37244349E0004A2A82 /* MembraneGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E36244349E0004A2A82 /* MembraneGeometry.swift */; };
+		C3880E38244349E0004A2A82 /* MembraneGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E36244349E0004A2A82 /* MembraneGeometry.swift */; };
+		C3880E3A24434A05004A2A82 /* MembraneShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3924434A05004A2A82 /* MembraneShaders.metal */; };
+		C3880E3B24434A05004A2A82 /* MembraneShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3924434A05004A2A82 /* MembraneShaders.metal */; };
 		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,8 +53,11 @@
 		C3880E282441B8E5004A2A82 /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
 		C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravellingWave.swift; sourceTree = "<group>"; };
 		C3880E2E244284DF004A2A82 /* CircleWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleWave.swift; sourceTree = "<group>"; };
-		C3880E312442F5BF004A2A82 /* Line2DShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Line2DShaders.h; sourceTree = "<group>"; };
-		C3880E332442F68D004A2A82 /* FlatShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlatShaders.h; sourceTree = "<group>"; };
+		C3880E312442F5BF004A2A82 /* Line2DShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Line2DShaderTypes.h; sourceTree = "<group>"; };
+		C3880E332442F68D004A2A82 /* FlatShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlatShaderTypes.h; sourceTree = "<group>"; };
+		C3880E342443491C004A2A82 /* MembraneShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MembraneShaderTypes.h; sourceTree = "<group>"; };
+		C3880E36244349E0004A2A82 /* MembraneGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembraneGeometry.swift; sourceTree = "<group>"; };
+		C3880E3924434A05004A2A82 /* MembraneShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MembraneShaders.metal; sourceTree = "<group>"; };
 		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
@@ -77,11 +85,14 @@
 			isa = PBXGroup;
 			children = (
 				C3504DC6242D74FE00C03609 /* ShaderTypes.h */,
-				C3880E332442F68D004A2A82 /* FlatShaders.h */,
+				C3880E332442F68D004A2A82 /* FlatShaderTypes.h */,
 				C3880E18243B9EC7004A2A82 /* FlatShaders.metal */,
-				C3880E312442F5BF004A2A82 /* Line2DShaders.h */,
+				C3880E312442F5BF004A2A82 /* Line2DShaderTypes.h */,
 				C3880E252440BD25004A2A82 /* Line2DShaders.metal */,
 				C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */,
+				C3880E342443491C004A2A82 /* MembraneShaderTypes.h */,
+				C3880E3924434A05004A2A82 /* MembraneShaders.metal */,
+				C3880E36244349E0004A2A82 /* MembraneGeometry.swift */,
 				C3880E282441B8E5004A2A82 /* MathUtils.swift */,
 				C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */,
 				C3880E2E244284DF004A2A82 /* CircleWave.swift */,
@@ -146,7 +157,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3880E322442F5BF004A2A82 /* Line2DShaders.h in Headers */,
+				C3880E352443491C004A2A82 /* MembraneShaderTypes.h in Headers */,
+				C3880E322442F5BF004A2A82 /* Line2DShaderTypes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,8 +269,10 @@
 				C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3880E272440BD25004A2A82 /* Line2DShaders.metal in Sources */,
 				C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */,
+				C3880E3B24434A05004A2A82 /* MembraneShaders.metal in Sources */,
 				C3880E2A2441B8E5004A2A82 /* MathUtils.swift in Sources */,
 				C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */,
+				C3880E38244349E0004A2A82 /* MembraneGeometry.swift in Sources */,
 				C3880E22243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
 				C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
@@ -271,10 +285,12 @@
 			files = (
 				C3880E292441B8E5004A2A82 /* MathUtils.swift in Sources */,
 				C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */,
+				C3880E37244349E0004A2A82 /* MembraneGeometry.swift in Sources */,
 				C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
 				C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */,
+				C3880E3A24434A05004A2A82 /* MembraneShaders.metal in Sources */,
 				C3880E262440BD25004A2A82 /* Line2DShaders.metal in Sources */,
 				C3880E21243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 			);
