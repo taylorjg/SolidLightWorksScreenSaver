@@ -34,6 +34,14 @@
 		C3880E38244349E0004A2A82 /* MembraneGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E36244349E0004A2A82 /* MembraneGeometry.swift */; };
 		C3880E3A24434A05004A2A82 /* MembraneShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3924434A05004A2A82 /* MembraneShaders.metal */; };
 		C3880E3B24434A05004A2A82 /* MembraneShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3924434A05004A2A82 /* MembraneShaders.metal */; };
+		C3880E402443CCE8004A2A82 /* BetweenYouAndIForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3F2443CCE8004A2A82 /* BetweenYouAndIForm.swift */; };
+		C3880E412443CCE8004A2A82 /* BetweenYouAndIForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E3F2443CCE8004A2A82 /* BetweenYouAndIForm.swift */; };
+		C3880E432446349E004A2A82 /* LineClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E422446349E004A2A82 /* LineClip.swift */; };
+		C3880E442446349E004A2A82 /* LineClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E422446349E004A2A82 /* LineClip.swift */; };
+		C3880E46244670F5004A2A82 /* DoublingBackForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E45244670F5004A2A82 /* DoublingBackForm.swift */; };
+		C3880E47244670F5004A2A82 /* DoublingBackForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E45244670F5004A2A82 /* DoublingBackForm.swift */; };
+		C3880E492446710B004A2A82 /* CouplingForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E482446710B004A2A82 /* CouplingForm.swift */; };
+		C3880E4A2446710B004A2A82 /* CouplingForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E482446710B004A2A82 /* CouplingForm.swift */; };
 		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +66,10 @@
 		C3880E342443491C004A2A82 /* MembraneShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MembraneShaderTypes.h; sourceTree = "<group>"; };
 		C3880E36244349E0004A2A82 /* MembraneGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembraneGeometry.swift; sourceTree = "<group>"; };
 		C3880E3924434A05004A2A82 /* MembraneShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MembraneShaders.metal; sourceTree = "<group>"; };
+		C3880E3F2443CCE8004A2A82 /* BetweenYouAndIForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetweenYouAndIForm.swift; sourceTree = "<group>"; };
+		C3880E422446349E004A2A82 /* LineClip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineClip.swift; sourceTree = "<group>"; };
+		C3880E45244670F5004A2A82 /* DoublingBackForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoublingBackForm.swift; sourceTree = "<group>"; };
+		C3880E482446710B004A2A82 /* CouplingForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouplingForm.swift; sourceTree = "<group>"; };
 		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
@@ -94,8 +106,12 @@
 				C3880E3924434A05004A2A82 /* MembraneShaders.metal */,
 				C3880E36244349E0004A2A82 /* MembraneGeometry.swift */,
 				C3880E282441B8E5004A2A82 /* MathUtils.swift */,
-				C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */,
+				C3880E422446349E004A2A82 /* LineClip.swift */,
 				C3880E2E244284DF004A2A82 /* CircleWave.swift */,
+				C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */,
+				C3880E45244670F5004A2A82 /* DoublingBackForm.swift */,
+				C3880E482446710B004A2A82 /* CouplingForm.swift */,
+				C3880E3F2443CCE8004A2A82 /* BetweenYouAndIForm.swift */,
 				C3504DC5242D74FE00C03609 /* Renderer.swift */,
 				C3504DC7242D74FF00C03609 /* Assets.xcassets */,
 			);
@@ -266,15 +282,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3504DD7242D74FF00C03609 /* Renderer.swift in Sources */,
+				C3880E4A2446710B004A2A82 /* CouplingForm.swift in Sources */,
 				C3880E1A243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
 				C3880E272440BD25004A2A82 /* Line2DShaders.metal in Sources */,
 				C3504DD1242D74FF00C03609 /* GameViewController.swift in Sources */,
+				C3880E442446349E004A2A82 /* LineClip.swift in Sources */,
 				C3880E3B24434A05004A2A82 /* MembraneShaders.metal in Sources */,
 				C3880E2A2441B8E5004A2A82 /* MathUtils.swift in Sources */,
 				C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */,
+				C3880E47244670F5004A2A82 /* DoublingBackForm.swift in Sources */,
 				C3880E38244349E0004A2A82 /* MembraneGeometry.swift in Sources */,
 				C3880E22243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
+				C3880E412443CCE8004A2A82 /* BetweenYouAndIForm.swift in Sources */,
 				C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,9 +308,13 @@
 				C3880E37244349E0004A2A82 /* MembraneGeometry.swift in Sources */,
 				C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
+				C3880E432446349E004A2A82 /* LineClip.swift in Sources */,
 				C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
+				C3880E46244670F5004A2A82 /* DoublingBackForm.swift in Sources */,
+				C3880E492446710B004A2A82 /* CouplingForm.swift in Sources */,
 				C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */,
 				C3880E3A24434A05004A2A82 /* MembraneShaders.metal in Sources */,
+				C3880E402443CCE8004A2A82 /* BetweenYouAndIForm.swift in Sources */,
 				C3880E262440BD25004A2A82 /* Line2DShaders.metal in Sources */,
 				C3880E21243FDCF3004A2A82 /* Line2DGeometry.swift in Sources */,
 			);

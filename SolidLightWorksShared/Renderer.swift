@@ -53,17 +53,13 @@ class Renderer: NSObject, MTKViewDelegate {
     var line2DPipelineState: MTLRenderPipelineState
     var line2DUniformBuffer: MTLBuffer
     var line2DUniforms: UnsafeMutablePointer<Line2DUniforms>
-    let travellingWaveRight = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: false)
-    let travellingWaveUp = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: true)
-    let circleWaveOuter = CircleWave(R: 2, A: 0.4, F: 3.5, S: 0.001, f: 0.001, rotationPhase: 0, oscillationPhase: 0)
-    let circleWaveInner = CircleWave(R: 1, A: 0.4, F: 3.5, S: -0.001, f: -0.001, rotationPhase: Float.pi / 2, oscillationPhase: 0)
     
-    var projectionMatrix: matrix_float4x4 = matrix_float4x4()
-    
-    var rotation: Float = 0
-    var tick = 0
+    let doublingBackForm = DoublingBackForm()
+    let couplingForm = CouplingForm(outerRadius: 2, innerRadius: 1)
     
     var hazeTexture: MTLTexture
+    
+    var projectionMatrix: matrix_float4x4 = matrix_float4x4()
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
         self.device = metalKitView.device!
@@ -206,23 +202,6 @@ class Renderer: NSObject, MTKViewDelegate {
             
             self.updateGameState()
             
-            let divisions = 127
-            let lineThickness: Float = 0.05
-            
-            let wavePointsRight = travellingWaveRight.getPoints(divisions: divisions, tick: tick)
-            let wavePointsUp = travellingWaveUp.getPoints(divisions: divisions, tick: tick)
-            // let wavePointsRight = circleWaveOuter.getPoints(divisions: divisions, tick: tick)
-            // let wavePointsUp = circleWaveInner.getPoints(divisions: divisions, tick: tick)
-            tick += 1
-            let (waveVerticesRight, waveIndicesRight) = makeLine2DVertices(wavePointsRight, lineThickness)
-            let (waveVerticesUp, waveIndicesUp) = makeLine2DVertices(wavePointsUp, lineThickness)
-            let waveIndicesRightBuffer = device.makeBuffer(bytes: waveIndicesRight,
-                                                           length: MemoryLayout<UInt16>.stride * waveIndicesRight.count,
-                                                           options: [])!
-            let waveIndicesUpBuffer = device.makeBuffer(bytes: waveIndicesUp,
-                                                        length: MemoryLayout<UInt16>.stride * waveIndicesUp.count,
-                                                        options: [])!
-            
             /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
             ///   holding onto the drawable and blocking the display pipeline any longer than necessary
             let renderPassDescriptor = view.currentRenderPassDescriptor
@@ -244,30 +223,29 @@ class Renderer: NSObject, MTKViewDelegate {
                 //                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
                 //                renderEncoder.popDebugGroup()
                 
-                renderEncoder.pushDebugGroup("Draw Tavelling Wave Right")
-                renderEncoder.setRenderPipelineState(line2DPipelineState)
-                renderEncoder.setVertexBytes(waveVerticesRight,
-                                             length: MemoryLayout<Line2DVertex>.stride * waveVerticesRight.count,
-                                             index: 0)
-                renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
-                renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
-                renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                    indexCount: waveIndicesRight.count,
-                                                    indexType: .uint16,
-                                                    indexBuffer: waveIndicesRightBuffer,
-                                                    indexBufferOffset: 0)
-                renderEncoder.popDebugGroup()
-                
-                renderEncoder.pushDebugGroup("Draw Tavelling Wave Up")
-                renderEncoder.setVertexBytes(waveVerticesUp,
-                                             length: MemoryLayout<Line2DVertex>.stride * waveVerticesUp.count,
-                                             index: 0)
-                renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                    indexCount: waveIndicesUp.count,
-                                                    indexType: .uint16,
-                                                    indexBuffer: waveIndicesUpBuffer,
-                                                    indexBufferOffset: 0)
-                renderEncoder.popDebugGroup()
+                let lineThickness: Float = 0.05
+                let lines = doublingBackForm.getUpdatedPoints()
+                // let lines = couplingForm.getUpdatedPoints()
+
+                lines.forEach { line in
+                    let (lineVertices, lineIndices) = makeLine2DVertices(line, lineThickness)
+                    let indicesBuffer = device.makeBuffer(bytes: lineIndices,
+                                                          length: MemoryLayout<UInt16>.stride * lineIndices.count,
+                                                          options: [])!
+                    renderEncoder.pushDebugGroup("Draw Line")
+                    renderEncoder.setRenderPipelineState(line2DPipelineState)
+                    renderEncoder.setVertexBytes(lineVertices,
+                                                 length: MemoryLayout<Line2DVertex>.stride * lineVertices.count,
+                                                 index: 0)
+                    renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
+                    renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
+                    renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                                        indexCount: lineIndices.count,
+                                                        indexType: .uint16,
+                                                        indexBuffer: indicesBuffer,
+                                                        indexBufferOffset: 0)
+                    renderEncoder.popDebugGroup()
+                }
                 
                 renderEncoder.endEncoding()
                 
