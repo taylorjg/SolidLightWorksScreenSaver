@@ -31,7 +31,7 @@ class TravellingWave {
     
     private func getPointsHorizontal(divisions: Int, tick: Int) -> [simd_float2] {
         let dx = width / Float(divisions)
-        return (0...divisions).map { index ->simd_float2 in
+        return (0...divisions).map { index -> simd_float2 in
             let x = dx * Float(index)
             let y = height / 2 * sin(k * x - omega * Float(tick) * speed + phase)
             return simd_float2(cx - width / 2 + x, cy + y)
@@ -40,7 +40,7 @@ class TravellingWave {
     
     private func getPointsVertical(divisions: Int, tick: Int) -> [simd_float2] {
         let dx = height / Float(divisions)
-        return (0...divisions).map { index ->simd_float2 in
+        return (0...divisions).map { index -> simd_float2 in
             let x = dx * Float(index)
             let y = height / 2 * sin(k * x - omega * Float(tick) * speed + phase)
             return simd_float2(cx + y, cy - height / 2 + x)

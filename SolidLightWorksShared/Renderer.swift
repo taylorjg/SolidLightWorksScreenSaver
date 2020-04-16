@@ -56,6 +56,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     let doublingBackForm = DoublingBackForm()
     let couplingForm = CouplingForm(outerRadius: 2, innerRadius: 1)
+    let betweenYouAndIForm = BetweenYouAndIForm(width: 5, height: 6, initiallyWipingInEllipse: true)
     
     var hazeTexture: MTLTexture
     
@@ -226,6 +227,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 let lineThickness: Float = 0.05
                 let lines = doublingBackForm.getUpdatedPoints()
                 // let lines = couplingForm.getUpdatedPoints()
+                // let lines = betweenYouAndIForm.getUpdatedPoints()
 
                 lines.forEach { line in
                     let (lineVertices, lineIndices) = makeLine2DVertices(line, lineThickness)
