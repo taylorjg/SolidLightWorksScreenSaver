@@ -78,9 +78,9 @@ class BetweenYouAndIForm {
                                     p1: simd_float2(-px, -py),
                                     rect1: simd_float2(minX, minY),
                                     rect2: simd_float2(maxX, maxY))
-        return clippedLines != nil
-            ? clippedLines.map { (a, b) in [a, b] }!
-            : [simd_float2(), simd_float2()]
+        return clippedLines
+            .map { (a, b) in [a, b] }
+            ?? [simd_float2(), simd_float2()]
     }
     
     func getUpdatedPoints() -> [[simd_float2]] {
