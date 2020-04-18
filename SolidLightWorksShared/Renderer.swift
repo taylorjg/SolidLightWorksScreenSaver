@@ -6,15 +6,9 @@
 //  Copyright © 2020 Jon Taylor. All rights reserved.
 //
 
-// Our platform independent renderer class
-
 import Metal
 import MetalKit
 import simd
-
-enum RendererError: Error {
-    case badVertexDescriptor
-}
 
 let screenGrey = Float(0xc0) / Float(0xff)
 let screenColor = simd_float4(screenGrey, screenGrey, screenGrey, 0.2)
@@ -43,16 +37,14 @@ let axesVertices = [
 
 class Renderer: NSObject, MTKViewDelegate {
     
-    public let device: MTLDevice
+    let device: MTLDevice
     let commandQueue: MTLCommandQueue
     
-    var flatPipelineState: MTLRenderPipelineState
-    var flatUniformBuffer: MTLBuffer
-    var flatUniforms: UnsafeMutablePointer<FlatUniforms>
+    let flatPipelineState: MTLRenderPipelineState
+    let line2DPipelineState: MTLRenderPipelineState
     
-    var line2DPipelineState: MTLRenderPipelineState
-    var line2DUniformBuffer: MTLBuffer
-    var line2DUniforms: UnsafeMutablePointer<Line2DUniforms>
+    var flatUniforms = FlatUniforms()
+    var line2DUniforms = Line2DUniforms()
     
     let doublingBackForm = DoublingBackForm()
     let couplingForm = CouplingForm(outerRadius: 2, innerRadius: 1)
@@ -60,36 +52,29 @@ class Renderer: NSObject, MTKViewDelegate {
     
     var hazeTexture: MTLTexture
     
-    var projectionMatrix: matrix_float4x4 = matrix_float4x4()
+    let viewMatrix = matrix4x4_translation(0, -2, -4)
+    var projectionMatrix = matrix_float4x4()
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
         self.device = metalKitView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         
-        let flatUniformBufferSize = MemoryLayout<FlatUniforms>.size
-        guard let buffer2 = self.device.makeBuffer(length:flatUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
-        flatUniformBuffer = buffer2
-        flatUniforms = UnsafeMutableRawPointer(flatUniformBuffer.contents()).bindMemory(to: FlatUniforms.self, capacity: 1)
-        
         do {
-            flatPipelineState = try Renderer.buildRenderFlatPipelineWithDevice(device: device,
-                                                                               metalKitView: metalKitView,
-                                                                               bundle: bundle)
+            flatPipelineState = try Renderer.buildRenderPipelineState(name: "Flat",
+                                                                      device: device,
+                                                                      metalKitView: metalKitView,
+                                                                      bundle: bundle)
         } catch {
             print("Unable to compile render flat pipeline state.  Error info: \(error)")
             return nil
         }
         
-        let line2DUniformBufferSize = MemoryLayout<Line2DUniforms>.size
-        guard let buffer3 = self.device.makeBuffer(length:line2DUniformBufferSize, options:[MTLResourceOptions.storageModeShared]) else { return nil }
-        line2DUniformBuffer = buffer3
-        line2DUniforms = UnsafeMutableRawPointer(line2DUniformBuffer.contents()).bindMemory(to: Line2DUniforms.self, capacity: 1)
-        
         do {
-            line2DPipelineState = try Renderer.buildRenderLine2DPipelineWithDevice(device: device,
-                                                                                   metalKitView: metalKitView,
-                                                                                   bundle: bundle)
+            line2DPipelineState = try Renderer.buildRenderPipelineState(name: "Line2D",
+                                                                        device: device,
+                                                                        metalKitView: metalKitView,
+                                                                        bundle: bundle)
         } catch {
             print("Unable to compile render line2D pipeline state.  Error info: \(error)")
             return nil
@@ -105,50 +90,19 @@ class Renderer: NSObject, MTKViewDelegate {
         super.init()
     }
     
-    class func buildRenderFlatPipelineWithDevice(device: MTLDevice,
-                                                 metalKitView: MTKView,
-                                                 bundle: Bundle?) throws -> MTLRenderPipelineState {
-        /// Build a render state pipeline object
-        
+    class func buildRenderPipelineState(name: String,
+                                        device: MTLDevice,
+                                        metalKitView: MTKView,
+                                        bundle: Bundle?) throws -> MTLRenderPipelineState {
         let library = bundle != nil
             ? try device.makeDefaultLibrary(bundle: bundle!)
             : device.makeDefaultLibrary()
         
-        let vertexFunction = library?.makeFunction(name: "vertexFlatShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentFlatShader")
+        let vertexFunction = library?.makeFunction(name: "vertex\(name)Shader")
+        let fragmentFunction = library?.makeFunction(name: "fragment\(name)Shader")
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.label = "RenderPipeline"
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        
-        let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
-        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
-        colorAttachments0.isBlendingEnabled = true
-        colorAttachments0.rgbBlendOperation = .add
-        colorAttachments0.alphaBlendOperation = .add
-        colorAttachments0.sourceRGBBlendFactor = .sourceAlpha
-        colorAttachments0.sourceAlphaBlendFactor = .sourceAlpha
-        colorAttachments0.destinationRGBBlendFactor = .oneMinusSourceAlpha
-        colorAttachments0.destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        
-        return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-    }
-    
-    class func buildRenderLine2DPipelineWithDevice(device: MTLDevice,
-                                                   metalKitView: MTKView,
-                                                   bundle: Bundle?) throws -> MTLRenderPipelineState {
-        /// Build a render state pipeline object
-        
-        let library = bundle != nil
-            ? try device.makeDefaultLibrary(bundle: bundle!)
-            : device.makeDefaultLibrary()
-        
-        let vertexFunction = library?.makeFunction(name: "vertexLine2DShader")
-        let fragmentFunction = library?.makeFunction(name: "fragmentLine2DShader")
-        
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.label = "RenderPipeline"
+        pipelineDescriptor.label = "\(name)RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
@@ -168,8 +122,6 @@ class Renderer: NSObject, MTKViewDelegate {
     class func loadTexture(device: MTLDevice,
                            textureName: String,
                            bundle: Bundle?) throws -> MTLTexture {
-        /// Load texture data with optimal parameters for sampling
-        
         let textureLoader = MTKTextureLoader(device: device)
         
         let textureLoaderOptions = [
@@ -183,66 +135,59 @@ class Renderer: NSObject, MTKViewDelegate {
                                             options: textureLoaderOptions)
     }
     
-    private func updateGameState() {
-        /// Update any game state before rendering
-        
-        let viewMatrix = matrix4x4_translation(0, -2.0, -4.0)
-        
-        flatUniforms[0].projectionMatrix = projectionMatrix
-        flatUniforms[0].modelViewMatrix = viewMatrix
-        
-        line2DUniforms[0].projectionMatrix = projectionMatrix
-        line2DUniforms[0].modelViewMatrix = viewMatrix
-        line2DUniforms[0].color = simd_float4(1, 1, 1, 1)
-    }
-    
     func draw(in view: MTKView) {
-        /// Per frame updates hare
+        
+        flatUniforms.modelViewMatrix = viewMatrix
+        flatUniforms.projectionMatrix = projectionMatrix
+        
+        line2DUniforms.modelViewMatrix = viewMatrix
+        line2DUniforms.projectionMatrix = projectionMatrix
+        line2DUniforms.color = simd_float4(1, 1, 1, 1)
         
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             
-            self.updateGameState()
-            
-            /// Delay getting the currentRenderPassDescriptor until we absolutely need it to avoid
-            ///   holding onto the drawable and blocking the display pipeline any longer than necessary
             let renderPassDescriptor = view.currentRenderPassDescriptor
             
-            if let renderPassDescriptor = renderPassDescriptor, let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
+            if let renderPassDescriptor = renderPassDescriptor,
+                let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                 
-                //                renderEncoder.pushDebugGroup("Draw Screen")
-                //                renderEncoder.setRenderPipelineState(flatPipelineState)
-                //                renderEncoder.setVertexBytes(screenVertices,
-                //                                             length: MemoryLayout<FlatVertex>.stride * screenVertices.count,
-                //                                             index: 0)
-                //                renderEncoder.setVertexBuffer(flatUniformBuffer, offset:0, index: 1)
-                //                renderEncoder.setFragmentBuffer(flatUniformBuffer, offset:0, index: 1)
-                //                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
-                //                renderEncoder.popDebugGroup()
+                renderEncoder.pushDebugGroup("Draw Screen")
+                renderEncoder.setRenderPipelineState(flatPipelineState)
+                let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
+                renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
+                let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+                renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+                renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
+                renderEncoder.popDebugGroup()
                 
-                //                renderEncoder.pushDebugGroup("Draw Axes")
-                //                renderEncoder.setVertexBytes(axesVertices, length: axesVertices.count * MemoryLayout<FlatVertex>.stride, index: 0)
-                //                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
-                //                renderEncoder.popDebugGroup()
+                renderEncoder.pushDebugGroup("Draw Axes")
+                let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
+                renderEncoder.setVertexBytes(axesVertices, length: axesVerticesLength, index: 0)
+                renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+                renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
+                renderEncoder.popDebugGroup()
                 
                 let lineThickness: Float = 0.05
                 let lines = doublingBackForm.getUpdatedPoints()
                 // let lines = couplingForm.getUpdatedPoints()
                 // let lines = betweenYouAndIForm.getUpdatedPoints()
-
+                
                 lines.forEach { line in
-                    let (lineVertices, lineIndices) = makeLine2DVertices(line, lineThickness)
-                    let indicesBuffer = device.makeBuffer(bytes: lineIndices,
-                                                          length: MemoryLayout<UInt16>.stride * lineIndices.count,
-                                                          options: [])!
                     renderEncoder.pushDebugGroup("Draw Line")
+                    let (vertices, indices) = makeLine2DVertices(line, lineThickness)
                     renderEncoder.setRenderPipelineState(line2DPipelineState)
-                    renderEncoder.setVertexBytes(lineVertices,
-                                                 length: MemoryLayout<Line2DVertex>.stride * lineVertices.count,
-                                                 index: 0)
-                    renderEncoder.setVertexBuffer(line2DUniformBuffer, offset:0, index: 1)
-                    renderEncoder.setFragmentBuffer(line2DUniformBuffer, offset:0, index: 1)
+                    let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
+                    renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
+                    let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
+                    renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+                    renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+                    
+                    let indicesLength = MemoryLayout<UInt16>.stride * indices.count
+                    let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
                     renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                        indexCount: lineIndices.count,
+                                                        indexCount: indices.count,
                                                         indexType: .uint16,
                                                         indexBuffer: indicesBuffer,
                                                         indexBufferOffset: 0)
@@ -250,19 +195,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
                 
                 renderEncoder.endEncoding()
-                
-                if let drawable = view.currentDrawable {
-                    commandBuffer.present(drawable)
-                }
+                view.currentDrawable.map(commandBuffer.present)
             }
             
             commandBuffer.commit()
+            commandBuffer.waitUntilCompleted()
         }
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        /// Respond to drawable size or orientation changes here
-        
         let aspect = Float(size.width) / Float(size.height)
         projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65),
                                                          aspectRatio:aspect,
