@@ -42,9 +42,9 @@ I have only just started this project. At the moment, all I have done is take th
 * ~~Draw a static wave~~
 * ~~Draw a travelling wave~~
 * ~~Implement first of the forms (without membrane): Doubling Back~~
-* Draw the remaining vocabulary: ellipse, line, circle wave
-* Implement the remaining forms (without membrane)
-* Randomly switch between forms
+* ~~Draw the remaining vocabulary: ellipse, line, circle wave~~
+* ~~Implement the remaining forms (without membrane)~~
+* ~~Periodically switch between forms~~
 * Port the membrane geometry to Metal
 * Implement first of the forms (with membrane): Doubling Back
 * Implement the remaining forms (with membrane)

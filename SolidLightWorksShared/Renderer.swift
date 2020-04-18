@@ -41,7 +41,12 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
-    let installations = [BetweenYouAndIInstallation()]
+    let installations: [Installation] = [
+        DoublingBackInstallation(),
+        CouplingInstallation(),
+        BetweenYouAndIInstallation()
+    ]
+    var installationIndex = 0
     let hazeTexture: MTLTexture
     let viewMatrix = matrix4x4_translation(0, 0, -6)
     var projectionMatrix = matrix_float4x4()
@@ -79,6 +84,15 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         super.init()
+
+        switchInstallation()
+    }
+    
+    private func switchInstallation() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            self.installationIndex = (self.installationIndex + 1) % self.installations.count
+            self.switchInstallation()
+        }
     }
     
     class func buildRenderPipelineState(name: String,
@@ -162,7 +176,7 @@ class Renderer: NSObject, MTKViewDelegate {
         line2DUniforms.projectionMatrix = projectionMatrix
         line2DUniforms.color = simd_float4(1, 1, 1, 1)
         renderEncoder.setRenderPipelineState(line2DPipelineState)
-        let projectors = installations[0].getProjectors()
+        let projectors = installations[installationIndex].getProjectors()
         projectors.forEach { (lines, modelMatrix) in
             lines.forEach { line in
                 renderEncoder.pushDebugGroup("Draw Line")

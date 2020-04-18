@@ -39,9 +39,9 @@ class CircleWave {
     
     private func getPoint(theta: Float, tick: Int) -> simd_float2 {
         let adjustedR = R + omega(theta: theta, tick: tick)
-        let cx = adjustedR * cos(theta)
-        let cy = adjustedR * sin(theta)
-        return simd_float2(cx, 2 + cy)
+        let x = adjustedR * cos(theta)
+        let y = adjustedR * sin(theta)
+        return simd_float2(x, y)
     }
     
     func getPoints(divisions: Int, tick: Int) -> [simd_float2] {

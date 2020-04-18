@@ -14,9 +14,18 @@ class DoublingBackForm {
     var travellingWaveRight: TravellingWave
     var travellingWaveUp: TravellingWave
 
-    init() {
-        travellingWaveRight = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: false)
-        travellingWaveUp = TravellingWave(cx: 0, cy: 2, width: 6, height: 4, vertical: true)
+    init(width: Float, height: Float) {
+        travellingWaveRight = TravellingWave(cx: 0,
+                                             cy: 0,
+                                             width: width,
+                                             height: height,
+                                             vertical: false)
+        
+        travellingWaveUp = TravellingWave(cx: 0,
+                                          cy: 0,
+                                          width: width,
+                                          height: height,
+                                          vertical: true)
     }
     
     func getUpdatedPoints() -> [[simd_float2]] {
