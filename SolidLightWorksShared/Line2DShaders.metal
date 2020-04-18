@@ -16,7 +16,8 @@ vertex float4 vertexLine2DShader(uint vertexID [[vertex_id]],
                                  constant Line2DUniforms &uniforms [[buffer(1)]])
 {
     float4 position = float4(vertices[vertexID].position, 1.0);
-    return uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
+    float4x4 mvp = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix;
+    return mvp * position;
 }
 
 fragment float4 fragmentLine2DShader(constant Line2DUniforms &uniforms [[buffer(1)]])

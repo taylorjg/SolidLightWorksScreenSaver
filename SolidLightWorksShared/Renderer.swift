@@ -39,20 +39,11 @@ class Renderer: NSObject, MTKViewDelegate {
     
     let device: MTLDevice
     let commandQueue: MTLCommandQueue
-    
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
-    
-    var flatUniforms = FlatUniforms()
-    var line2DUniforms = Line2DUniforms()
-    
-    let doublingBackForm = DoublingBackForm()
-    let couplingForm = CouplingForm(outerRadius: 2, innerRadius: 1)
-    let betweenYouAndIForm = BetweenYouAndIForm(width: 5, height: 6, initiallyWipingInEllipse: true)
-    
-    var hazeTexture: MTLTexture
-    
-    let viewMatrix = matrix4x4_translation(0, -2, -4)
+    let installations = [BetweenYouAndIInstallation()]
+    let hazeTexture: MTLTexture
+    let viewMatrix = matrix4x4_translation(0, 0, -6)
     var projectionMatrix = matrix_float4x4()
     
     init?(metalKitView: MTKView, bundle: Bundle? = nil) {
@@ -135,69 +126,77 @@ class Renderer: NSObject, MTKViewDelegate {
                                             options: textureLoaderOptions)
     }
     
-    func draw(in view: MTKView) {
-        
+    private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
+        var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
-        
-        line2DUniforms.modelViewMatrix = viewMatrix
+        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        renderEncoder.pushDebugGroup("Draw Screen")
+        renderEncoder.setRenderPipelineState(flatPipelineState)
+        let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
+        renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
+        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
+        renderEncoder.popDebugGroup()
+    }
+    
+    private func renderAxes(renderEncoder: MTLRenderCommandEncoder) {
+        var flatUniforms = FlatUniforms()
+        flatUniforms.modelViewMatrix = viewMatrix
+        flatUniforms.projectionMatrix = projectionMatrix
+        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        renderEncoder.pushDebugGroup("Draw Axes")
+        renderEncoder.setRenderPipelineState(flatPipelineState)
+        let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
+        renderEncoder.setVertexBytes(axesVertices, length: axesVerticesLength, index: 0)
+        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
+        renderEncoder.popDebugGroup()
+    }
+    
+    private func renderInstallation(renderEncoder: MTLRenderCommandEncoder) {
+        var line2DUniforms = Line2DUniforms()
+        line2DUniforms.viewMatrix = viewMatrix
         line2DUniforms.projectionMatrix = projectionMatrix
         line2DUniforms.color = simd_float4(1, 1, 1, 1)
-        
+        renderEncoder.setRenderPipelineState(line2DPipelineState)
+        let projectors = installations[0].getProjectors()
+        projectors.forEach { (lines, modelMatrix) in
+            lines.forEach { line in
+                renderEncoder.pushDebugGroup("Draw Line")
+                let lineThickness: Float = 0.05
+                let (vertices, indices) = makeLine2DVertices(line, lineThickness)
+                let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
+                renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
+                let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
+                line2DUniforms.modelMatrix = modelMatrix
+                renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+                renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+                let indicesLength = MemoryLayout<UInt16>.stride * indices.count
+                let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
+                renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                                    indexCount: indices.count,
+                                                    indexType: .uint16,
+                                                    indexBuffer: indicesBuffer,
+                                                    indexBufferOffset: 0)
+                renderEncoder.popDebugGroup()
+            }
+        }
+    }
+    
+    func draw(in view: MTKView) {
         if let commandBuffer = commandQueue.makeCommandBuffer() {
-            
             let renderPassDescriptor = view.currentRenderPassDescriptor
-            
             if let renderPassDescriptor = renderPassDescriptor,
                 let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
-                
-                renderEncoder.pushDebugGroup("Draw Screen")
-                renderEncoder.setRenderPipelineState(flatPipelineState)
-                let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
-                renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
-                let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
-                renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-                renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-                renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
-                renderEncoder.popDebugGroup()
-                
-                renderEncoder.pushDebugGroup("Draw Axes")
-                let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
-                renderEncoder.setVertexBytes(axesVertices, length: axesVerticesLength, index: 0)
-                renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-                renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-                renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
-                renderEncoder.popDebugGroup()
-                
-                let lineThickness: Float = 0.05
-                let lines = doublingBackForm.getUpdatedPoints()
-                // let lines = couplingForm.getUpdatedPoints()
-                // let lines = betweenYouAndIForm.getUpdatedPoints()
-                
-                lines.forEach { line in
-                    renderEncoder.pushDebugGroup("Draw Line")
-                    let (vertices, indices) = makeLine2DVertices(line, lineThickness)
-                    renderEncoder.setRenderPipelineState(line2DPipelineState)
-                    let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
-                    renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
-                    let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
-                    renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
-                    renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
-                    
-                    let indicesLength = MemoryLayout<UInt16>.stride * indices.count
-                    let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
-                    renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                        indexCount: indices.count,
-                                                        indexType: .uint16,
-                                                        indexBuffer: indicesBuffer,
-                                                        indexBufferOffset: 0)
-                    renderEncoder.popDebugGroup()
-                }
-                
+                // renderScreen(renderEncoder: renderEncoder)
+                // renderAxes(renderEncoder: renderEncoder)
+                renderInstallation(renderEncoder: renderEncoder)
                 renderEncoder.endEncoding()
                 view.currentDrawable.map(commandBuffer.present)
             }
-            
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
         }

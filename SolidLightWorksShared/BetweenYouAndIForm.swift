@@ -10,7 +10,7 @@ import Foundation
 
 class BetweenYouAndIForm {
     
-    let MAX_TICKS = 1000 // 10000
+    let MAX_TICKS = 10000
     let width: Float
     let height: Float
     let rx: Float
