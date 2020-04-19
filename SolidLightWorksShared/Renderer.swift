@@ -51,15 +51,16 @@ class Renderer: NSObject, MTKViewDelegate {
     let viewMatrix = matrix4x4_translation(0, 0, -6)
     var projectionMatrix = matrix_float4x4()
     
-    init?(metalKitView: MTKView, bundle: Bundle? = nil) {
-        self.device = metalKitView.device!
+    init?(mtkView: MTKView, bundle: Bundle? = nil) {
+        mtkView.sampleCount = 4
+        self.device = mtkView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         
         do {
             flatPipelineState = try Renderer.buildRenderPipelineState(name: "Flat",
                                                                       device: device,
-                                                                      metalKitView: metalKitView,
+                                                                      mtkView: mtkView,
                                                                       bundle: bundle)
         } catch {
             print("Unable to compile render flat pipeline state.  Error info: \(error)")
@@ -69,7 +70,7 @@ class Renderer: NSObject, MTKViewDelegate {
         do {
             line2DPipelineState = try Renderer.buildRenderPipelineState(name: "Line2D",
                                                                         device: device,
-                                                                        metalKitView: metalKitView,
+                                                                        mtkView: mtkView,
                                                                         bundle: bundle)
         } catch {
             print("Unable to compile render line2D pipeline state.  Error info: \(error)")
@@ -97,7 +98,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     class func buildRenderPipelineState(name: String,
                                         device: MTLDevice,
-                                        metalKitView: MTKView,
+                                        mtkView: MTKView,
                                         bundle: Bundle?) throws -> MTLRenderPipelineState {
         let library = bundle != nil
             ? try device.makeDefaultLibrary(bundle: bundle!)
@@ -110,9 +111,10 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineDescriptor.label = "\(name)RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
+        pipelineDescriptor.sampleCount = 4
         
         let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
-        colorAttachments0.pixelFormat = metalKitView.colorPixelFormat
+        colorAttachments0.pixelFormat = mtkView.colorPixelFormat
         colorAttachments0.isBlendingEnabled = true
         colorAttachments0.rgbBlendOperation = .add
         colorAttachments0.alphaBlendOperation = .add
