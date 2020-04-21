@@ -10,21 +10,17 @@ import Foundation
 
 class Ellipse {
     
-    let cx: Float
-    let cy: Float
     let rx: Float
     let ry: Float
 
-    init(cx: Float, cy: Float, rx: Float, ry: Float) {
-        self.cx = cx
-        self.cy = cy
+    init(rx: Float, ry: Float) {
         self.rx = rx
         self.ry = ry
     }
     
     private func getPoint(angle: Float) -> simd_float2 {
-        let x = cx - rx * cos(angle)
-        let y = cy + ry * sin(angle)
+        let x = rx * cos(angle)
+        let y = ry * sin(angle)
         return simd_float2(x, y)
     }
 

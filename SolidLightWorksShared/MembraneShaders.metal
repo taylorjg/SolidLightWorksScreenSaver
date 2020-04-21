@@ -1,6 +1,6 @@
 //
 //  MembraneShaders.metal
-//  SolidLightWorks
+//  SolidLightWorksShared
 //
 //  Created by Administrator on 12/04/2020.
 //  Copyright © 2020 Jon Taylor. All rights reserved.

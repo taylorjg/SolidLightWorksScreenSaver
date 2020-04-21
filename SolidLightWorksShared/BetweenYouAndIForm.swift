@@ -40,7 +40,7 @@ class BetweenYouAndIForm {
             ? (theta, -theta)
             : (-theta, theta - (Float.pi * 2))
         let rx = self.rx - sin(Float.pi * tickRatio)
-        return Ellipse(cx: 0, cy: 0, rx: rx, ry: ry).getPoints(
+        return Ellipse(rx: rx, ry: ry).getPoints(
             startAngle: startAngle + Float.pi / 2,
             endAngle: endAngle + Float.pi / 2,
             divisions: 127)

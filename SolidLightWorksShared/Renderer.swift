@@ -42,6 +42,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
     let installations: [Installation] = [
+        LeavingInstallation(),
         DoublingBackInstallation(),
         CouplingInstallation(),
         BetweenYouAndIInstallation()
@@ -85,8 +86,8 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         super.init()
-
-        switchInstallation()
+        
+        // switchInstallation()
     }
     
     private func switchInstallation() {
@@ -185,7 +186,12 @@ class Renderer: NSObject, MTKViewDelegate {
                 let lineThickness: Float = 0.05
                 let (vertices, indices) = makeLine2DVertices(line, lineThickness)
                 let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
-                renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
+                if (verticesLength <= 4096) {
+                    renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
+                } else {
+                    let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
+                    renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
+                }
                 let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
                 line2DUniforms.modelMatrix = modelMatrix
                 renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
