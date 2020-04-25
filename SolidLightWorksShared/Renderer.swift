@@ -47,7 +47,7 @@ class Renderer: NSObject, MTKViewDelegate {
         BetweenYouAndIInstallation(),
         LeavingInstallation(),
     ]
-    var installationIndex = 0
+    var installationIndex = 3
     let hazeTexture: MTLTexture
     let viewMatrix = matrix4x4_translation(0, 0, -6)
     var projectionMatrix = matrix_float4x4()
@@ -87,7 +87,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        switchInstallation()
+        // switchInstallation()
     }
     
     private func switchInstallation() {
