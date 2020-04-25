@@ -102,16 +102,13 @@ class LeavingForm {
         return p + around
     }
     
-    private func ellipseOscillationAngle() -> Float {
+    private func ellipseOscillationAngle(tickRatio: Float) -> Float {
         let a = MAX_TICKS / 50
-        if (tick < a) || (tick > MAX_TICKS - a) {
-            return 0
-        }
         let b = tick % a
         let ratio = Float(b) / Float(a)
         let s = sin(TWO_PI * ratio)
         let maxOscillationAngle = PI / 180 * 5
-        return s * maxOscillationAngle
+        return s * maxOscillationAngle * abs(sin(TWO_PI * tickRatio))
     }
     
     private func getEllipsePoints(_ startAngle: Float, _ endAngle: Float) -> [simd_float2] {
@@ -151,7 +148,7 @@ class LeavingForm {
     func getUpdatedPoints() -> [[simd_float2]] {
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let deltaAngle = TWO_PI / Float(MAX_TICKS)
-        let oscillationAngle = ellipseOscillationAngle()
+        let oscillationAngle = ellipseOscillationAngle(tickRatio: tickRatio)
 
         if growing {
             endAngle -= deltaAngle
