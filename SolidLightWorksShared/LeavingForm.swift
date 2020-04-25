@@ -77,7 +77,7 @@ class LeavingForm {
     }
     
     private func travellingWaveSpeed(tickRatio: Float) -> Float {
-        let maxSpeed = Float(6)
+        let maxSpeed = Float(12)
         return maxSpeed * abs(sin(TWO_PI * tickRatio))
     }
     
@@ -123,7 +123,7 @@ class LeavingForm {
                                          _ A: Float,
                                          _ f: Float,
                                          _ tickRatio: Float) -> [simd_float2] {
-        let lambda = simd_length(fred(simd_float2(), angle, 1.0))
+        let lambda = ry
         let k = TWO_PI / lambda
         let omega = TWO_PI * f
         let length = simd_distance(movingPoint, travellingWaveEndPoint)
