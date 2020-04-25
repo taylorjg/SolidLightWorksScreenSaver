@@ -18,7 +18,7 @@ class Ellipse {
         self.ry = ry
     }
     
-    private func getPoint(angle: Float) -> simd_float2 {
+    func getPoint(angle: Float) -> simd_float2 {
         let x = rx * cos(angle)
         let y = ry * sin(angle)
         return simd_float2(x, y)

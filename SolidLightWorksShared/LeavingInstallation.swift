@@ -16,8 +16,8 @@ class LeavingInstallation: Installation {
     let modelMatrix2: matrix_float4x4
     
     init() {
-        form1 = LeavingForm(rx: 2, ry: 1.4, initiallyGrowing: true)
-        form2 = LeavingForm(rx: 2, ry: 1.4, initiallyGrowing: false)
+        form1 = LeavingForm(rx: 2, ry: 1.6, initiallyGrowing: true)
+        form2 = LeavingForm(rx: 2, ry: 1.6, initiallyGrowing: false)
         modelMatrix1 = matrix4x4_translation(-2.5, 0, 0)
         modelMatrix2 = matrix4x4_translation(2.5, 0, 0)
     }

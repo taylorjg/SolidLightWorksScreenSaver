@@ -42,10 +42,10 @@ class Renderer: NSObject, MTKViewDelegate {
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
     let installations: [Installation] = [
-        LeavingInstallation(),
         DoublingBackInstallation(),
         CouplingInstallation(),
-        BetweenYouAndIInstallation()
+        BetweenYouAndIInstallation(),
+        LeavingInstallation(),
     ]
     var installationIndex = 0
     let hazeTexture: MTLTexture
@@ -87,11 +87,11 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        // switchInstallation()
+        switchInstallation()
     }
     
     private func switchInstallation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
             self.installationIndex = (self.installationIndex + 1) % self.installations.count
             self.switchInstallation()
         }

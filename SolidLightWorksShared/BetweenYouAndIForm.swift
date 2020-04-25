@@ -48,7 +48,7 @@ class BetweenYouAndIForm {
     
     private func getTravellingWavePoints(tickRatio: Float, wipeY: Float, wipeExtent: Float) -> [simd_float2] {
         let lambda = height
-        let k = Float.pi / lambda
+        let k = Float.pi * 2 / lambda
         let f = Float(2)
         let omega = Float.pi * 2.0 * f
         if (wipingInEllipse) {
