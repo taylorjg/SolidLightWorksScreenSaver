@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Window Controller-->
+        <scene sceneID="TMb-Ro-cus">
+            <objects>
+                <windowController storyboardIdentifier="ConfigSheetWindowController" id="dYb-8A-KCC" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="xgC-s9-b0Q">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+                        <connections>
+                            <outlet property="delegate" destination="dYb-8A-KCC" id="87V-3O-AKH"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="nCc-gT-sFv" kind="relationship" relationship="window.shadowedContentViewController" id="QX6-AG-ndo"/>
+                    </connections>
+                </windowController>
+                <customObject id="bYO-ya-pab" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="138" y="82"/>
+        </scene>
+        <!--Config Sheet View Controller-->
+        <scene sceneID="Dcs-Ev-Ox1">
+            <objects>
+                <viewController id="nCc-gT-sFv" customClass="ConfigSheetViewController" customModule="SolidLightWorks" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="RWM-V5-Bcl">
+                        <rect key="frame" x="0.0" y="0.0" width="411" height="200"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xeh-Ig-P5m">
+                                <rect key="frame" x="19" y="164" width="110" height="18"/>
+                                <buttonCell key="cell" type="check" title="Doubling Back" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Zjf-uh-0vb">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LVU-nJ-dV8">
+                                <rect key="frame" x="16" y="131" width="76" height="18"/>
+                                <buttonCell key="cell" type="check" title="Coupling" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="GWi-Cv-VHs">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DJX-HZ-i7d">
+                                <rect key="frame" x="18" y="96" width="134" height="18"/>
+                                <buttonCell key="cell" type="check" title="Between You and I" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NUM-fg-Ovr">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="IBP-ln-WgT">
+                                <rect key="frame" x="18" y="62" width="69" height="18"/>
+                                <buttonCell key="cell" type="check" title="Leaving" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Zpn-p0-FzO">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eO8-Nv-7O3">
+                                <rect key="frame" x="339" y="13" width="59" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Rkv-0b-9IP">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="okButtonTapped:" target="nCc-gT-sFv" id="FOM-WO-SYY"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uCY-P1-X14">
+                                <rect key="frame" x="258" y="13" width="82" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LZU-gh-aZ7">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                    <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="cancelButtonTapped:" target="nCc-gT-sFv" id="ZLY-SX-Esw"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="LVU-nJ-dV8" firstAttribute="top" secondItem="xeh-Ig-P5m" secondAttribute="bottom" constant="20" id="1iE-il-7dJ"/>
+                            <constraint firstItem="xeh-Ig-P5m" firstAttribute="top" secondItem="RWM-V5-Bcl" secondAttribute="top" constant="20" symbolic="YES" id="MgL-Mo-FeR"/>
+                            <constraint firstItem="LVU-nJ-dV8" firstAttribute="leading" secondItem="DJX-HZ-i7d" secondAttribute="leading" id="Pgg-nf-rTD"/>
+                            <constraint firstItem="xeh-Ig-P5m" firstAttribute="leading" secondItem="LVU-nJ-dV8" secondAttribute="leading" id="Ztc-zA-Mc5"/>
+                            <constraint firstItem="DJX-HZ-i7d" firstAttribute="leading" secondItem="IBP-ln-WgT" secondAttribute="leading" id="ieM-Zt-WZN"/>
+                            <constraint firstItem="IBP-ln-WgT" firstAttribute="top" secondItem="DJX-HZ-i7d" secondAttribute="bottom" constant="20" id="ng0-au-rbw"/>
+                            <constraint firstItem="xeh-Ig-P5m" firstAttribute="leading" secondItem="RWM-V5-Bcl" secondAttribute="leading" constant="20" symbolic="YES" id="qbf-RU-qjw"/>
+                            <constraint firstItem="DJX-HZ-i7d" firstAttribute="top" secondItem="LVU-nJ-dV8" secondAttribute="bottom" constant="20" id="urI-Sc-NeW"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="form1Check" destination="xeh-Ig-P5m" id="So5-Qu-rpx"/>
+                        <outlet property="form2Check" destination="LVU-nJ-dV8" id="zn9-63-cpa"/>
+                        <outlet property="form3Check" destination="DJX-HZ-i7d" id="ArG-wH-vYt"/>
+                        <outlet property="form4Check" destination="IBP-ln-WgT" id="X3l-09-X1V"/>
+                    </connections>
+                </viewController>
+                <customObject id="IIM-xs-qZ3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="103.5" y="394"/>
+        </scene>
+    </scenes>
+</document>

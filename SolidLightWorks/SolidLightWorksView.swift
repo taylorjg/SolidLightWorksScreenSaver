@@ -45,4 +45,16 @@ class SolidLightWorksView: ScreenSaverView {
     required init?(coder decoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override var hasConfigureSheet: Bool {
+        return true
+    }
+    
+    override var configureSheet: NSWindow? {
+        let bundle = Bundle(for: SolidLightWorksView.self)
+        let storyboard = NSStoryboard(name: "Main", bundle: bundle)
+        let configSheet = storyboard.instantiateController(withIdentifier: "ConfigSheetWindowController")
+        let windowController = configSheet as? NSWindowController
+        return windowController?.window
+    }
 }
