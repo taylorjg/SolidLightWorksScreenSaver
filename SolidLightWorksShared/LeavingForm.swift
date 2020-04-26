@@ -8,14 +8,6 @@
 
 import Foundation
 
-// TODO: elliptical arc oscillation factor:
-// quicker and/or greater amplitude at 90 and 270 degrees
-// 0: slow
-// 90: fast
-// 180: slow
-// 270: fast
-// 360: slow
-
 let PI = Float.pi
 let TWO_PI = Float.pi * 2
 let HALF_PI = Float.pi / 2
@@ -81,13 +73,10 @@ class LeavingForm {
         return maxSpeed * abs(sin(TWO_PI * tickRatio))
     }
     
-    // TODO: temporary func name!
-    private func fred(_ movingPoint: simd_float2,
-                      _ angle: Float,
-                      _ radiusRatio: Float) -> simd_float2 {
+    private func radiusEndPoint(angle: Float, radiusRatio: Float) -> simd_float2 {
         let x = radiusRatio * rx * cos(angle)
         let y = radiusRatio * ry * sin(angle)
-        return simd_float2(x, y) + movingPoint
+        return simd_float2(x, y)
     }
     
     private func rotate(point: simd_float2, around: simd_float2, through: Float) -> simd_float2 {
@@ -111,30 +100,33 @@ class LeavingForm {
         return s * maxOscillationAngle * abs(sin(TWO_PI * tickRatio))
     }
     
-    private func getEllipsePoints(_ startAngle: Float, _ endAngle: Float) -> [simd_float2] {
+    private func getEllipsePoints(startAngle: Float, endAngle: Float) -> [simd_float2] {
         return ellipse.getPoints(startAngle: startAngle,
                                  endAngle: endAngle,
                                  divisions: ELLIPSE_POINT_COUNT)
     }
     
-    private func getTravellingWavePoints(_ movingPoint: simd_float2,
-                                         _ travellingWaveEndPoint: simd_float2,
-                                         _ angle: Float,
-                                         _ A: Float,
-                                         _ f: Float,
-                                         _ tickRatio: Float) -> [simd_float2] {
+    private func getTravellingWavePoints(movingPoint: simd_float2,
+                                         endPoint: simd_float2,
+                                         angle: Float,
+                                         amplitude: Float,
+                                         speed: Float,
+                                         tickRatio: Float) -> [simd_float2] {
         let lambda = ry
         let k = TWO_PI / lambda
-        let omega = TWO_PI * f
-        let length = simd_distance(movingPoint, travellingWaveEndPoint)
+        let omega = TWO_PI * speed
+        let length = simd_distance(movingPoint, endPoint)
         let dx = length / Float(TRAVELLING_WAVE_POINT_COUNT)
         let points = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
             let x = Float(n) * dx
-            let y = A * sin(k * x + omega * tickRatio)
+            let y = amplitude * sin(k * x + omega * tickRatio)
             return simd_float2(x, y)
         }
-        let diff = movingPoint - points[0]
-        return points.map { pt in rotate(point: pt + diff, around: movingPoint, through: angle) }
+        let anchor = points[0]
+        let translation = movingPoint - anchor
+        return points
+            .map { pt in rotate(point: pt, around: anchor, through: angle) }
+            .map { pt in pt + translation }
     }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
@@ -146,35 +138,38 @@ class LeavingForm {
     }
     
     func getUpdatedPoints() -> [[simd_float2]] {
+        
         let tickRatio = Float(tick) / Float(MAX_TICKS)
+        
         let deltaAngle = TWO_PI / Float(MAX_TICKS)
-        let oscillationAngle = ellipseOscillationAngle(tickRatio: tickRatio)
-
         if growing {
             endAngle -= deltaAngle
         } else {
             startAngle -= deltaAngle
         }
         
+        let oscillationAngle = ellipseOscillationAngle(tickRatio: tickRatio)
         let theta = (growing ? endAngle : startAngle) + oscillationAngle
         let movingPoint = ellipse.getPoint(angle: theta)
-
+        
         let ellipsePoints = growing
-            ? getEllipsePoints(startAngle, endAngle + oscillationAngle)
-            : getEllipsePoints(startAngle + oscillationAngle, endAngle)
+            ? getEllipsePoints(startAngle: startAngle,
+                               endAngle: endAngle + oscillationAngle)
+            : getEllipsePoints(startAngle: startAngle + oscillationAngle,
+                               endAngle: endAngle)
         
         let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
         let angleOffset = travellingWaveAngleOffset(tickRatio: tickRatio)
         let amplitude = travellingWaveAmplitude(tickRatio: tickRatio)
         let speed = travellingWaveSpeed(tickRatio: tickRatio)
         let angle = theta + PI + angleOffset
-        let travellingWaveEndPoint = fred(movingPoint, angle, radiusRatio)
-        let travellingWavePoints = getTravellingWavePoints(movingPoint,
-                                                           travellingWaveEndPoint,
-                                                           angle,
-                                                           amplitude,
-                                                           speed,
-                                                           tickRatio)
+        let endPoint = radiusEndPoint(angle: angle, radiusRatio: radiusRatio) + movingPoint
+        let travellingWavePoints = getTravellingWavePoints(movingPoint: movingPoint,
+                                                           endPoint: endPoint,
+                                                           angle: angle,
+                                                           amplitude: amplitude,
+                                                           speed: speed,
+                                                           tickRatio: tickRatio)
         
         let combinedPoints = combinePoints(ellipsePoints, travellingWavePoints)
         
@@ -184,7 +179,6 @@ class LeavingForm {
         }
         
         return [combinedPoints]
-        // return [ellipsePoints]
     }
     
     private func reset(growing: Bool) {
