@@ -13,7 +13,8 @@ class SolidLightWorksView: ScreenSaverView {
     
     private var renderer: Renderer!
     private var mtkView: MTKView!
-    
+    private let defaultsManager = DefaultsManager()
+
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
 
@@ -31,7 +32,10 @@ class SolidLightWorksView: ScreenSaverView {
 
         let bundle = Bundle(for: SolidLightWorksView.self)
 
-        guard let newRenderer = Renderer(mtkView: mtkView, bundle: bundle) else {
+        guard let newRenderer = Renderer(mtkView: mtkView,
+                                         bundle: bundle,
+                                         enabledForms: defaultsManager.enabledForms,
+                                         switchInterval: defaultsManager.switchInterval) else {
             print("Renderer cannot be initialized")
             return
         }

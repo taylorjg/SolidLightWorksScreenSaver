@@ -9,15 +9,18 @@
 import Cocoa
 
 class ConfigSheetViewController: NSViewController {
-
+    
+    let defaultsManager = DefaultsManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        form1Check.state = .off
-        form2Check.state = .off
-        form3Check.state = .off
-        form4Check.state = .on
+        let enabledForms = defaultsManager.enabledForms
+        form1Check.state = enabledForms.contains(1) ? .on : .off
+        form2Check.state = enabledForms.contains(2) ? .on : .off
+        form3Check.state = enabledForms.contains(3) ? .on : .off
+        form4Check.state = enabledForms.contains(4) ? .on : .off
     }
-
+    
     // Doubling Back
     @IBOutlet weak var form1Check: NSButton!
     
@@ -40,6 +43,12 @@ class ConfigSheetViewController: NSViewController {
     }
     
     @IBAction func okButtonTapped(_ sender: NSButton) {
+        var enabledForms = [Int]()
+        if form1Check.state == .on { enabledForms.append(1) }
+        if form2Check.state == .on { enabledForms.append(2) }
+        if form3Check.state == .on { enabledForms.append(3) }
+        if form4Check.state == .on { enabledForms.append(4) }
+        defaultsManager.enabledForms = enabledForms
         close()
     }
 }

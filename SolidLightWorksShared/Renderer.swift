@@ -41,18 +41,22 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
-    let installations: [Installation] = [
-        DoublingBackInstallation(),
-        CouplingInstallation(),
-        BetweenYouAndIInstallation(),
-        LeavingInstallation(),
-    ]
+    var installations = [Installation]()
+//    let installations: [Installation] = [
+//        DoublingBackInstallation(),
+//        CouplingInstallation(),
+//        BetweenYouAndIInstallation(),
+//        LeavingInstallation(),
+//    ]
     var installationIndex = 0
     let hazeTexture: MTLTexture
     let viewMatrix = matrix4x4_translation(0, 0, -6)
     var projectionMatrix = matrix_float4x4()
     
-    init?(mtkView: MTKView, bundle: Bundle? = nil) {
+    init?(mtkView: MTKView,
+          bundle: Bundle? = nil,
+          enabledForms: [Int] = [1, 2, 3, 4],
+          switchInterval: Int = 30) {
         mtkView.sampleCount = 4
         self.device = mtkView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
@@ -85,15 +89,24 @@ class Renderer: NSObject, MTKViewDelegate {
             return nil
         }
         
+        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
+        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
+        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
+        if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
+        
+        if enabledForms.isEmpty {
+            installations.append(BetweenYouAndIInstallation())
+        }
+
         super.init()
         
-        switchInstallation()
+        switchInstallation(switchInterval: switchInterval)
     }
     
-    private func switchInstallation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+    private func switchInstallation(switchInterval: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(switchInterval)) {
             self.installationIndex = (self.installationIndex + 1) % self.installations.count
-            self.switchInstallation()
+            self.switchInstallation(switchInterval: switchInterval)
         }
     }
     

@@ -58,6 +58,7 @@
 		C3880E65244D8EDF004A2A82 /* LeavingInstallation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E63244D8EDF004A2A82 /* LeavingInstallation.swift */; };
 		C3880E6724558EF3004A2A82 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3880E6624558EF3004A2A82 /* Main.storyboard */; };
 		C3880E692455A9CB004A2A82 /* ConfigSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E682455A9CB004A2A82 /* ConfigSheetViewController.swift */; };
+		C3880E6B2455FD7C004A2A82 /* DefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E6A2455FD7C004A2A82 /* DefaultsManager.swift */; };
 		C3C950A6242C1CC700E775BD /* SolidLightWorksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +96,7 @@
 		C3880E63244D8EDF004A2A82 /* LeavingInstallation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavingInstallation.swift; sourceTree = "<group>"; };
 		C3880E6624558EF3004A2A82 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		C3880E682455A9CB004A2A82 /* ConfigSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigSheetViewController.swift; sourceTree = "<group>"; };
+		C3880E6A2455FD7C004A2A82 /* DefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsManager.swift; sourceTree = "<group>"; };
 		C3C95098242C1BA400E775BD /* SolidLightWorks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SolidLightWorks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3C9509F242C1BA400E775BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidLightWorksView.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 			children = (
 				C3C9509F242C1BA400E775BD /* Info.plist */,
 				C3C950A5242C1CC700E775BD /* SolidLightWorksView.swift */,
+				C3880E6A2455FD7C004A2A82 /* DefaultsManager.swift */,
 				C3880E682455A9CB004A2A82 /* ConfigSheetViewController.swift */,
 				C3880E6624558EF3004A2A82 /* Main.storyboard */,
 			);
@@ -345,6 +348,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3880E6B2455FD7C004A2A82 /* DefaultsManager.swift in Sources */,
 				C3880E64244D8EDF004A2A82 /* LeavingInstallation.swift in Sources */,
 				C3880E292441B8E5004A2A82 /* MathUtils.swift in Sources */,
 				C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */,
