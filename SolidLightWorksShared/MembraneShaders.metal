@@ -29,7 +29,7 @@ vertex MembraneInOut vertexMembraneShader(uint vertexID [[vertex_id]],
     MembraneInOut out;
     
     float4 position = float4(membraneVertex.position, 1.0);
-    float4 projector = float4(uniforms.projector, 1.0);
+    float4 projector = float4(uniforms.projectorPosition, 1.0);
     out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
     out.uv = membraneVertex.uv;
     out.eyePosition = (uniforms.modelViewMatrix * position).xyz;
