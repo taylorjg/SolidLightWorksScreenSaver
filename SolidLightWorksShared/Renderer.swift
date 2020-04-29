@@ -46,9 +46,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var installations = [Installation]()
     var installationIndex = 0
     let hazeTexture: MTLTexture
-//    let viewMatrix = matrix4x4_translation(0, 0, -6)
-    let viewMatrix = matrix4x4_translation(1, -1, -12)
-    var projectionMatrix = matrix_float4x4()
+    let viewMatrix: matrix_float4x4
+    var projectionMatrix: matrix_float4x4
     
     init?(mtkView: MTKView,
           bundle: Bundle? = nil,
@@ -85,6 +84,11 @@ class Renderer: NSObject, MTKViewDelegate {
             print("Unable to load haze texture. Error info: \(error)")
             return nil
         }
+        
+        let cameraPosition = simd_float3(0.25, 1, 12)
+        let cameraTarget = simd_float3()
+        viewMatrix = matrix_lookat(eye: cameraPosition, point: cameraTarget, up: simd_float3(0, 1, 0))
+        projectionMatrix = matrix_float4x4()
         
         //        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
         //        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
