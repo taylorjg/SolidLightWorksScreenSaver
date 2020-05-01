@@ -45,8 +45,10 @@ class Renderer: NSObject, MTKViewDelegate {
     let line2DPipelineState: MTLRenderPipelineState
     var installations = [Installation]()
     var installationIndex = 0
+    let renderAxes = false
+    let render2D = true
     let hazeTexture: MTLTexture
-    let viewMatrix: matrix_float4x4
+    var viewMatrix: matrix_float4x4
     var projectionMatrix: matrix_float4x4
     
     init?(mtkView: MTKView,
@@ -85,25 +87,21 @@ class Renderer: NSObject, MTKViewDelegate {
             return nil
         }
         
-        let cameraPosition = simd_float3(0.25, 1, 12)
-        let cameraTarget = simd_float3()
-        viewMatrix = matrix_lookat(eye: cameraPosition, point: cameraTarget, up: simd_float3(0, 1, 0))
+        viewMatrix = matrix_float4x4()
         projectionMatrix = matrix_float4x4()
         
-        //        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
-        //        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
-        //        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
-        //        if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
-        //
-        //        if enabledForms.isEmpty {
-        //            installations.append(BetweenYouAndIInstallation())
-        //        }
+        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
+        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
+        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
+        if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
         
-        installations.append(LeavingInstallation())
+        if enabledForms.isEmpty {
+            installations.append(BetweenYouAndIInstallation())
+        }
         
         super.init()
         
-        //        switchInstallation(switchInterval: switchInterval)
+        switchInstallation(switchInterval: switchInterval)
     }
     
     private func switchInstallation(switchInterval: Int) {
@@ -159,21 +157,6 @@ class Renderer: NSObject, MTKViewDelegate {
                                             options: textureLoaderOptions)
     }
     
-    private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
-        var flatUniforms = FlatUniforms()
-        flatUniforms.modelViewMatrix = viewMatrix
-        flatUniforms.projectionMatrix = projectionMatrix
-        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
-        renderEncoder.pushDebugGroup("Draw Screen")
-        renderEncoder.setRenderPipelineState(flatPipelineState)
-        let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
-        renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
-        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
-        renderEncoder.popDebugGroup()
-    }
-    
     private func renderAxes(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix
@@ -189,52 +172,83 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.popDebugGroup()
     }
     
-    private func renderInstallationScreen(renderEncoder: MTLRenderCommandEncoder,
-                                          projectors: [([[simd_float2]], matrix_float4x4)]) {
-        var line2DUniforms = Line2DUniforms()
-        line2DUniforms.viewMatrix = viewMatrix
-        line2DUniforms.projectionMatrix = projectionMatrix
-        line2DUniforms.color = simd_float4(1, 1, 1, 1)
-        renderEncoder.setRenderPipelineState(line2DPipelineState)
-        projectors.forEach { (lines, modelMatrix) in
-            lines.forEach { line in
-                renderEncoder.pushDebugGroup("Draw Line")
-                let lineThickness: Float = 0.05
-                let (vertices, indices) = makeLine2DVertices(line, lineThickness)
-                let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
-                if (verticesLength <= 4096) {
-                    renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
-                } else {
-                    let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
-                    renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
-                }
-                let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
-                line2DUniforms.modelMatrix = modelMatrix
-                renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
-                renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
-                let indicesLength = MemoryLayout<UInt16>.stride * indices.count
-                let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
-                renderEncoder.drawIndexedPrimitives(type: .triangle,
-                                                    indexCount: indices.count,
-                                                    indexType: .uint16,
-                                                    indexBuffer: indicesBuffer,
-                                                    indexBufferOffset: 0)
-                renderEncoder.popDebugGroup()
-            }
-        }
-    }
-    
-    private func renderInstallationMembrane(renderEncoder: MTLRenderCommandEncoder,
-                                            projectors: [([[simd_float2]], matrix_float4x4)]) {
+    private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
         let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        renderEncoder.pushDebugGroup("Draw Screen")
         renderEncoder.setRenderPipelineState(flatPipelineState)
-        let (lines, _) = projectors[0]
-        let line = lines[0]
-        let projectorPosition = simd_float3(0, 0, 10)
-        let (vertices, indices) = makeMembraneVertices(points: line, projectorPosition: projectorPosition)
+        let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
+        renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
+        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
+        renderEncoder.popDebugGroup()
+    }
+    
+    private func renderScreenFormLine(renderEncoder: MTLRenderCommandEncoder,
+                                      screenForm: ScreenForm,
+                                      lineIndex: Int) {
+        var line2DUniforms = Line2DUniforms()
+        line2DUniforms.viewMatrix = viewMatrix
+        line2DUniforms.projectionMatrix = projectionMatrix
+        line2DUniforms.color = simd_float4(1, 1, 1, 1)
+        renderEncoder.pushDebugGroup("Draw Screen Form Line")
+        renderEncoder.setRenderPipelineState(line2DPipelineState)
+        let lineThickness: Float = 0.05
+        let line = screenForm.lines[lineIndex]
+        let (vertices, indices) = makeLine2DVertices(line.points, lineThickness)
+        let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
+        if (verticesLength <= 4096) {
+            renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
+        } else {
+            let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
+            renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
+        }
+        let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
+        line2DUniforms.modelMatrix = screenForm.transform
+        renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+        let indicesLength = MemoryLayout<UInt16>.stride * indices.count
+        let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
+        renderEncoder.drawIndexedPrimitives(type: .triangle,
+                                            indexCount: indices.count,
+                                            indexType: .uint16,
+                                            indexBuffer: indicesBuffer,
+                                            indexBufferOffset: 0)
+        renderEncoder.popDebugGroup()
+    }
+    
+    private func renderScreenForm(renderEncoder: MTLRenderCommandEncoder, screenForm: ScreenForm) {
+        let lineCount = screenForm.lines.count
+        (0..<lineCount).forEach { lineIndex in
+            renderScreenFormLine(renderEncoder: renderEncoder,
+                                 screenForm: screenForm,
+                                 lineIndex: lineIndex)
+        }
+    }
+    
+    private func renderScreenForms(renderEncoder: MTLRenderCommandEncoder, screenForms: [ScreenForm]) {
+        screenForms.forEach { screenForm in
+            renderScreenForm(renderEncoder: renderEncoder, screenForm: screenForm)
+        }
+    }
+    
+    private func renderProjectedFormLine(renderEncoder: MTLRenderCommandEncoder,
+                                         projectedForm: ProjectedForm,
+                                         lineIndex: Int) {
+        let line = projectedForm.lines[lineIndex]
+        // let transform = projectedForm.transform
+        // let projectorPosition = projectedForm.projectorPosition
+        var flatUniforms = FlatUniforms()
+        flatUniforms.modelViewMatrix = viewMatrix
+        flatUniforms.projectionMatrix = projectionMatrix
+        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        renderEncoder.pushDebugGroup("Draw Projected Form Line")
+        renderEncoder.setRenderPipelineState(flatPipelineState)
+        let (vertices, indices) = makeMembraneVertices(points: line.points,
+                                                       projectorPosition: projectedForm.projectorPosition)
         let verticesLength = MemoryLayout<FlatVertex>.stride * vertices.count
         let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
         renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
@@ -247,12 +261,50 @@ class Renderer: NSObject, MTKViewDelegate {
                                             indexType: .uint16,
                                             indexBuffer: indicesBuffer,
                                             indexBufferOffset: 0)
+        renderEncoder.popDebugGroup()
     }
     
-    private func renderInstallation(renderEncoder: MTLRenderCommandEncoder) {
-        let projectors = installations[installationIndex].getProjectors()
-        renderInstallationScreen(renderEncoder: renderEncoder, projectors: projectors)
-        renderInstallationMembrane(renderEncoder: renderEncoder, projectors: projectors)
+    private func renderProjectedForm(renderEncoder: MTLRenderCommandEncoder,
+                                     projectedForm: ProjectedForm) {
+        let lineCount = projectedForm.lines.count
+        (0..<lineCount).forEach { lineIndex in
+            renderProjectedFormLine(renderEncoder: renderEncoder,
+                                    projectedForm: projectedForm,
+                                    lineIndex: lineIndex)
+        }
+    }
+    
+    private func renderProjectedForms(renderEncoder: MTLRenderCommandEncoder,
+                                      projectedForms: [ProjectedForm]) {
+        projectedForms.forEach { projectedForm in
+            renderProjectedForm(renderEncoder: renderEncoder, projectedForm: projectedForm)
+        }
+    }
+    
+    private func renderInstallation2D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
+        let installationData2D = installation.getInstallationData2D()
+        let cameraPose = installationData2D.cameraPose
+        viewMatrix = matrix_lookat(eye: cameraPose.position,
+                                   point: cameraPose.target,
+                                   up: simd_float3(0, 1, 0))
+        if renderAxes {
+            renderAxes(renderEncoder: renderEncoder)
+        }
+        renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData2D.screenForms)
+    }
+    
+    private func renderInstallation3D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
+        let installationData3D = installation.getInstallationData3D()
+        let cameraPose = installationData3D.cameraPoses[0]
+        viewMatrix = matrix_lookat(eye: cameraPose.position,
+                                   point: cameraPose.target,
+                                   up: simd_float3(0, 1, 0))
+        if renderAxes {
+            renderAxes(renderEncoder: renderEncoder)
+        }
+        renderScreen(renderEncoder: renderEncoder)
+        renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
+        renderProjectedForms(renderEncoder: renderEncoder, projectedForms: installationData3D.projectedForms)
     }
     
     func draw(in view: MTKView) {
@@ -260,9 +312,14 @@ class Renderer: NSObject, MTKViewDelegate {
             let renderPassDescriptor = view.currentRenderPassDescriptor
             if let renderPassDescriptor = renderPassDescriptor,
                 let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
-                renderScreen(renderEncoder: renderEncoder)
-                renderAxes(renderEncoder: renderEncoder)
-                renderInstallation(renderEncoder: renderEncoder)
+                
+                let installation = installations[installationIndex]
+                if render2D {
+                    renderInstallation2D(renderEncoder: renderEncoder, installation: installation)
+                } else {
+                    renderInstallation3D(renderEncoder: renderEncoder, installation: installation)
+                }
+                
                 renderEncoder.endEncoding()
             }
             view.currentDrawable.map(commandBuffer.present)

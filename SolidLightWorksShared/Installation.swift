@@ -7,8 +7,40 @@
 //
 
 import Foundation
-import Metal
+
+struct Line {
+    let points: [simd_float2]
+}
+
+struct ScreenForm {
+    let lines: [Line]
+    let transform: matrix_float4x4
+}
+
+struct ProjectedForm {
+    let lines: [Line]
+    let transform: matrix_float4x4
+    let projectorPosition: vector_float3
+}
+
+struct CameraPose {
+    let position: simd_float3
+    let target: simd_float3
+}
+
+struct InstallationData2D {
+    let screenForms: [ScreenForm]
+    let cameraPose: CameraPose
+}
+
+struct InstallationData3D {
+    let screenForms: [ScreenForm]
+    let projectedForms: [ProjectedForm]
+    let cameraPoses: [CameraPose]
+    // TODO: add screen, floor, walls
+}
 
 protocol Installation {
-    func getProjectors() -> [([[simd_float2]], matrix_float4x4)]
+    func getInstallationData2D() -> InstallationData2D
+    func getInstallationData3D() -> InstallationData3D
 }
