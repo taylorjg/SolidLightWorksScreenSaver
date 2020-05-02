@@ -233,8 +233,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     private func renderScreenForm(renderEncoder: MTLRenderCommandEncoder, screenForm: ScreenForm) {
-        let lineCount = screenForm.lines.count
-        (0..<lineCount).forEach { lineIndex in
+        for lineIndex in screenForm.lines.indices {
             renderScreenFormLine(renderEncoder: renderEncoder,
                                  screenForm: screenForm,
                                  lineIndex: lineIndex)
@@ -255,7 +254,7 @@ class Renderer: NSObject, MTKViewDelegate {
         membraneUniforms.modelMatrix = projectedForm.transform
         membraneUniforms.viewMatrix = viewMatrix
         membraneUniforms.projectionMatrix = projectionMatrix
-        membraneUniforms.normalMatrix = matrix_identity_float3x3
+        membraneUniforms.normalMatrix = viewMatrix.upperLeft
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
         // TODO: membraneUniforms.cameraPosition = cameraPose.position
         membraneUniforms.cameraPosition = simd_float3()
@@ -281,8 +280,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     private func renderProjectedForm(renderEncoder: MTLRenderCommandEncoder,
                                      projectedForm: ProjectedForm) {
-        let lineCount = projectedForm.lines.count
-        (0..<lineCount).forEach { lineIndex in
+        for lineIndex in projectedForm.lines.indices {
             renderProjectedFormLine(renderEncoder: renderEncoder,
                                     projectedForm: projectedForm,
                                     lineIndex: lineIndex)

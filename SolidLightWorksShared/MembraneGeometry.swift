@@ -9,6 +9,29 @@
 import Foundation
 import simd
 
+// https://computergraphics.stackexchange.com/questions/4031/programmatically-generating-vertex-normals
+// http://www.iquilezles.org/www/articles/normals/normals.htm
+private func calculateNormals(vertices: [MembraneVertex], indices: [UInt16]) {
+    for index in stride(from: 0, to: indices.count, by: 3) {
+        let ia = Int(indices[index])
+        let ib = Int(indices[index + 1])
+        let ic = Int(indices[index + 2])
+        var va = vertices[ia]
+        var vb = vertices[ib]
+        var vc = vertices[ic]
+        let dir1 = va.position - vb.position
+        let dir2 = vc.position - vb.position
+        let n = cross(dir1, dir2)
+        va.normal += n
+        vb.normal += n
+        vc.normal += n
+    }
+    for index in vertices.indices {
+        var vertex = vertices[index]
+        vertex.normal = normalize(vertex.normal)
+    }
+}
+
 func makeMembraneVertices(points: [simd_float2],
                           projectorPosition: simd_float3) -> ([MembraneVertex], [UInt16]) {
     let normal = simd_float3()
@@ -34,5 +57,6 @@ func makeMembraneVertices(points: [simd_float2],
         }
         vertexIndex += 2
     }
+    calculateNormals(vertices: vertices, indices: indices)
     return (vertices, indices)
 }

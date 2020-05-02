@@ -40,11 +40,9 @@ vertex MembraneInOut vertexMembraneShader(uint vertexID [[vertex_id]],
     return out;
 }
 
-//fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
-//                                       constant MembraneUniforms &uniforms [[buffer(1)]],
-//                                       texture2d<half> hazeTexture [[texture(0)]])
 fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
-                                       constant MembraneUniforms &uniforms [[buffer(1)]])
+                                       constant MembraneUniforms &uniforms [[buffer(1)]],
+                                       texture2d<float> hazeTexture [[texture(0)]])
 {
 //    constexpr sampler hazeSampler(mip_filter::nearest,
 //                                  mag_filter::nearest,
@@ -65,5 +63,5 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
 //    whiteValue.a = a;
 //
 //    return mix(hazeValue, whiteValue, weight);
-    return float4(0.0, 1.0, 0.0, 0.25);
+    return float4(1.0, 1.0, 1.0, 0.25);
 }

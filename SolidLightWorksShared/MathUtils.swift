@@ -49,6 +49,23 @@ func matrix_perspective_right_hand(fovyRadians fovy: Float, aspectRatio: Float, 
                                          vector_float4( 0,  0, zs * nearZ, 0)))
 }
 
+extension simd_float4 {
+  var xyz: simd_float3 {
+    get {
+      simd_float3(x, y, z)
+    }
+  }
+}
+
+extension matrix_float4x4 {
+    var upperLeft: matrix_float3x3 {
+      let x = columns.0.xyz
+      let y = columns.1.xyz
+      let z = columns.2.xyz
+      return matrix_float3x3(columns: (x, y, z))
+    }
+}
+
 func radians_from_degrees(_ degrees: Float) -> Float {
     return (degrees / 180) * .pi
 }
