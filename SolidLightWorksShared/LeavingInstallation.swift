@@ -24,11 +24,11 @@ class LeavingInstallation: Installation {
         form2 = LeavingForm(rx: 2, ry: 1.6, initiallyGrowing: false)
         transform1 = matrix4x4_translation(-2.5, 0, 0)
         transform2 = matrix4x4_translation(2.5, 0, 0)
-        projectorPosition1 = simd_float3(0, 0, 10)
-        projectorPosition2 = simd_float3(0, 0, 10)
+        projectorPosition1 = simd_float3(-2.5, 0, 10)
+        projectorPosition2 = simd_float3(2.5, 0, 10)
         cameraPose2D = CameraPose(position: simd_float3(0, 0, 6), target: simd_float3())
         cameraPoses3D = [
-            CameraPose(position: simd_float3(0.25, 1, 12), target: simd_float3())
+            CameraPose(position: simd_float3(0, 0, 12), target: simd_float3())
         ]
     }
     

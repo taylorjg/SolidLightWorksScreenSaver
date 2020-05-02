@@ -22,7 +22,7 @@ class DoublingBackInstallation: Installation {
         projectorPosition = simd_float3(0, 0, 10)
         cameraPose2D = CameraPose(position: simd_float3(0, 0, 4), target: simd_float3())
         cameraPoses3D = [
-            CameraPose(position: simd_float3(0.25, 1, 12), target: simd_float3())
+            CameraPose(position: simd_float3(0, 0, 12), target: simd_float3())
         ]
     }
     

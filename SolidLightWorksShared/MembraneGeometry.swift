@@ -10,19 +10,20 @@ import Foundation
 import simd
 
 func makeMembraneVertices(points: [simd_float2],
-                          projectorPosition: simd_float3) -> ([FlatVertex], [UInt16]) {
-    let color = simd_float4(1, 0, 0, 0.25)
+                          projectorPosition: simd_float3) -> ([MembraneVertex], [UInt16]) {
+    let normal = simd_float3()
+    let uv = simd_float2()
     let pointCount = points.count
     let segmentCount = pointCount - 1
-    var vertices = [FlatVertex]()
+    var vertices = [MembraneVertex]()
     var indices = [UInt16]()
     vertices.reserveCapacity(pointCount * 2)
     indices.reserveCapacity(segmentCount * 6)
     var vertexIndex = UInt16(0)
     for index in 0..<points.count {
         let p = points[index]
-        vertices.append(FlatVertex(position: simd_float3(p, 0), color: color))
-        vertices.append(FlatVertex(position: projectorPosition, color: color))
+        vertices.append(MembraneVertex(position: simd_float3(p, 0), normal: normal, uv: uv))
+        vertices.append(MembraneVertex(position: projectorPosition, normal: normal, uv: uv))
         if index < segmentCount {
             indices.append(vertexIndex + 0)
             indices.append(vertexIndex + 1)

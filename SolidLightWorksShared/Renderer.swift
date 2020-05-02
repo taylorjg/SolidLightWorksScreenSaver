@@ -43,10 +43,11 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     let flatPipelineState: MTLRenderPipelineState
     let line2DPipelineState: MTLRenderPipelineState
+    let membranePipelineState: MTLRenderPipelineState
     var installations = [Installation]()
     var installationIndex = 0
     let renderAxes = false
-    let render2D = true
+    let render2D = false
     let hazeTexture: MTLTexture
     var viewMatrix: matrix_float4x4
     var projectionMatrix: matrix_float4x4
@@ -81,6 +82,16 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         do {
+            membranePipelineState = try Renderer.buildRenderPipelineState(name: "Membrane",
+                                                                        device: device,
+                                                                        mtkView: mtkView,
+                                                                        bundle: bundle)
+        } catch {
+            print("Unable to compile render membrane pipeline state.  Error info: \(error)")
+            return nil
+        }
+        
+        do {
             hazeTexture = try Renderer.loadTexture(device: device, textureName: "Haze", bundle: bundle)
         } catch {
             print("Unable to load haze texture. Error info: \(error)")
@@ -101,7 +112,8 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        switchInstallation(switchInterval: switchInterval)
+        // switchInstallation(switchInterval: switchInterval)
+        switchInstallation(switchInterval: 5)
     }
     
     private func switchInstallation(switchInterval: Int) {
@@ -239,21 +251,24 @@ class Renderer: NSObject, MTKViewDelegate {
                                          projectedForm: ProjectedForm,
                                          lineIndex: Int) {
         let line = projectedForm.lines[lineIndex]
-        // let transform = projectedForm.transform
-        // let projectorPosition = projectedForm.projectorPosition
-        var flatUniforms = FlatUniforms()
-        flatUniforms.modelViewMatrix = viewMatrix
-        flatUniforms.projectionMatrix = projectionMatrix
-        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        var membraneUniforms = MembraneUniforms()
+        membraneUniforms.modelMatrix = projectedForm.transform
+        membraneUniforms.viewMatrix = viewMatrix
+        membraneUniforms.projectionMatrix = projectionMatrix
+        membraneUniforms.normalMatrix = matrix_identity_float3x3
+        membraneUniforms.projectorPosition = projectedForm.projectorPosition
+        // TODO: membraneUniforms.cameraPosition = cameraPose.position
+        membraneUniforms.cameraPosition = simd_float3()
+        let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Projected Form Line")
-        renderEncoder.setRenderPipelineState(flatPipelineState)
+        renderEncoder.setRenderPipelineState(membranePipelineState)
         let (vertices, indices) = makeMembraneVertices(points: line.points,
                                                        projectorPosition: projectedForm.projectorPosition)
-        let verticesLength = MemoryLayout<FlatVertex>.stride * vertices.count
+        let verticesLength = MemoryLayout<MembraneVertex>.stride * vertices.count
         let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
         renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
-        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
         let indicesLength = MemoryLayout<UInt16>.stride * indices.count
         let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
         renderEncoder.drawIndexedPrimitives(type: .triangle,

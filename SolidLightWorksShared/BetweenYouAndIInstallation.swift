@@ -26,11 +26,11 @@ class BetweenYouAndIInstallation: Installation {
         let rotation = matrix4x4_rotation(radians: -Float.pi / 2, axis: simd_float3(0, 0, 1))
         transform1 = simd_mul(rotation, matrix4x4_translation(0, -2.5, 0))
         transform2 = simd_mul(rotation, matrix4x4_translation(0, 2.5, 0))
-        projectorPosition1 = simd_float3(0, 0, 10)
-        projectorPosition2 = simd_float3(0, 0, 10)
+        projectorPosition1 = simd_float3(0, -2.5, 10)
+        projectorPosition2 = simd_float3(0, 2.5, 10)
         cameraPose2D = CameraPose(position: simd_float3(0, 0, 6), target: simd_float3())
         cameraPoses3D = [
-            CameraPose(position: simd_float3(0.25, 1, 12), target: simd_float3())
+            CameraPose(position: simd_float3(0, 0, 12), target: simd_float3())
         ]
     }
     
