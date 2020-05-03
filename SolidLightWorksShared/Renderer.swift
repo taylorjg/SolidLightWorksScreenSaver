@@ -279,6 +279,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     private func renderProjectedFormLine(renderEncoder: MTLRenderCommandEncoder,
+                                         cameraPose: CameraPose,
                                          projectedForm: ProjectedForm,
                                          lineIndex: Int) {
         let line = projectedForm.lines[lineIndex]
@@ -288,8 +289,7 @@ class Renderer: NSObject, MTKViewDelegate {
         membraneUniforms.projectionMatrix = projectionMatrix
         membraneUniforms.normalMatrix = viewMatrix.upperLeft
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
-        // TODO: membraneUniforms.cameraPosition = cameraPose.position
-        membraneUniforms.cameraPosition = simd_float3()
+        membraneUniforms.worldCameraPosition = cameraPose.position
         let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Projected Form Line")
         renderEncoder.setRenderPipelineState(membranePipelineState)
@@ -316,18 +316,23 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     private func renderProjectedForm(renderEncoder: MTLRenderCommandEncoder,
+                                     cameraPose: CameraPose,
                                      projectedForm: ProjectedForm) {
         for lineIndex in projectedForm.lines.indices {
             renderProjectedFormLine(renderEncoder: renderEncoder,
+                                    cameraPose: cameraPose,
                                     projectedForm: projectedForm,
                                     lineIndex: lineIndex)
         }
     }
     
     private func renderProjectedForms(renderEncoder: MTLRenderCommandEncoder,
+                                      cameraPose: CameraPose,
                                       projectedForms: [ProjectedForm]) {
         projectedForms.forEach { projectedForm in
-            renderProjectedForm(renderEncoder: renderEncoder, projectedForm: projectedForm)
+            renderProjectedForm(renderEncoder: renderEncoder,
+                                cameraPose: cameraPose,
+                                projectedForm: projectedForm)
         }
     }
     
@@ -345,16 +350,19 @@ class Renderer: NSObject, MTKViewDelegate {
     
     private func renderInstallation3D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
         let installationData3D = installation.getInstallationData3D()
-        let cameraPose = installationData3D.cameraPoses[0]
+//        let cameraPose = installationData3D.cameraPoses[0]
+        let cameraPose = CameraPose(position: simd_float3(-13.13, 2.42, 9.03), target: simd_float3(-0.75, 2, 4.43))
         viewMatrix = matrix_lookat(eye: cameraPose.position,
                                    point: cameraPose.target,
                                    up: simd_float3(0, 1, 0))
         if renderAxes {
             renderAxes(renderEncoder: renderEncoder)
         }
-        renderScreen(renderEncoder: renderEncoder)
+        // renderScreen(renderEncoder: renderEncoder)
         renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
-        renderProjectedForms(renderEncoder: renderEncoder, projectedForms: installationData3D.projectedForms)
+        renderProjectedForms(renderEncoder: renderEncoder,
+                             cameraPose: cameraPose,
+                             projectedForms: installationData3D.projectedForms)
     }
     
     func draw(in view: MTKView) {

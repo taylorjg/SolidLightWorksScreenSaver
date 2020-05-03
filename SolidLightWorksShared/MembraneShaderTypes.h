@@ -24,7 +24,7 @@ typedef struct
     matrix_float4x4 projectionMatrix;
     matrix_float3x3 normalMatrix;
     vector_float3 projectorPosition;
-    vector_float3 cameraPosition;
+    vector_float3 worldCameraPosition;
 } MembraneUniforms;
 
 #endif /* MembraneShaderTypes_h */
