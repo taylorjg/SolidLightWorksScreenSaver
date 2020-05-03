@@ -11,25 +11,38 @@ import simd
 
 // https://computergraphics.stackexchange.com/questions/4031/programmatically-generating-vertex-normals
 // http://www.iquilezles.org/www/articles/normals/normals.htm
-private func calculateNormals(vertices: [MembraneVertex], indices: [UInt16]) {
+private func calculateNormals(vertices: [MembraneVertex],
+                              indices: [UInt16]) -> ([MembraneVertex], [UInt16]) {
+
+    class NormalHolder {
+        var normal = simd_float3()
+    }
+
+    let nhs = vertices.indices.map { _ in NormalHolder() }
+
     for index in stride(from: 0, to: indices.count, by: 3) {
         let ia = Int(indices[index])
         let ib = Int(indices[index + 1])
         let ic = Int(indices[index + 2])
-        var va = vertices[ia]
-        var vb = vertices[ib]
-        var vc = vertices[ic]
-        let dir1 = va.position - vb.position
-        let dir2 = vc.position - vb.position
-        let n = cross(dir1, dir2)
-        va.normal += n
-        vb.normal += n
-        vc.normal += n
+        let screenVertex1 = vertices[ia]
+        let projectorVertex = vertices[ib]
+        let screenVertex2 = vertices[ic]
+        let direction1 = screenVertex1.position - projectorVertex.position
+        let direction2 = screenVertex2.position - projectorVertex.position
+        let faceNormal = cross(direction1, direction2)
+        nhs[ia].normal += faceNormal
+        nhs[ib].normal += faceNormal
+        nhs[ic].normal += faceNormal
     }
-    for index in vertices.indices {
+
+    let updatedVertices = vertices.indices.map { index -> MembraneVertex in
         var vertex = vertices[index]
-        vertex.normal = normalize(vertex.normal)
+        let nh = nhs[index]
+        vertex.normal = normalize(nh.normal)
+        return vertex
     }
+    
+    return (updatedVertices, indices)
 }
 
 func makeMembraneVertices(points: [simd_float2],
@@ -51,12 +64,9 @@ func makeMembraneVertices(points: [simd_float2],
             indices.append(vertexIndex + 0)
             indices.append(vertexIndex + 1)
             indices.append(vertexIndex + 2)
-            indices.append(vertexIndex + 2)
-            indices.append(vertexIndex + 1)
-            indices.append(vertexIndex + 3)
         }
         vertexIndex += 2
     }
-    calculateNormals(vertices: vertices, indices: indices)
-    return (vertices, indices)
+
+    return calculateNormals(vertices: vertices, indices: indices)
 }

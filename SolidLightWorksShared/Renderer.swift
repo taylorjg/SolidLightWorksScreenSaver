@@ -47,6 +47,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var installations = [Installation]()
     var installationIndex = 0
     let renderAxes = false
+    let renderVertexNormals = false
     let render2D = false
     let hazeTexture: MTLTexture
     var viewMatrix: matrix_float4x4
@@ -184,6 +185,37 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.popDebugGroup()
     }
     
+    private func renderVertexNormals(renderEncoder: MTLRenderCommandEncoder,
+                                     vertices: [MembraneVertex],
+                                     transform: matrix_float4x4) {
+        var flatUniforms = FlatUniforms()
+        flatUniforms.modelViewMatrix = viewMatrix * transform
+        flatUniforms.projectionMatrix = projectionMatrix
+        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        renderEncoder.pushDebugGroup("Draw Vertex Normals")
+        renderEncoder.setRenderPipelineState(flatPipelineState)
+        let color = simd_float4(0, 0, 1, 1)
+        let vertexNormalVertices = vertices.flatMap { vertex -> [FlatVertex] in
+            let p1 = vertex.position
+            let p2 = p1 + (vertex.normal * 0.1)
+            return [
+                FlatVertex(position: p1, color: color),
+                FlatVertex(position: p2, color: color)
+            ]
+        }
+        let vertexNormalVerticesLength = MemoryLayout<FlatVertex>.stride * vertexNormalVertices.count
+        if vertexNormalVerticesLength <= 4096 {
+            renderEncoder.setVertexBytes(vertexNormalVertices, length: vertexNormalVerticesLength, index: 0)
+        } else {
+            let verticesBuffer = device.makeBuffer(bytes: vertexNormalVertices, length: vertexNormalVerticesLength, options: [])!
+            renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
+        }
+        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: vertexNormalVertices.count)
+        renderEncoder.popDebugGroup()
+    }
+    
     private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix
@@ -276,6 +308,11 @@ class Renderer: NSObject, MTKViewDelegate {
                                             indexBuffer: indicesBuffer,
                                             indexBufferOffset: 0)
         renderEncoder.popDebugGroup()
+        if renderVertexNormals {
+            renderVertexNormals(renderEncoder: renderEncoder,
+                                vertices: vertices,
+                                transform: projectedForm.transform)
+        }
     }
     
     private func renderProjectedForm(renderEncoder: MTLRenderCommandEncoder,
