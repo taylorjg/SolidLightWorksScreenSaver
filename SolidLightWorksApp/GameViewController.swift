@@ -20,8 +20,8 @@ class GameViewController: NSViewController {
 
         print(FileManager.default.temporaryDirectory)
 
-        guard let mtkView = self.view as? MTKView else {
-            print("View attached to GameViewController is not an MTKView")
+        guard let mtkView = self.view as? MyMTKView else {
+            print("View attached to GameViewController is not an instance of MyMTKView")
             return
         }
 
@@ -39,9 +39,9 @@ class GameViewController: NSViewController {
         }
 
         renderer = newRenderer
-
+        
         renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
-
         mtkView.delegate = renderer
+        mtkView.keyboardControlDelegate = renderer
     }
 }

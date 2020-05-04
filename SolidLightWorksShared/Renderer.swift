@@ -37,21 +37,26 @@ let axesVertices = [
     FlatVertex(position: simd_float3(0, 0, -8), color: simd_float4(1, 1, 0, 1))
 ]
 
-class Renderer: NSObject, MTKViewDelegate {
+class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
-    let device: MTLDevice
-    let commandQueue: MTLCommandQueue
-    let flatPipelineState: MTLRenderPipelineState
-    let line2DPipelineState: MTLRenderPipelineState
-    let membranePipelineState: MTLRenderPipelineState
-    var installations = [Installation]()
-    var installationIndex = 0
-    let renderAxes = false
-    let renderVertexNormals = false
-    let render2D = true
-    let hazeTexture: MTLTexture
-    var viewMatrix: matrix_float4x4
-    var projectionMatrix: matrix_float4x4
+    private enum RenderMode {
+        case drawing2D
+        case projection3D
+    }
+    
+    private let device: MTLDevice
+    private let commandQueue: MTLCommandQueue
+    private let flatPipelineState: MTLRenderPipelineState
+    private let line2DPipelineState: MTLRenderPipelineState
+    private let membranePipelineState: MTLRenderPipelineState
+    private var installations = [Installation]()
+    private var installationIndex = 0
+    private var renderAxesHelpers = false
+    private var renderVertexNormalsHelpers = false
+    private var renderMode = RenderMode.drawing2D
+    private let hazeTexture: MTLTexture
+    private var viewMatrix: matrix_float4x4
+    private var projectionMatrix: matrix_float4x4
     
     init?(mtkView: MTKView,
           bundle: Bundle? = nil,
@@ -84,9 +89,9 @@ class Renderer: NSObject, MTKViewDelegate {
         
         do {
             membranePipelineState = try Renderer.buildRenderPipelineState(name: "Membrane",
-                                                                        device: device,
-                                                                        mtkView: mtkView,
-                                                                        bundle: bundle)
+                                                                          device: device,
+                                                                          mtkView: mtkView,
+                                                                          bundle: bundle)
         } catch {
             print("Unable to compile render membrane pipeline state.  Error info: \(error)")
             return nil
@@ -102,9 +107,9 @@ class Renderer: NSObject, MTKViewDelegate {
         viewMatrix = matrix_float4x4()
         projectionMatrix = matrix_float4x4()
         
-//        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
-//        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
-//        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
+        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
+        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
+        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
         if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
         
         if enabledForms.isEmpty {
@@ -113,8 +118,31 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        // switchInstallation(switchInterval: switchInterval)
-        // switchInstallation(switchInterval: 5)
+        switchInstallation(switchInterval: switchInterval)
+    }
+    
+    func onSwitchForm() {
+        // TODO
+    }
+    
+    func onSwitchCameraPose() {
+        // TODO
+    }
+    
+    func onSelect2DDrawingMode() {
+        renderMode = .drawing2D
+    }
+    
+    func onSelect3DProjectionMode() {
+        renderMode = .projection3D
+    }
+    
+    func onToggleAxesHelpers() {
+        renderAxesHelpers = !renderAxesHelpers
+    }
+    
+    func onToggleVertexNormalsHelpers() {
+        renderVertexNormalsHelpers = !renderVertexNormalsHelpers
     }
     
     private func switchInstallation(switchInterval: Int) {
@@ -170,7 +198,7 @@ class Renderer: NSObject, MTKViewDelegate {
                                             options: textureLoaderOptions)
     }
     
-    private func renderAxes(renderEncoder: MTLRenderCommandEncoder) {
+    private func renderAxesHelpers(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
@@ -185,9 +213,9 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.popDebugGroup()
     }
     
-    private func renderVertexNormals(renderEncoder: MTLRenderCommandEncoder,
-                                     vertices: [MembraneVertex],
-                                     transform: matrix_float4x4) {
+    private func renderVertexNormalsHelpers(renderEncoder: MTLRenderCommandEncoder,
+                                            vertices: [MembraneVertex],
+                                            transform: matrix_float4x4) {
         var flatUniforms = FlatUniforms()
         flatUniforms.modelViewMatrix = viewMatrix * transform
         flatUniforms.projectionMatrix = projectionMatrix
@@ -308,10 +336,10 @@ class Renderer: NSObject, MTKViewDelegate {
                                             indexBuffer: indicesBuffer,
                                             indexBufferOffset: 0)
         renderEncoder.popDebugGroup()
-        if renderVertexNormals {
-            renderVertexNormals(renderEncoder: renderEncoder,
-                                vertices: vertices,
-                                transform: projectedForm.transform)
+        if renderVertexNormalsHelpers {
+            renderVertexNormalsHelpers(renderEncoder: renderEncoder,
+                                       vertices: vertices,
+                                       transform: projectedForm.transform)
         }
     }
     
@@ -342,21 +370,21 @@ class Renderer: NSObject, MTKViewDelegate {
         viewMatrix = matrix_lookat(eye: cameraPose.position,
                                    point: cameraPose.target,
                                    up: simd_float3(0, 1, 0))
-        if renderAxes {
-            renderAxes(renderEncoder: renderEncoder)
+        if renderAxesHelpers {
+            renderAxesHelpers(renderEncoder: renderEncoder)
         }
         renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData2D.screenForms)
     }
     
     private func renderInstallation3D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
         let installationData3D = installation.getInstallationData3D()
-//        let cameraPose = installationData3D.cameraPoses[0]
+        //        let cameraPose = installationData3D.cameraPoses[0]
         let cameraPose = CameraPose(position: simd_float3(-13.13, 2.42, 9.03), target: simd_float3(-0.75, 2, 4.43))
         viewMatrix = matrix_lookat(eye: cameraPose.position,
                                    point: cameraPose.target,
                                    up: simd_float3(0, 1, 0))
-        if renderAxes {
-            renderAxes(renderEncoder: renderEncoder)
+        if renderAxesHelpers {
+            renderAxesHelpers(renderEncoder: renderEncoder)
         }
         // renderScreen(renderEncoder: renderEncoder)
         renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
@@ -372,9 +400,11 @@ class Renderer: NSObject, MTKViewDelegate {
                 let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                 
                 let installation = installations[installationIndex]
-                if render2D {
+                
+                switch renderMode {
+                case .drawing2D:
                     renderInstallation2D(renderEncoder: renderEncoder, installation: installation)
-                } else {
+                case .projection3D:
                     renderInstallation3D(renderEncoder: renderEncoder, installation: installation)
                 }
                 

@@ -12,6 +12,8 @@ import Carbon.HIToolbox.Events
 
 class MyMTKView: MTKView {
     
+    var keyboardControlDelegate: KeyboardControlDelegate?
+    
     override var acceptsFirstResponder: Bool {
         return true
     }
@@ -19,22 +21,22 @@ class MyMTKView: MTKView {
     override func keyDown(with event: NSEvent) {
         switch Int(event.keyCode) {
         case kVK_ANSI_F:
-            print("Switch form")
+            keyboardControlDelegate?.onSwitchForm()
             break
         case kVK_ANSI_P:
-            print("Switch camera pose")
+            keyboardControlDelegate?.onSwitchCameraPose()
             break
         case kVK_ANSI_2:
-            print("Render 2D drawings")
+            keyboardControlDelegate?.onSelect2DDrawingMode()
             break
         case kVK_ANSI_3:
-            print("Render 3D projections")
+            keyboardControlDelegate?.onSelect3DProjectionMode()
             break
         case kVK_ANSI_A:
-            print("Toggle axes helpers")
+            keyboardControlDelegate?.onToggleAxesHelpers()
             break
         case kVK_ANSI_V:
-            print("Toggle vertex normal helpers")
+            keyboardControlDelegate?.onToggleVertexNormalsHelpers()
             break
         default:
             break
