@@ -48,7 +48,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var installationIndex = 0
     let renderAxes = false
     let renderVertexNormals = false
-    let render2D = false
+    let render2D = true
     let hazeTexture: MTLTexture
     var viewMatrix: matrix_float4x4
     var projectionMatrix: matrix_float4x4
@@ -102,9 +102,9 @@ class Renderer: NSObject, MTKViewDelegate {
         viewMatrix = matrix_float4x4()
         projectionMatrix = matrix_float4x4()
         
-        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
-        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
-        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
+//        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
+//        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
+//        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
         if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
         
         if enabledForms.isEmpty {
@@ -114,7 +114,7 @@ class Renderer: NSObject, MTKViewDelegate {
         super.init()
         
         // switchInstallation(switchInterval: switchInterval)
-        switchInstallation(switchInterval: 5)
+        // switchInstallation(switchInterval: 5)
     }
     
     private func switchInstallation(switchInterval: Int) {

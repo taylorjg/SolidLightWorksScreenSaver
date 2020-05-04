@@ -15,7 +15,7 @@ let QUARTER_PI = Float.pi / 4
 
 class LeavingForm {
     
-    let MAX_TICKS = 10000
+    let MAX_TICKS = 20000
     let ELLIPSE_POINT_COUNT = 100
     let TRAVELLING_WAVE_POINT_COUNT = 50
     var tick = 0
@@ -64,13 +64,26 @@ class LeavingForm {
     }
     
     private func travellingWaveAmplitude(tickRatio: Float) -> Float {
-        let maxAmplitude = Float(0.2)
+        let maxAmplitude = Float(0.15)
         return maxAmplitude * abs(sin(TWO_PI * tickRatio))
     }
     
-    private func travellingWaveSpeed(tickRatio: Float) -> Float {
-        let maxSpeed = Float(12)
-        return maxSpeed * abs(sin(TWO_PI * tickRatio))
+    // 0.00 => 0.25: 0 => max
+    // 0.25 => 0.50: max => 0
+    // 0.50 => 0.75: 0 => max
+    // 0.75 => 1.00: max => 0
+    private func travellingWaveFrequency(tickRatio: Float) -> Float {
+        let maxSpeed = Float(4)
+        if tickRatio < 0.25 {
+            return maxSpeed * tickRatio * 4
+        }
+        if tickRatio < 0.5 {
+            return maxSpeed * (0.5 - tickRatio) * 4
+        }
+        if tickRatio < 0.75 {
+            return maxSpeed * (tickRatio - 0.5) * 4
+        }
+        return maxSpeed * (1 - tickRatio) * 4
     }
     
     private func radiusEndPoint(angle: Float, radiusRatio: Float) -> simd_float2 {
@@ -110,23 +123,21 @@ class LeavingForm {
                                          endPoint: simd_float2,
                                          angle: Float,
                                          amplitude: Float,
-                                         speed: Float,
+                                         frequency: Float,
                                          tickRatio: Float) -> [simd_float2] {
-        let lambda = ry
-        let k = TWO_PI / lambda
-        let omega = TWO_PI * speed
+        let waveLength = min(rx, ry)
+        let k = TWO_PI / waveLength
+        let omega = TWO_PI * frequency
         let length = simd_distance(movingPoint, endPoint)
         let dx = length / Float(TRAVELLING_WAVE_POINT_COUNT)
         let points = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
             let x = Float(n) * dx
-            let y = amplitude * sin(k * x + omega * tickRatio)
+            let y = amplitude * sin(k * x - omega)
             return simd_float2(x, y)
         }
         let anchor = points[0]
         let translation = movingPoint - anchor
-        return points
-            .map { pt in rotate(point: pt, around: anchor, through: angle) }
-            .map { pt in pt + translation }
+        return points.map { pt in rotate(point: pt, around: anchor, through: angle) + translation }
     }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
@@ -161,14 +172,14 @@ class LeavingForm {
         let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
         let angleOffset = travellingWaveAngleOffset(tickRatio: tickRatio)
         let amplitude = travellingWaveAmplitude(tickRatio: tickRatio)
-        let speed = travellingWaveSpeed(tickRatio: tickRatio)
+        let frequency = travellingWaveFrequency(tickRatio: tickRatio)
         let angle = theta + PI + angleOffset
         let endPoint = radiusEndPoint(angle: angle, radiusRatio: radiusRatio) + movingPoint
         let travellingWavePoints = getTravellingWavePoints(movingPoint: movingPoint,
                                                            endPoint: endPoint,
                                                            angle: angle,
                                                            amplitude: amplitude,
-                                                           speed: speed,
+                                                           frequency: frequency,
                                                            tickRatio: tickRatio)
         
         let combinedPoints = combinePoints(ellipsePoints, travellingWavePoints)
