@@ -48,7 +48,6 @@ private func calculateNormals(vertices: [MembraneVertex],
 func makeMembraneVertices(points: [simd_float2],
                           projectorPosition: simd_float3) -> ([MembraneVertex], [UInt16]) {
     let normal = simd_float3()
-    let uv = simd_float2()
     let pointCount = points.count
     let segmentCount = pointCount - 1
     var vertices = [MembraneVertex]()
@@ -58,8 +57,11 @@ func makeMembraneVertices(points: [simd_float2],
     var vertexIndex = UInt16(0)
     for index in 0..<points.count {
         let p = points[index]
-        vertices.append(MembraneVertex(position: simd_float3(p, 0), normal: normal, uv: uv))
-        vertices.append(MembraneVertex(position: projectorPosition, normal: normal, uv: uv))
+        let u = Float(index) / Float(points.count)
+        let uv1 = simd_float2(u, Float(0))
+        let uv2 = simd_float2(u, Float(1))
+        vertices.append(MembraneVertex(position: simd_float3(p, 0), normal: normal, uv: uv1))
+        vertices.append(MembraneVertex(position: projectorPosition, normal: normal, uv: uv2))
         if index < segmentCount {
             indices.append(vertexIndex + 0)
             indices.append(vertexIndex + 1)

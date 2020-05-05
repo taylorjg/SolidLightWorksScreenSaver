@@ -15,7 +15,7 @@ let QUARTER_PI = Float.pi / 4
 
 class LeavingForm {
     
-    let MAX_TICKS = 20000
+    let MAX_TICKS = 10000
     let ELLIPSE_POINT_COUNT = 100
     let TRAVELLING_WAVE_POINT_COUNT = 50
     var tick = 0

@@ -26,11 +26,8 @@ class MyMTKView: MTKView {
         case kVK_ANSI_P:
             keyboardControlDelegate?.onSwitchCameraPose()
             break
-        case kVK_ANSI_2:
-            keyboardControlDelegate?.onSelect2DDrawingMode()
-            break
-        case kVK_ANSI_3:
-            keyboardControlDelegate?.onSelect3DProjectionMode()
+        case kVK_ANSI_M:
+            keyboardControlDelegate?.onToggleRenderMode()
             break
         case kVK_ANSI_A:
             keyboardControlDelegate?.onToggleAxesHelpers()

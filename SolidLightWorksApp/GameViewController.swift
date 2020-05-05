@@ -33,7 +33,7 @@ class GameViewController: NSViewController {
 
         mtkView.device = defaultDevice
 
-        guard let newRenderer = Renderer(mtkView: mtkView) else {
+        guard let newRenderer = Renderer(mtkView: mtkView, bundle: nil, interactive: true) else {
             print("Renderer cannot be initialized")
             return
         }

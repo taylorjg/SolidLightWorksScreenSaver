@@ -50,7 +50,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private let line2DPipelineState: MTLRenderPipelineState
     private let membranePipelineState: MTLRenderPipelineState
     private var installations = [Installation]()
-    private var installationIndex = 0
+    private var currentInstallationIndex = 0
+    private var currentCameraPoseCount = 0
+    private var currentCameraPoseIndex = 0
     private var renderAxesHelpers = false
     private var renderVertexNormalsHelpers = false
     private var renderMode = RenderMode.drawing2D
@@ -60,6 +62,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     init?(mtkView: MTKView,
           bundle: Bundle? = nil,
+          interactive: Bool,
           enabledForms: [Int] = [1, 2, 3, 4],
           switchInterval: Int = 30) {
         mtkView.sampleCount = 4
@@ -118,23 +121,33 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         
         super.init()
         
-        switchInstallation(switchInterval: switchInterval)
+        if (!interactive) {
+            switchInstallation(switchInterval: switchInterval)
+        }
     }
     
     func onSwitchForm() {
-        // TODO
+        currentInstallationIndex = (currentInstallationIndex + 1) % installations.count
+        currentCameraPoseIndex = 0
     }
     
     func onSwitchCameraPose() {
-        // TODO
+        if currentCameraPoseCount > 0 {
+            currentCameraPoseIndex = (currentCameraPoseIndex + 1) % currentCameraPoseCount
+        } else {
+            currentCameraPoseIndex = 0
+        }
     }
     
-    func onSelect2DDrawingMode() {
-        renderMode = .drawing2D
-    }
-    
-    func onSelect3DProjectionMode() {
-        renderMode = .projection3D
+    func onToggleRenderMode() {
+        switch (renderMode) {
+        case .drawing2D:
+            renderMode = .projection3D
+            break
+        case .projection3D:
+            renderMode = .drawing2D
+            break
+        }
     }
     
     func onToggleAxesHelpers() {
@@ -147,7 +160,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private func switchInstallation(switchInterval: Int) {
         DispatchQueue.main.asyncAfter(deadline: .now() + Double(switchInterval)) {
-            self.installationIndex = (self.installationIndex + 1) % self.installations.count
+            self.currentInstallationIndex = (self.currentInstallationIndex + 1) % self.installations.count
             self.switchInstallation(switchInterval: switchInterval)
         }
     }
@@ -328,6 +341,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
         renderEncoder.setFragmentBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
+        renderEncoder.setFragmentTexture(hazeTexture, index: 0)
         let indicesLength = MemoryLayout<UInt16>.stride * indices.count
         let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
         renderEncoder.drawIndexedPrimitives(type: .triangle,
@@ -378,15 +392,15 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private func renderInstallation3D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
         let installationData3D = installation.getInstallationData3D()
-        //        let cameraPose = installationData3D.cameraPoses[0]
-        let cameraPose = CameraPose(position: simd_float3(-13.13, 2.42, 9.03), target: simd_float3(-0.75, 2, 4.43))
+        currentCameraPoseCount = installationData3D.cameraPoses.count
+        let cameraPose = installationData3D.cameraPoses[currentCameraPoseIndex]
         viewMatrix = matrix_lookat(eye: cameraPose.position,
                                    point: cameraPose.target,
                                    up: simd_float3(0, 1, 0))
         if renderAxesHelpers {
             renderAxesHelpers(renderEncoder: renderEncoder)
         }
-        // renderScreen(renderEncoder: renderEncoder)
+        renderScreen(renderEncoder: renderEncoder)
         renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
         renderProjectedForms(renderEncoder: renderEncoder,
                              cameraPose: cameraPose,
@@ -399,7 +413,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
             if let renderPassDescriptor = renderPassDescriptor,
                 let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                 
-                let installation = installations[installationIndex]
+                let installation = installations[currentInstallationIndex]
                 
                 switch renderMode {
                 case .drawing2D:

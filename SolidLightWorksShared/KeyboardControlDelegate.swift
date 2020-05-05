@@ -11,8 +11,7 @@ import Foundation
 protocol KeyboardControlDelegate {
     func onSwitchForm()
     func onSwitchCameraPose()
-    func onSelect2DDrawingMode()
-    func onSelect3DProjectionMode()
+    func onToggleRenderMode()
     func onToggleAxesHelpers()
     func onToggleVertexNormalsHelpers()
 }
