@@ -74,7 +74,8 @@ func getNormals(_ points: [simd_float2]) -> [(simd_float2, Float)] {
 private func computeMiter(_ a: simd_float2, _ b: simd_float2, _ halfThick: Float) -> (simd_float2, Float) {
     let tangent = simd_normalize(a + b)
     let miter = cross(tangent)
-    let miterLen = halfThick / dot(miter, cross(a))
+    let denominator = dot(miter, cross(a))
+    let miterLen = simd_clamp(halfThick / denominator, -1, 1)
     return (miter, miterLen)
 }
 
