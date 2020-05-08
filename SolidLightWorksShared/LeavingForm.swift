@@ -13,98 +13,59 @@ let TWO_PI = Float.pi * 2
 let HALF_PI = Float.pi / 2
 let QUARTER_PI = Float.pi / 4
 
-private func f(_ rx: Float, _ ry: Float, _ a: Float, _ k: Float, _ wt: Float, _ x: Float) -> Float {
-    return (pow(x, 2) / pow(rx, 2)) + (pow(a * sin(k * x - wt), 2) / pow(ry, 2)) - 1
+// Parametric equation of an ellipse:
+// x = f1(t)
+// y = g1(t)
+
+// Parametric equation of a travelling wave:
+// x = f2(t)
+// y = g2(t)
+
+private func f1(rx: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return rx * cos(t) }
+    return f
 }
 
-private func fprime(_ rx: Float, _ ry: Float, _ a: Float, _ k: Float, _ wt: Float, _ x: Float) -> Float {
-    return (2 * x / pow(rx, 2)) + ((pow(a, 2) * k * sin(2 * (k * x - wt))) / pow(ry, 2))
+private func g1(ry: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return ry * sin(t) }
+    return f
 }
 
-private func newtonsMethod(_ rx: Float, _ ry: Float, _ a: Float, _ k: Float, _ wt: Float, _ estimate: Float) -> Float {
-    let tolerance = Float(1e-6)
-    var prev = estimate
-    while (true) {
-        let next = prev - f(rx, ry, a, k, wt, prev) / fprime(rx, ry, a, k, wt, prev)
-        let diff = abs(next - prev)
-//        print("prev: \(prev); next: \(next); diff: \(diff)")
-        if (diff <= tolerance) { return prev }
-        prev = next
-    }
+private func f2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return t }
+    return f
 }
 
-private func f1(_ rx: Float, _ t: Float) -> Float {
-    return rx * cos(t)
-}
-private func g1(_ ry: Float, _ t: Float) -> Float {
-    return ry * sin(t)
-}
-private func f2(_ a: Float, _ k: Float, _ wt: Float, _ t: Float) -> Float {
-    return t
-}
-private func g2(_ a: Float, _ k: Float, _ wt: Float, _ t: Float) -> Float {
-    return a * sin(k * t - wt)
+private func g2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return a * sin(k * t - wt) }
+    return f
 }
 
-private func df1dt1(_ rx: Float, _ t: Float) -> Float {
-    return -rx * sin(t)
-}
-private func dg1dt1(_ ry: Float, _ t: Float) -> Float {
-    return ry * cos(t)
-}
-private func df2dt2(_ a: Float, _ k: Float, _ wt: Float, _ t: Float) -> Float {
-    return 1
-}
-private func dg2dt2(_ a: Float, _ k: Float, _ wt: Float, _ t: Float) -> Float {
-    return a * cos(k * t - wt) * k
+// The following online tool was very useful for finding the derivatives:
+// https://www.symbolab.com/solver/derivative-calculator
+
+// Derivative of f1
+private func df1dt1(rx: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return -rx * sin(t) }
+    return f
 }
 
-// https://uk.mathworks.com/help/matlab/ref/mldivide.html
-private func mldivide(A: matrix_float2x2, b: simd_float2) -> simd_float2 {
-    return simd_inverse(A) * b
+// Derivative of g1
+private func dg1dt1(ry: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return ry * cos(t) }
+    return f
 }
 
-// https://www.mathworks.com/matlabcentral/answers/318475-how-to-find-the-intersection-of-two-curves#answer_249066
-//t1 = t1e; t2 = t2e;
-//tol = 1e-13 % Define acceptable error tolerance
-//rpt = true; % Pass through while-loop at least once
-//while rpt % Repeat while-loop until rpt is false
-//  x1 = f1(t1); y1 = g1(t1);
-//  x2 = f2(t2); y2 = g2(t2);
-//  rpt = sqrt((x2-x1)^2+(y2-y1)^2)>=tol; % Euclidean distance apart
-//  dt = [df1dt1(t1),-df2dt2(t2);dg1dt1(t1),-dg2dt2(t2)]\[x2-x1;y2-y1];
-//  t1 = t1+dt(1); t2 = t2+dt(2);
-//end
-//x1 = f1(t1); y1 = g1(t1); % <-- These last two lines added later
-//x2 = f2(t2); y2 = g2(t2);
-private func newtonsMethod2(_ rx: Float,
-                            _ ry: Float,
-                            _ a: Float,
-                            _ k: Float,
-                            _ wt: Float,
-                            _ t1e: Float,
-                            _ t2e: Float) -> (Float, Float) {
-    var t1 = t1e
-    var t2 = t2e
-    let tolerance = Float(1e-3)
-    while true {
-        let x1 = f1(rx, t1)
-        let y1 = g1(ry, t1)
-        let x2 = f2(a, k, wt, t2)
-        let y2 = g2(a, k, wt, t2)
-        let d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
-//        print("t1: \(t1); t2: \(t2); x1: \(x1); y1: \(y1); x2: \(x2); y2: \(y2); d: \(d)")
-        if (d <= tolerance) { break }
-        let A = matrix_float2x2.init(rows: [
-            simd_float2(df1dt1(rx, t1), -df2dt2(a, k, wt, t2)),
-            simd_float2(dg1dt1(ry, t1), -dg2dt2(a, k, wt, t2))
-        ])
-        let b = simd_float2(x2 - x1, y2 - y1)
-        let dt = mldivide(A: A, b: b)
-        t1 += dt[0]
-        t2 += dt[1]
-    }
-    return (t1, t2)
+// Derivative of f2
+private func df2dt2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return 1 }
+    return f
+}
+
+// Derivative of g2
+private func dg2dt2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return a * cos(k * t - wt) * k }
+    return f
 }
 
 class LeavingForm {
@@ -112,14 +73,11 @@ class LeavingForm {
     let MAX_TICKS = 10000
     let ELLIPSE_POINT_COUNT = 100
     let TRAVELLING_WAVE_POINT_COUNT = 50
-    var tick = 0
     let rx: Float
     let ry: Float
-    var growing = false
-    var startAngle: Float = 0
-    var endAngle: Float = 0
     let ellipse: Ellipse
-    var lastEstimate = -Float.pi
+    var tick = 0
+    var growing = false
     var t1e: Float
     var t2e: Float
     
@@ -130,22 +88,6 @@ class LeavingForm {
         t1e = -Float.pi
         t2e = -rx
         reset(growing: initiallyGrowing)
-//        if (initiallyGrowing) {
-//            let tickRatio = Float(5000) / Float(MAX_TICKS)
-//            let a = Float(0.2)
-//            let f = Float(50)
-//            let waveLength = ry
-//            let k = TWO_PI / waveLength
-//            let omega = TWO_PI * f
-//            let wt = omega * tickRatio
-//            let t1e = -Float.pi
-//            let t2e = -rx
-//            let (t1, t2) = newtonsMethod2(rx, ry, a, k, wt, t1e, t2e)
-//            print("result - t1: \(t1); t2: \(t2)")
-//            let p1 = ellipse.getPoint(angle: t1)
-//            let p2 = simd_float2(t2, a * sin(k * t2 - wt))
-//            print("p1: \(p1); p2: \(p2)")
-//        }
     }
     
     // 0.00 => 0.25: 0.00 => 1.00
@@ -219,40 +161,10 @@ class LeavingForm {
         return p + around
     }
     
-    private func ellipseOscillationAngle(tickRatio: Float) -> Float {
-        let a = MAX_TICKS / 50
-        let b = tick % a
-        let ratio = Float(b) / Float(a)
-        let s = sin(TWO_PI * ratio)
-        let maxOscillationAngle = PI / 180 * 5
-        return s * maxOscillationAngle * abs(sin(TWO_PI * tickRatio))
-    }
-    
     private func getEllipsePoints(startAngle: Float, endAngle: Float) -> [simd_float2] {
         return ellipse.getPoints(startAngle: startAngle,
                                  endAngle: endAngle,
                                  divisions: ELLIPSE_POINT_COUNT)
-    }
-    
-    private func getTravellingWavePoints(movingPoint: simd_float2,
-                                         endPoint: simd_float2,
-                                         angle: Float,
-                                         amplitude: Float,
-                                         frequency: Float,
-                                         tickRatio: Float) -> [simd_float2] {
-        let waveLength = min(rx, ry)
-        let k = TWO_PI / waveLength
-        let omega = TWO_PI * frequency
-        let length = simd_distance(movingPoint, endPoint)
-        let dx = length / Float(TRAVELLING_WAVE_POINT_COUNT)
-        let points = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
-            let x = Float(n) * dx
-            let y = amplitude * sin(k * x - omega)
-            return simd_float2(x, y)
-        }
-        let anchor = points[0]
-        let translation = movingPoint - anchor
-        return points.map { pt in rotate(point: pt, around: anchor, through: angle) + translation }
     }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
@@ -272,27 +184,29 @@ class LeavingForm {
         let k = TWO_PI / waveLength
         let omega = TWO_PI * f
         let wt = omega * tickRatio
-
-        let (t1, t2) = newtonsMethod2(rx, ry, a, k, wt, t1e, t2e)
-//        print("t1: \(t1); t2: \(t2)")
+        
+        let (t1, t2) = newtonsMethod(f1: f1(rx: rx),
+                                     g1: g1(ry: ry),
+                                     f2: f2(a: a, k: k, wt: wt),
+                                     g2: g2(a: a, k: k, wt: wt),
+                                     df1dt1: df1dt1(rx: rx),
+                                     dg1dt1: dg1dt1(ry: ry),
+                                     df2dt2: df2dt2(a: a, k: k, wt: wt),
+                                     dg2dt2: dg2dt2(a: a, k: k, wt: wt),
+                                     t1e: t1e,
+                                     t2e: t2e)
+        
+        // Update the estimates
         t1e = t1
         t2e = t2
-
-//        let px = newtonsMethod(rx, ry, a, k, wt, lastEstimate)
-//        lastEstimate = px
-//        let py = a * sin(k * px - wt)
-//        let radians = atan2(py, px)
-//        let p1 = simd_float2(px, py)
-//        let p2 = ellipse.getPoint(angle: radians)
-//        let x = rx * cos(radians)
-//        let y = ry * sin(radians)
-////        print("(px, py): (\(px), \(py)); radians: \(radians); degrees: \(radians * 180 / Float.pi)")
-//        let term1 = ry/rx
-//        let term2 = sqrt(pow(rx, 2) - pow(px, 2))
-//        let y1 = term1 * term2
-//        let y2 = -term1 * term2
-////        print("p1: \(p1); p2: \(p2); p1 - p2: \(p1 - p2); radians: \(radians); degrees: \(radians * 180 / Float.pi)")
-////        print("p1: \(p1); p2: \(p2); y1: \(y1); y2: \(y2); x: \(x); y: \(y)")
+        
+        let (startAngle, endAngle) = growing
+            ? (-HALF_PI, t1)
+            : (t1, -HALF_PI - TWO_PI)
+        
+        let ellipsePoints = ellipse.getPoints(startAngle: startAngle,
+                                              endAngle: endAngle,
+                                              divisions: ELLIPSE_POINT_COUNT)
 
         let dx = rx / Float(TRAVELLING_WAVE_POINT_COUNT)
         let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
@@ -301,14 +215,6 @@ class LeavingForm {
             return simd_float2(x, y)
         }
 
-        let correctedAngle = t1 > 0 ? t1 - TWO_PI : t1
-//        let ellipsePoints = radians > 0
-//            ? ellipse.getPoints(startAngle: -HALF_PI, endAngle: radians - TWO_PI, divisions: ELLIPSE_POINT_COUNT)
-//            : ellipse.getPoints(startAngle: -HALF_PI, endAngle: radians, divisions: ELLIPSE_POINT_COUNT)
-        let ellipsePoints = growing
-            ? ellipse.getPoints(startAngle: -HALF_PI, endAngle: correctedAngle, divisions: ELLIPSE_POINT_COUNT)
-            : ellipse.getPoints(startAngle: correctedAngle, endAngle: -HALF_PI - TWO_PI, divisions: ELLIPSE_POINT_COUNT)
-
         tick += 1
         if tick > MAX_TICKS {
             reset(growing: !growing)
@@ -316,54 +222,10 @@ class LeavingForm {
         
         let combinedPoints = combinePoints(ellipsePoints, travellingWavePoints)
         return [combinedPoints]
-
-//        let tickRatio = Float(tick) / Float(MAX_TICKS)
-//
-//        let deltaAngle = TWO_PI / Float(MAX_TICKS)
-//        if growing {
-//            endAngle -= deltaAngle
-//        } else {
-//            startAngle -= deltaAngle
-//        }
-//
-//        let oscillationAngle = ellipseOscillationAngle(tickRatio: tickRatio)
-//        let theta = (growing ? endAngle : startAngle) + oscillationAngle
-//        let movingPoint = ellipse.getPoint(angle: theta)
-//
-//        let ellipsePoints = growing
-//            ? getEllipsePoints(startAngle: startAngle,
-//                               endAngle: endAngle + oscillationAngle)
-//            : getEllipsePoints(startAngle: startAngle + oscillationAngle,
-//                               endAngle: endAngle)
-//
-//        let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
-//        let angleOffset = travellingWaveAngleOffset(tickRatio: tickRatio)
-//        let amplitude = travellingWaveAmplitude(tickRatio: tickRatio)
-//        let frequency = travellingWaveFrequency(tickRatio: tickRatio)
-//        let angle = theta + PI + angleOffset
-//        let endPoint = radiusEndPoint(angle: angle, radiusRatio: radiusRatio) + movingPoint
-//        let travellingWavePoints = getTravellingWavePoints(movingPoint: movingPoint,
-//                                                           endPoint: endPoint,
-//                                                           angle: angle,
-//                                                           amplitude: amplitude,
-//                                                           frequency: frequency,
-//                                                           tickRatio: tickRatio)
-//
-//        let combinedPoints = combinePoints(ellipsePoints, travellingWavePoints)
-//
-//        tick += 1
-//        if tick > MAX_TICKS {
-//            reset(growing: !growing)
-//        }
-//
-//        return [combinedPoints]
     }
     
     private func reset(growing: Bool) {
         tick = 0
         self.growing = growing
-        (startAngle, endAngle) = growing
-            ? (-HALF_PI, -HALF_PI)
-            : (-HALF_PI, -HALF_PI - TWO_PI)
     }
 }
