@@ -15,6 +15,18 @@ private func mldivide(A: matrix_float2x2, b: simd_float2) -> simd_float2 {
 
 // https://en.wikipedia.org/wiki/Newton%27s_method
 // https://www.mathworks.com/matlabcentral/answers/318475-how-to-find-the-intersection-of-two-curves#answer_249066
+//
+// [start excerpt]
+// You can use a modified version of the Newton-Raphson method for finding the intersection
+// of two parameterized curves, provided the parameter functions defining the curves can be
+// differentiated. For each intersection point the method requires an estimated value for
+// each of the two parameters that would yield that point.
+//
+// Let x1 = f1(t1), y1 = g1(t1) define one curve and x2 = f2(t2), y2 = g2(t2) define the
+// second curve. Let their respective derivative functions be called df1dt1, dg1dt1,
+// df2dt2, and dg2dt2. Let t1e and t2e be the respective estimated values of t1 and t2
+// for some intersection point. Then do this:
+//
 // t1 = t1e; t2 = t2e;
 // tol = 1e-13 % Define acceptable error tolerance
 // rpt = true; % Pass through while-loop at least once
@@ -27,6 +39,7 @@ private func mldivide(A: matrix_float2x2, b: simd_float2) -> simd_float2 {
 // end
 // x1 = f1(t1); y1 = g1(t1); % <-- These last two lines added later
 // x2 = f2(t2); y2 = g2(t2);
+// [end excerpt]
 func newtonsMethod(f1: (Float) -> Float,
                    g1: (Float) -> Float,
                    f2: (Float) -> Float,

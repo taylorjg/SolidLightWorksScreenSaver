@@ -14,44 +14,34 @@ let HALF_PI = Float.pi / 2
 let QUARTER_PI = Float.pi / 4
 
 // Parametric equation of an ellipse:
-// (f1) x = a * cos(t)
-// (g1) y = b * sin(t)
+// x = a * cos(t)
+// y = b * sin(t)
 
 // Parametric equation of a travelling wave:
-// (f2) x = t
-// (g2) y = a * sin(k * t - wt)
+// x = t
+// y = a * sin(k * t - wt)
 
 // Parametric equation of a travelling wave rotated ccw by theta:
-// (f3) x = t * cos(theta) - a * sin(k * t - wt) * sin(theta)
-// (g3) y = t * sin(theta) + a * sin(k * t - wt) * cos(theta)
+// x = t * cos(theta) - a * sin(k * t - wt) * sin(theta)
+// y = t * sin(theta) + a * sin(k * t - wt) * cos(theta)
 // (see https://math.stackexchange.com/questions/245859/rotating-parametric-curve)
 
-private func f1(rx: Float) -> (Float) -> Float {
+private func parametricEllipseX(rx: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return rx * cos(t) }
     return f
 }
 
-private func g1(ry: Float) -> (Float) -> Float {
+private func parametricEllipseY(ry: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return ry * sin(t) }
     return f
 }
 
-private func f2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
-    func f(t: Float) -> Float { return t }
-    return f
-}
-
-private func g2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
-    func f(t: Float) -> Float { return a * sin(k * t - wt) }
-    return f
-}
-
-private func f3(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricWaveX(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return t * cos(theta) - a * sin(k * t - wt) * sin(theta) }
     return f
 }
 
-private func g3(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricWaveY(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return t * sin(theta) + a * sin(k * t - wt) * cos(theta) }
     return f
 }
@@ -59,38 +49,22 @@ private func g3(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float
 // The following online tool was very useful for finding the derivatives:
 // https://www.symbolab.com/solver/derivative-calculator
 
-// Derivative of f1
-private func df1dt1(rx: Float) -> (Float) -> Float {
+private func parametricEllipseXDerivative(rx: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return -rx * sin(t) }
     return f
 }
 
-// Derivative of g1
-private func dg1dt1(ry: Float) -> (Float) -> Float {
+private func parametricEllipseYDerivative(ry: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return ry * cos(t) }
     return f
 }
 
-// Derivative of f2
-private func df2dt2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
-    func f(t: Float) -> Float { return 1 }
-    return f
-}
-
-// Derivative of g2
-private func dg2dt2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
-    func f(t: Float) -> Float { return a * cos(k * t - wt) * k }
-    return f
-}
-
-// Derivative of f3
-private func df3dt2(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricWaveXDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return cos(theta) - a * sin(theta) * cos(k * t - wt) * k}
     return f
 }
 
-// Derivative of g3
-private func dg3dt2(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricWaveYDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return sin(theta) + a * cos(theta) * cos(k * t - wt) * k }
     return f
 }
@@ -102,21 +76,20 @@ class LeavingForm {
     let TRAVELLING_WAVE_POINT_COUNT = 50
     let rx: Float
     let ry: Float
-    let ellipse: Ellipse
-    var tick = 0
-    var growing = false
+    var tick: Int
+    var growing: Bool
     let theta: Float
     var t1e: Float
     var t2e: Float
-
+    
     init(rx: Float, ry: Float, initiallyGrowing: Bool) {
         self.rx = rx
         self.ry = ry
-        ellipse = Ellipse(rx: rx, ry: ry)
         theta = radians_from_degrees(65)
-        t1e = theta - PI
-        t2e = rx * cos(t1e)
-        reset(growing: initiallyGrowing)
+        t1e = theta - PI // Initial estimate of t1
+        t2e = rx * cos(t1e) // Initial estimate of t2
+        tick = 0
+        growing = initiallyGrowing
     }
     
     // 0.00 => 0.25: 0.00 => 1.00
@@ -172,29 +145,11 @@ class LeavingForm {
         return maxSpeed * (1 - tickRatio) * 4
     }
     
-    private func radiusEndPoint(angle: Float, radiusRatio: Float) -> simd_float2 {
-        let x = radiusRatio * rx * cos(angle)
-        let y = radiusRatio * ry * sin(angle)
-        return simd_float2(x, y)
-    }
-    
-    private func rotate(point: simd_float2, around: simd_float2, through: Float) -> simd_float2 {
-        let c = cos(through)
-        let s = sin(through)
-        let x = point.x - around.x
-        let y = point.y - around.y
-        // https://en.wikipedia.org/wiki/Rotation_matrix
-        let p = simd_float2(
-            x * c - y * s,
-            x * s + y * c)
-        return p + around
-    }
-    
-    private func getEllipsePoints(startAngle: Float, endAngle: Float) -> [simd_float2] {
-        return ellipse.getPoints(startAngle: startAngle,
-                                 endAngle: endAngle,
-                                 divisions: ELLIPSE_POINT_COUNT)
-    }
+    //    private func radiusEndPoint(angle: Float, radiusRatio: Float) -> simd_float2 {
+    //        let x = radiusRatio * rx * cos(angle)
+    //        let y = radiusRatio * ry * sin(angle)
+    //        return simd_float2(x, y)
+    //    }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
                                _ travellingWavePoints: [simd_float2]) -> [simd_float2] {
@@ -214,14 +169,14 @@ class LeavingForm {
         let omega = TWO_PI * f
         let wt = omega * tickRatio
         
-        let (t1, t2) = newtonsMethod(f1: f1(rx: rx),
-                                     g1: g1(ry: ry),
-                                     f2: f3(a: a, k: k, wt: wt, theta: theta),
-                                     g2: g3(a: a, k: k, wt: wt, theta: theta),
-                                     df1dt1: df1dt1(rx: rx),
-                                     dg1dt1: dg1dt1(ry: ry),
-                                     df2dt2: df3dt2(a: a, k: k, wt: wt, theta: theta),
-                                     dg2dt2: dg3dt2(a: a, k: k, wt: wt, theta: theta),
+        let (t1, t2) = newtonsMethod(f1: parametricEllipseX(rx: rx),
+                                     g1: parametricEllipseY(ry: ry),
+                                     f2: parametricWaveX(a: a, k: k, wt: wt, theta: theta),
+                                     g2: parametricWaveY(a: a, k: k, wt: wt, theta: theta),
+                                     df1dt1: parametricEllipseXDerivative(rx: rx),
+                                     dg1dt1: parametricEllipseYDerivative(ry: ry),
+                                     df2dt2: parametricWaveXDerivative(a: a, k: k, wt: wt, theta: theta),
+                                     dg2dt2: parametricWaveYDerivative(a: a, k: k, wt: wt, theta: theta),
                                      t1e: t1e,
                                      t2e: t2e)
         // Update the estimates
@@ -231,19 +186,23 @@ class LeavingForm {
         let (startAngle, endAngle) = growing
             ? (-HALF_PI, t1)
             : (t1, -HALF_PI - TWO_PI)
-
-        let ellipsePoints = ellipse.getPoints(startAngle: startAngle,
-                                              endAngle: endAngle,
-                                              divisions: ELLIPSE_POINT_COUNT)
-
-        let dx = rx / Float(TRAVELLING_WAVE_POINT_COUNT)
-        let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
-            let t = t2 + Float(n) * dx
-            let x = f3(a: a, k: k, wt: wt, theta: theta)(t)
-            let y = g3(a: a, k: k, wt: wt, theta: theta)(t)
+        
+        let deltaAngle = (endAngle - startAngle) / Float(ELLIPSE_POINT_COUNT)
+        let ellipsePoints = (0...ELLIPSE_POINT_COUNT).map { n -> simd_float2 in
+            let t = startAngle + Float(n) * deltaAngle
+            let x = parametricEllipseX(rx: rx)(t)
+            let y = parametricEllipseY(ry: ry)(t)
             return simd_float2(x, y)
         }
-
+        
+        let deltaRadius = rx / Float(TRAVELLING_WAVE_POINT_COUNT)
+        let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
+            let t = t2 + Float(n) * deltaRadius
+            let x = parametricWaveX(a: a, k: k, wt: wt, theta: theta)(t)
+            let y = parametricWaveY(a: a, k: k, wt: wt, theta: theta)(t)
+            return simd_float2(x, y)
+        }
+        
         tick += 1
         if tick > MAX_TICKS {
             reset(growing: !growing)
