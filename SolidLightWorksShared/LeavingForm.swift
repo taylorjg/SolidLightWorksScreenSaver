@@ -71,25 +71,20 @@ private func parametricWaveYDerivative(a: Float, k: Float, wt: Float, theta: Flo
 
 class LeavingForm {
     
-    let MAX_TICKS = 10000
-    let ELLIPSE_POINT_COUNT = 100
-    let TRAVELLING_WAVE_POINT_COUNT = 50
-    let rx: Float
-    let ry: Float
-    var tick: Int
-    var growing: Bool
-    let theta: Float
-    var t1e: Float
-    var t2e: Float
-    
+    private let MAX_TICKS = 10000
+    private let ELLIPSE_POINT_COUNT = 100
+    private let TRAVELLING_WAVE_POINT_COUNT = 50
+
+    private let rx: Float
+    private let ry: Float
+    private var growing: Bool
+    private var tick: Int
+
     init(rx: Float, ry: Float, initiallyGrowing: Bool) {
         self.rx = rx
         self.ry = ry
-        theta = radians_from_degrees(65)
-        t1e = theta - PI // Initial estimate of t1
-        t2e = rx * cos(t1e) // Initial estimate of t2
-        tick = 0
         growing = initiallyGrowing
+        tick = 0
     }
     
     // 0.00 => 0.25: 0.00 => 1.00
@@ -123,8 +118,7 @@ class LeavingForm {
     }
     
     private func travellingWaveAmplitude(tickRatio: Float) -> Float {
-        let maxAmplitude = Float(0.15)
-        return maxAmplitude * abs(sin(TWO_PI * tickRatio))
+        return 0.2 * abs(sin(TWO_PI * tickRatio))
     }
     
     // 0.00 => 0.25: 0 => max
@@ -132,24 +126,18 @@ class LeavingForm {
     // 0.50 => 0.75: 0 => max
     // 0.75 => 1.00: max => 0
     private func travellingWaveFrequency(tickRatio: Float) -> Float {
-        let maxSpeed = Float(4)
-        if tickRatio < 0.25 {
-            return maxSpeed * tickRatio * 4
-        }
-        if tickRatio < 0.5 {
-            return maxSpeed * (0.5 - tickRatio) * 4
-        }
-        if tickRatio < 0.75 {
-            return maxSpeed * (tickRatio - 0.5) * 4
-        }
-        return maxSpeed * (1 - tickRatio) * 4
+        return 5 + 25 * abs(sin(TWO_PI * tickRatio))
+//        if tickRatio < 0.25 {
+//            return baseSpeed + maxSpeed * tickRatio * 4
+//        }
+//        if tickRatio < 0.5 {
+//            return baseSpeed + maxSpeed * (0.5 - tickRatio) * 4
+//        }
+//        if tickRatio < 0.75 {
+//            return baseSpeed + maxSpeed * (tickRatio - 0.5) * 4
+//        }
+//        return baseSpeed + maxSpeed * (1 - tickRatio) * 4
     }
-    
-    //    private func radiusEndPoint(angle: Float, radiusRatio: Float) -> simd_float2 {
-    //        let x = radiusRatio * rx * cos(angle)
-    //        let y = radiusRatio * ry * sin(angle)
-    //        return simd_float2(x, y)
-    //    }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
                                _ travellingWavePoints: [simd_float2]) -> [simd_float2] {
@@ -162,12 +150,21 @@ class LeavingForm {
     func getUpdatedPoints() -> [[simd_float2]] {
         
         let tickRatio = Float(tick) / Float(MAX_TICKS)
-        let a = Float(0.2)
-        let f = Float(50)
-        let waveLength = ry
+        let a = travellingWaveAmplitude(tickRatio: tickRatio)
+        let f = travellingWaveFrequency(tickRatio: tickRatio)
+        let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
+        let waveLength = min(rx, ry)
         let k = TWO_PI / waveLength
         let omega = TWO_PI * f
-        let wt = omega * tickRatio
+        let wt = omega
+        
+        // let desiredAngle = radians_from_degrees(360)
+        let desiredAngle = TWO_PI * tickRatio
+        let convertedAngle = -HALF_PI - desiredAngle
+        let theta = convertedAngle - PI
+        
+        let t1e = convertedAngle
+        let t2e = rx * cos(convertedAngle)
         
         let (t1, t2) = newtonsMethod(f1: parametricEllipseX(rx: rx),
                                      g1: parametricEllipseY(ry: ry),
@@ -179,9 +176,6 @@ class LeavingForm {
                                      dg2dt2: parametricWaveYDerivative(a: a, k: k, wt: wt, theta: theta),
                                      t1e: t1e,
                                      t2e: t2e)
-        // Update the estimates
-        t1e = t1
-        t2e = t2
         
         let (startAngle, endAngle) = growing
             ? (-HALF_PI, t1)
@@ -195,7 +189,10 @@ class LeavingForm {
             return simd_float2(x, y)
         }
         
-        let deltaRadius = rx / Float(TRAVELLING_WAVE_POINT_COUNT)
+        let p = simd_float2(parametricEllipseX(rx: rx)(t1), parametricEllipseY(ry: ry)(t1))
+        let radius = simd_length(p)
+        
+        let deltaRadius = radius * radiusRatio / Float(TRAVELLING_WAVE_POINT_COUNT)
         let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
             let t = t2 + Float(n) * deltaRadius
             let x = parametricWaveX(a: a, k: k, wt: wt, theta: theta)(t)

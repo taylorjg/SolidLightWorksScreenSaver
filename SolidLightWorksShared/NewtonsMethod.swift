@@ -40,6 +40,12 @@ private func mldivide(A: matrix_float2x2, b: simd_float2) -> simd_float2 {
 // x1 = f1(t1); y1 = g1(t1); % <-- These last two lines added later
 // x2 = f2(t2); y2 = g2(t2);
 // [end excerpt]
+
+private let TOLERANCE = Float(1e-3)
+private let MAX_T1_ADJUSTMENT = Float.pi / 4
+private let MAX_T2_ADJUSTMENT = Float(2)
+private let MAX_ITERATION_COUNT = 20
+
 func newtonsMethod(f1: (Float) -> Float,
                    g1: (Float) -> Float,
                    f2: (Float) -> Float,
@@ -52,22 +58,34 @@ func newtonsMethod(f1: (Float) -> Float,
                    t2e: Float) -> (Float, Float) {
     var t1 = t1e
     var t2 = t2e
-    let tolerance = Float(0.001)
+    var iterationCount = 1
     while true {
         let x1 = f1(t1)
         let y1 = g1(t1)
         let x2 = f2(t2)
         let y2 = g2(t2)
-        let d = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
-        if (d <= tolerance) { break }
+        let dx = x2 - x1
+        let dy = y2 - y1
+        let h = hypot(dx, dy)
+        // print("t1: \(t1); t2: \(t2); x1: \(x1); y1: \(y1); x2: \(x2); y2: \(y2); h: \(h); ")
+        if (h <= TOLERANCE) {
+            // print(String(repeating: "-", count: 80))
+            break
+        }
+        if iterationCount > MAX_ITERATION_COUNT {
+            fatalError("[newtonsMethod] too many iterations!")
+        }
         let A = matrix_float2x2.init(rows: [
             simd_float2(df1dt1(t1), -df2dt2(t2)),
             simd_float2(dg1dt1(t1), -dg2dt2(t2))
         ])
         let b = simd_float2(x2 - x1, y2 - y1)
         let dt = mldivide(A: A, b: b)
-        t1 += dt[0]
-        t2 += dt[1]
+        let dt1 = simd_clamp(dt[0], -MAX_T1_ADJUSTMENT, +MAX_T1_ADJUSTMENT)
+        let dt2 = simd_clamp(dt[1], -MAX_T2_ADJUSTMENT, +MAX_T2_ADJUSTMENT)
+        t1 += dt1
+        t2 += dt2
+        iterationCount += 1
     }
     return (t1, t2)
 }
