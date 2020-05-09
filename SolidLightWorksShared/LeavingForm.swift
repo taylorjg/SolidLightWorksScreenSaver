@@ -121,26 +121,8 @@ class LeavingForm {
         return 0.2 * abs(sin(TWO_PI * tickRatio))
     }
     
-    // 0.00 => 0.25: 0 => max
-    // 0.25 => 0.50: max => 0
-    // 0.50 => 0.75: 0 => max
-    // 0.75 => 1.00: max => 0
-    private func travellingWaveFrequency(tickRatio: Float) -> Float {
-        return 5 + 25 * abs(sin(TWO_PI * tickRatio))
-//        if tickRatio < 0.25 {
-//            return baseSpeed + maxSpeed * tickRatio * 4
-//        }
-//        if tickRatio < 0.5 {
-//            return baseSpeed + maxSpeed * (0.5 - tickRatio) * 4
-//        }
-//        if tickRatio < 0.75 {
-//            return baseSpeed + maxSpeed * (tickRatio - 0.5) * 4
-//        }
-//        return baseSpeed + maxSpeed * (1 - tickRatio) * 4
-    }
-    
     private func combinePoints(_ ellipsePoints: [simd_float2],
-                               _ travellingWavePoints: [simd_float2]) -> [simd_float2] {
+                               with travellingWavePoints: [simd_float2]) -> [simd_float2] {
         let travellingWavePointsTail = travellingWavePoints.dropFirst()
         return growing
             ? ellipsePoints + travellingWavePointsTail
@@ -151,14 +133,13 @@ class LeavingForm {
         
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let a = travellingWaveAmplitude(tickRatio: tickRatio)
-        let f = travellingWaveFrequency(tickRatio: tickRatio)
+        let f = Float(25)
         let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
         let waveLength = min(rx, ry)
         let k = TWO_PI / waveLength
         let omega = TWO_PI * f
-        let wt = omega
-        
-        // let desiredAngle = radians_from_degrees(360)
+        let wt = omega * tickRatio
+
         let desiredAngle = TWO_PI * tickRatio
         let convertedAngle = -HALF_PI - desiredAngle
         let theta = convertedAngle - PI
@@ -205,7 +186,7 @@ class LeavingForm {
             reset(growing: !growing)
         }
         
-        let combinedPoints = combinePoints(ellipsePoints, travellingWavePoints)
+        let combinedPoints = combinePoints(ellipsePoints, with: travellingWavePoints)
         return [combinedPoints]
     }
     
