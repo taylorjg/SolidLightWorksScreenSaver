@@ -14,12 +14,17 @@ let HALF_PI = Float.pi / 2
 let QUARTER_PI = Float.pi / 4
 
 // Parametric equation of an ellipse:
-// x = f1(t)
-// y = g1(t)
+// (f1) x = a * cos(t)
+// (g1) y = b * sin(t)
 
 // Parametric equation of a travelling wave:
-// x = f2(t)
-// y = g2(t)
+// (f2) x = t
+// (g2) y = a * sin(k * t - wt)
+
+// Parametric equation of a travelling wave rotated ccw by theta:
+// (f3) x = t * cos(theta) - a * sin(k * t - wt) * sin(theta)
+// (g3) y = t * sin(theta) + a * sin(k * t - wt) * cos(theta)
+// (see https://math.stackexchange.com/questions/245859/rotating-parametric-curve)
 
 private func f1(rx: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return rx * cos(t) }
@@ -38,6 +43,16 @@ private func f2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
 
 private func g2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return a * sin(k * t - wt) }
+    return f
+}
+
+private func f3(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return t * cos(theta) - a * sin(k * t - wt) * sin(theta) }
+    return f
+}
+
+private func g3(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return t * sin(theta) + a * sin(k * t - wt) * cos(theta) }
     return f
 }
 
@@ -68,6 +83,18 @@ private func dg2dt2(a: Float, k: Float, wt: Float) -> (Float) -> Float {
     return f
 }
 
+// Derivative of f3
+private func df3dt2(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return cos(theta) - a * sin(theta) * cos(k * t - wt) * k}
+    return f
+}
+
+// Derivative of g3
+private func dg3dt2(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+    func f(t: Float) -> Float { return sin(theta) + a * cos(theta) * cos(k * t - wt) * k }
+    return f
+}
+
 class LeavingForm {
     
     let MAX_TICKS = 10000
@@ -78,15 +105,17 @@ class LeavingForm {
     let ellipse: Ellipse
     var tick = 0
     var growing = false
+    let theta: Float
     var t1e: Float
     var t2e: Float
-    
+
     init(rx: Float, ry: Float, initiallyGrowing: Bool) {
         self.rx = rx
         self.ry = ry
         ellipse = Ellipse(rx: rx, ry: ry)
-        t1e = -Float.pi
-        t2e = -rx
+        theta = radians_from_degrees(65)
+        t1e = theta - PI
+        t2e = rx * cos(t1e)
         reset(growing: initiallyGrowing)
     }
     
@@ -187,15 +216,14 @@ class LeavingForm {
         
         let (t1, t2) = newtonsMethod(f1: f1(rx: rx),
                                      g1: g1(ry: ry),
-                                     f2: f2(a: a, k: k, wt: wt),
-                                     g2: g2(a: a, k: k, wt: wt),
+                                     f2: f3(a: a, k: k, wt: wt, theta: theta),
+                                     g2: g3(a: a, k: k, wt: wt, theta: theta),
                                      df1dt1: df1dt1(rx: rx),
                                      dg1dt1: dg1dt1(ry: ry),
-                                     df2dt2: df2dt2(a: a, k: k, wt: wt),
-                                     dg2dt2: dg2dt2(a: a, k: k, wt: wt),
+                                     df2dt2: df3dt2(a: a, k: k, wt: wt, theta: theta),
+                                     dg2dt2: dg3dt2(a: a, k: k, wt: wt, theta: theta),
                                      t1e: t1e,
                                      t2e: t2e)
-        
         // Update the estimates
         t1e = t1
         t2e = t2
@@ -203,15 +231,16 @@ class LeavingForm {
         let (startAngle, endAngle) = growing
             ? (-HALF_PI, t1)
             : (t1, -HALF_PI - TWO_PI)
-        
+
         let ellipsePoints = ellipse.getPoints(startAngle: startAngle,
                                               endAngle: endAngle,
                                               divisions: ELLIPSE_POINT_COUNT)
 
         let dx = rx / Float(TRAVELLING_WAVE_POINT_COUNT)
         let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
-            let x = t2 + Float(n) * dx
-            let y = a * sin(k * x - wt)
+            let t = t2 + Float(n) * dx
+            let x = f3(a: a, k: k, wt: wt, theta: theta)(t)
+            let y = g3(a: a, k: k, wt: wt, theta: theta)(t)
             return simd_float2(x, y)
         }
 

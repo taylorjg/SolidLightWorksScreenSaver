@@ -39,7 +39,7 @@ func newtonsMethod(f1: (Float) -> Float,
                    t2e: Float) -> (Float, Float) {
     var t1 = t1e
     var t2 = t2e
-    let tolerance = Float(1e-3)
+    let tolerance = Float(0.001)
     while true {
         let x1 = f1(t1)
         let y1 = g1(t1)
@@ -49,7 +49,7 @@ func newtonsMethod(f1: (Float) -> Float,
         if (d <= tolerance) { break }
         let A = matrix_float2x2.init(rows: [
             simd_float2(df1dt1(t1), -df2dt2(t2)),
-            simd_float2(dg1dt1(t1), -df2dt2(t2))
+            simd_float2(dg1dt1(t1), -dg2dt2(t2))
         ])
         let b = simd_float2(x2 - x1, y2 - y1)
         let dt = mldivide(A: A, b: b)
