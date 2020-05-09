@@ -74,12 +74,12 @@ class LeavingForm {
     private let MAX_TICKS = 10000
     private let ELLIPSE_POINT_COUNT = 100
     private let TRAVELLING_WAVE_POINT_COUNT = 50
-
+    
     private let rx: Float
     private let ry: Float
     private var growing: Bool
     private var tick: Int
-
+    
     init(rx: Float, ry: Float, initiallyGrowing: Bool) {
         self.rx = rx
         self.ry = ry
@@ -105,7 +105,7 @@ class LeavingForm {
     // 0.00 => 0.25: -PI/4 => 0
     // 0.25 => 0.75: 0
     // 0.75 => 1.00: 0 => PI/4
-    private func travellingWaveAngleOffset(tickRatio: Float) -> Float {
+    private func travellingWaveRotation(tickRatio: Float) -> Float {
         if tickRatio <= 0.25 {
             let t = 1 - (tickRatio * 4)
             return -(t * QUARTER_PI)
@@ -118,7 +118,16 @@ class LeavingForm {
     }
     
     private func travellingWaveAmplitude(tickRatio: Float) -> Float {
-        return 0.2 * abs(sin(TWO_PI * tickRatio))
+        return 0.15 * abs(sin(TWO_PI * tickRatio))
+    }
+    
+    private func rotate(_ p: simd_float2, around q: simd_float2, through theta: Float) -> simd_float2 {
+        let c = cos(theta)
+        let s = sin(theta)
+        let x = p.x - q.x
+        let y = p.y - q.y
+        // https://en.wikipedia.org/wiki/Rotation_matrix
+        return simd_float2(x * c - y * s, x * s + y * c) + q
     }
     
     private func combinePoints(_ ellipsePoints: [simd_float2],
@@ -134,12 +143,11 @@ class LeavingForm {
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let a = travellingWaveAmplitude(tickRatio: tickRatio)
         let f = Float(25)
-        let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
         let waveLength = min(rx, ry)
         let k = TWO_PI / waveLength
         let omega = TWO_PI * f
         let wt = omega * tickRatio
-
+        
         let desiredAngle = TWO_PI * tickRatio
         let convertedAngle = -HALF_PI - desiredAngle
         let theta = convertedAngle - PI
@@ -173,12 +181,15 @@ class LeavingForm {
         let p = simd_float2(parametricEllipseX(rx: rx)(t1), parametricEllipseY(ry: ry)(t1))
         let radius = simd_length(p)
         
+        let radiusRatio = travellingWaveRadiusRatio(tickRatio: tickRatio)
         let deltaRadius = radius * radiusRatio / Float(TRAVELLING_WAVE_POINT_COUNT)
+        let rotation = travellingWaveRotation(tickRatio: tickRatio)
         let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
             let t = t2 + Float(n) * deltaRadius
             let x = parametricWaveX(a: a, k: k, wt: wt, theta: theta)(t)
             let y = parametricWaveY(a: a, k: k, wt: wt, theta: theta)(t)
-            return simd_float2(x, y)
+            let wavePoint = simd_float2(x, y)
+            return rotation != 0 ? rotate(wavePoint, around: p, through: rotation) : wavePoint
         }
         
         tick += 1
