@@ -52,11 +52,9 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
     float4 hazeValue = float4(hazeTexture.sample(defaultSampler, in.uv));
     hazeValue.a = 0.35;
     
-    float4 whiteValue = float4(1);
-    
     float d = distance(in.worldPosition, in.worldProjectorPosition);
     float a = 1.0 - (d / length(in.worldProjectorPosition));
-    whiteValue.a = a;
+    float4 whiteValue = float4(1, 1, 1, a);
     
     return mix(hazeValue, whiteValue, weight);
 }
