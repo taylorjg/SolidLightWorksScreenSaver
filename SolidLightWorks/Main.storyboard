@@ -63,21 +63,12 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LYi-It-B9w">
-                                <rect key="frame" x="193" y="162" width="93" height="16"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="Switch interval" id="nMm-Oc-ODf">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oQy-Uv-cn5">
                                 <rect key="frame" x="290" y="156" width="104" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" title="30 seconds" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="30" imageScaling="proportionallyDown" inset="2" selectedItem="NLs-ZU-65j" id="88V-di-Omj">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="FEV-rG-x62">
                                         <items>
                                             <menuItem title="10 seconds" tag="10" id="Gi9-Nk-hlS"/>
@@ -116,6 +107,46 @@ Gw
                                     <action selector="cancelButtonTapped:" target="nCc-gT-sFv" id="ZLY-SX-Esw"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7P8-nT-Xen">
+                                <rect key="frame" x="181" y="97" width="104" height="16"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Render forms as" id="mtq-w3-DDl">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yKf-fG-uBB">
+                                <rect key="frame" x="291" y="97" width="99" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="radio" title="2D Drawings" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="3b1-31-YF1">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="renderModeChanged:" target="nCc-gT-sFv" id="sqP-lJ-RUx"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PZU-UP-XQ1">
+                                <rect key="frame" x="291" y="63" width="111" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="radio" title="3D Projections" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="zl5-H6-TaZ">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="renderModeChanged:" target="nCc-gT-sFv" id="wcL-dl-3iq"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LYi-It-B9w">
+                                <rect key="frame" x="181" y="162" width="93" height="16"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Switch interval" id="nMm-Oc-ODf">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="DJX-HZ-i7d" firstAttribute="top" secondItem="LVU-nJ-dV8" secondAttribute="bottom" constant="21" id="3iE-vy-dN0"/>
@@ -129,10 +160,12 @@ Gw
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="drawing2D" destination="yKf-fG-uBB" id="gqW-UT-0ki"/>
                         <outlet property="form1Check" destination="xeh-Ig-P5m" id="So5-Qu-rpx"/>
                         <outlet property="form2Check" destination="LVU-nJ-dV8" id="zn9-63-cpa"/>
                         <outlet property="form3Check" destination="DJX-HZ-i7d" id="ArG-wH-vYt"/>
                         <outlet property="form4Check" destination="IBP-ln-WgT" id="X3l-09-X1V"/>
+                        <outlet property="projection3D" destination="PZU-UP-XQ1" id="kcs-He-OPG"/>
                         <outlet property="switchIntervalPopUp" destination="oQy-Uv-cn5" id="LR4-Bs-2tS"/>
                     </connections>
                 </viewController>

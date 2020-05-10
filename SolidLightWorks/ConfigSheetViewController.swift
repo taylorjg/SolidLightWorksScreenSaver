@@ -20,9 +20,9 @@ class ConfigSheetViewController: NSViewController {
         form3Check.state = enabledForms.contains(3) ? .on : .off
         form4Check.state = enabledForms.contains(4) ? .on : .off
         switchIntervalPopUp.selectItem(withTag: defaultsManager.switchInterval)
+        drawing2D.state = defaultsManager.renderMode == RenderMode.drawing2D ? .on : .off
+        projection3D.state = defaultsManager.renderMode == RenderMode.projection3D ? .on : .off
     }
-    
-    @IBOutlet weak var switchIntervalPopUp: NSPopUpButton!
     
     // Doubling Back
     @IBOutlet weak var form1Check: NSButton!
@@ -36,13 +36,21 @@ class ConfigSheetViewController: NSViewController {
     // Leaving
     @IBOutlet weak var form4Check: NSButton!
     
-    private func close() {
-        guard let window = view.window else { return }
-        window.endSheet(window)
+    @IBOutlet weak var switchIntervalPopUp: NSPopUpButton!
+    
+    @IBOutlet weak var projection3D: NSButton!
+    @IBOutlet weak var drawing2D: NSButton!
+    
+    @IBAction func renderModeChanged(_ sender: NSButton) {
     }
     
     @IBAction func cancelButtonTapped(_ sender: NSButton) {
         close()
+    }
+    
+    private func close() {
+        guard let window = view.window else { return }
+        window.endSheet(window)
     }
     
     @IBAction func okButtonTapped(_ sender: NSButton) {
@@ -53,6 +61,7 @@ class ConfigSheetViewController: NSViewController {
         if form4Check.state == .on { enabledForms.append(4) }
         defaultsManager.enabledForms = enabledForms
         defaultsManager.switchInterval = switchIntervalPopUp.selectedTag()
+        defaultsManager.renderMode = drawing2D.state == .on ? RenderMode.drawing2D : RenderMode.projection3D
         close()
     }
 }

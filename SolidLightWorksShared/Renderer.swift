@@ -37,12 +37,32 @@ let axesVertices = [
     FlatVertex(position: simd_float3(0, 0, -8), color: simd_float4(1, 1, 0, 1))
 ]
 
-class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
+enum RenderMode {
+    case drawing2D
+    case projection3D
+}
+
+struct Settings {
+    static let defaultEnabledForms = [1, 2, 3, 4]
+    static let defaultSwitchInterval = 30
+    static let defaultRenderMode = RenderMode.drawing2D
     
-    private enum RenderMode {
-        case drawing2D
-        case projection3D
+    let interactive: Bool
+    let enabledForms: [Int]
+    let switchInterval: Int
+    let renderMode: RenderMode
+}
+
+extension Settings {
+    init() {
+        interactive = true
+        enabledForms = Settings.defaultEnabledForms
+        switchInterval = Settings.defaultSwitchInterval
+        renderMode = Settings.defaultRenderMode
     }
+}
+
+class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private let device: MTLDevice
     private let commandQueue: MTLCommandQueue
@@ -60,11 +80,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private var viewMatrix: matrix_float4x4
     private var projectionMatrix: matrix_float4x4
     
-    init?(mtkView: MTKView,
-          bundle: Bundle? = nil,
-          interactive: Bool,
-          enabledForms: [Int] = [1, 2, 3, 4],
-          switchInterval: Int = 30) {
+    init?(mtkView: MTKView, bundle: Bundle? = nil, settings: Settings) {
         mtkView.sampleCount = 4
         self.device = mtkView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
@@ -110,19 +126,21 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         viewMatrix = matrix_float4x4()
         projectionMatrix = matrix_float4x4()
         
-        if enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
-        if enabledForms.contains(2) { installations.append(CouplingInstallation()) }
-        if enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
-        if enabledForms.contains(4) { installations.append(LeavingInstallation()) }
+        self.renderMode = settings.renderMode
         
-        if enabledForms.isEmpty {
-            installations.append(BetweenYouAndIInstallation())
+        if settings.enabledForms.contains(1) { installations.append(DoublingBackInstallation()) }
+        if settings.enabledForms.contains(2) { installations.append(CouplingInstallation()) }
+        if settings.enabledForms.contains(3) { installations.append(BetweenYouAndIInstallation()) }
+        if settings.enabledForms.contains(4) { installations.append(LeavingInstallation()) }
+        
+        if settings.enabledForms.isEmpty {
+            installations.append(LeavingInstallation())
         }
         
         super.init()
         
-        if (!interactive) {
-            switchInstallation(switchInterval: switchInterval)
+        if (!settings.interactive && installations.count > 1) {
+            switchInstallation(switchInterval: settings.switchInterval)
         }
     }
     
