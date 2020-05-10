@@ -69,9 +69,18 @@ private func parametricWaveYDerivative(a: Float, k: Float, wt: Float, theta: Flo
     return f
 }
 
+private func easeInOutCubic(_ x: Float) -> Float {
+    return x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2
+}
+
+private func easeInOutQuint(_ x: Float) -> Float {
+    return x < 0.5 ? 16 * x * x * x * x * x : 1 - pow(-2 * x + 2, 5) / 2
+}
+
 class LeavingForm {
     
     private let MAX_TICKS = 10000
+    private let STALL_TICKS = 500
     private let ELLIPSE_POINT_COUNT = 100
     private let TRAVELLING_WAVE_POINT_COUNT = 50
     
@@ -79,12 +88,16 @@ class LeavingForm {
     private let ry: Float
     private var growing: Bool
     private var tick: Int
+    private var stalling: Bool
+    private var stallTick: Int
     
     init(rx: Float, ry: Float, initiallyGrowing: Bool) {
         self.rx = rx
         self.ry = ry
         growing = initiallyGrowing
         tick = 0
+        stalling = false
+        stallTick = 0
     }
     
     // 0.00 => 0.25: 0.00 => 1.00
@@ -117,8 +130,26 @@ class LeavingForm {
         return 0
     }
     
+    // 0.00 => 0.25: 0 => max
+    // 0.25 => 0.50: max => 0
+    // 0.50 => 0.75: 0 => max
+    // 0.75 => 1.00: max => 0
     private func travellingWaveAmplitude(tickRatio: Float) -> Float {
-        return 0.15 * abs(sin(TWO_PI * tickRatio))
+        let maxAmplitude = Float(0.15)
+        if tickRatio < 0.25 {
+            let t = tickRatio * 4
+            return maxAmplitude * easeInOutQuint(t)
+        }
+        if tickRatio < 0.5 {
+            let t = (0.5 - tickRatio) * 4
+            return maxAmplitude * t
+        }
+        if tickRatio < 0.75 {
+            let t = (tickRatio - 0.5) * 4
+            return maxAmplitude * t
+        }
+        let t = (1 - tickRatio) * 4
+        return maxAmplitude * easeInOutQuint(t)
     }
     
     private func rotate(_ p: simd_float2, around q: simd_float2, through theta: Float) -> simd_float2 {
@@ -139,6 +170,18 @@ class LeavingForm {
     }
     
     func getUpdatedPoints() -> [[simd_float2]] {
+        
+        if (tick == MAX_TICKS / 4) {
+            if (stalling) {
+                stallTick -= 1
+                if (stallTick == 0) {
+                    stalling = false
+                }
+            } else {
+                stalling = true
+                stallTick = STALL_TICKS
+            }
+        }
         
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let a = travellingWaveAmplitude(tickRatio: tickRatio)
@@ -192,9 +235,11 @@ class LeavingForm {
             return rotation != 0 ? rotate(wavePoint, around: p, through: rotation) : wavePoint
         }
         
-        tick += 1
-        if tick > MAX_TICKS {
-            reset(growing: !growing)
+        if (!stalling) {
+            tick += 1
+            if tick > MAX_TICKS {
+                reset(growing: !growing)
+            }
         }
         
         let combinedPoints = combinePoints(ellipsePoints, with: travellingWavePoints)
