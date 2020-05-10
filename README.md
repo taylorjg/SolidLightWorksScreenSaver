@@ -53,8 +53,56 @@ I have only just started this project. At the moment, all I have done is take th
 * Implement rotating camera
 * Add a screensaver configuration sheet with option to show forms without membranes
 
+# Maths
+
+Here are a few notes regarding the maths behind the forms.
+
+Anthony McCall talks about a vocabulary of forms (see [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X) pp. 171-172):
+
+* the Circle
+* the Straight Line
+* the Travelling Wave
+* the Wipe
+* the Circle Wave
+
+## Doubling Back
+
+Two travelling waves travelling in opposite directions - one of them to the right and the other upwards.
+I used the following reference for details of an equation for a travelling wave:
+
+* [Traveling waves](http://labman.phys.utk.edu/phys221core/modules/m11/traveling_waves.html)
+
+See [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X) p. 85.
+![_Doubling Back, 2003_ Programming diagrams](readme-images/IMG_5650-768x980.jpg)
+
+## Coupling
+
+Two circle waves. I found the following blog article that provides more details including equations:
+
+* [Making of Solid Light for Anthony McCall](https://www.ericforman.com/blog/making-of-solid-light-for-anthony-mccall)
+
+## Between You and I
+
+Ellipses, straight lines and travelling waves. The rotating straight line needs to be clipped to a rectangle. I used the following reference to do this:
+
+* [Cohen–Sutherland algorithm](https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm)
+
+## Leaving
+
+I think this is a travelling wave along the radius of an ellipse which rotates clockwise around the ellipse.
+The tricky part was figuring out the point of intersection between the rotating travelling wave and the path of the ellipse.
+I used the following references to achieve this:
+
+* [Newton's method / Newton–Raphson method](https://en.wikipedia.org/wiki/Newton%27s_method)
+* [How to find the intersection of two curves](https://uk.mathworks.com/matlabcentral/answers/318475-how-to-find-the-intersection-of-two-curves#answer_249066)
+
 # Links
 
-* [solid-light-works](https://github.com/taylorjg/solid-light-works)
 * [How to Make a Custom Screensaver for Mac OS X](https://medium.com/better-programming/how-to-make-a-custom-screensaver-for-mac-os-x-7e1650c13bd8)
-* [ScreenSaverView](https://developer.apple.com/documentation/screensaver/screensaverview)
+* Apple Documentation
+  * [ScreenSaver](https://developer.apple.com/documentation/screensaver)
+    * [ScreenSaverView](https://developer.apple.com/documentation/screensaver/screensaverview)
+    * [ScreenSaverDefaults](https://developer.apple.com/documentation/screensaver/screensaverdefaults)
+* Books
+  * [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X)
+* [solid-light-works](https://github.com/taylorjg/solid-light-works)
