@@ -41,6 +41,9 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="formCheckChanged:" target="nCc-gT-sFv" id="Sbg-WR-l2J"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LVU-nJ-dV8">
                                 <rect key="frame" x="16" y="131" width="76" height="18"/>
@@ -48,6 +51,9 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="formCheckChanged:" target="nCc-gT-sFv" id="uvO-AK-Kb4"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DJX-HZ-i7d">
                                 <rect key="frame" x="18" y="96" width="134" height="18"/>
@@ -55,6 +61,9 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="formCheckChanged:" target="nCc-gT-sFv" id="3T9-dE-nlE"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="IBP-ln-WgT">
                                 <rect key="frame" x="18" y="62" width="69" height="18"/>
@@ -62,6 +71,9 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="formCheckChanged:" target="nCc-gT-sFv" id="dO6-r6-drC"/>
+                                </connections>
                             </button>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oQy-Uv-cn5">
                                 <rect key="frame" x="290" y="156" width="104" height="25"/>
@@ -90,7 +102,7 @@ DQ
 </string>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="okButtonTapped:" target="nCc-gT-sFv" id="FOM-WO-SYY"/>
+                                    <action selector="okButtonTapped:" target="nCc-gT-sFv" id="evW-5M-xyi"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uCY-P1-X14">
@@ -165,6 +177,7 @@ Gw
                         <outlet property="form2Check" destination="LVU-nJ-dV8" id="zn9-63-cpa"/>
                         <outlet property="form3Check" destination="DJX-HZ-i7d" id="ArG-wH-vYt"/>
                         <outlet property="form4Check" destination="IBP-ln-WgT" id="X3l-09-X1V"/>
+                        <outlet property="okButton" destination="eO8-Nv-7O3" id="N87-io-pJq"/>
                         <outlet property="projection3D" destination="PZU-UP-XQ1" id="kcs-He-OPG"/>
                         <outlet property="switchIntervalPopUp" destination="oQy-Uv-cn5" id="LR4-Bs-2tS"/>
                     </connections>

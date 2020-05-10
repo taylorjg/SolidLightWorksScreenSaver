@@ -22,6 +22,7 @@ class ConfigSheetViewController: NSViewController {
         switchIntervalPopUp.selectItem(withTag: defaultsManager.switchInterval)
         drawing2D.state = defaultsManager.renderMode == RenderMode.drawing2D ? .on : .off
         projection3D.state = defaultsManager.renderMode == RenderMode.projection3D ? .on : .off
+        updateButtonState()
     }
     
     // Doubling Back
@@ -41,6 +42,12 @@ class ConfigSheetViewController: NSViewController {
     @IBOutlet weak var projection3D: NSButton!
     @IBOutlet weak var drawing2D: NSButton!
     
+    @IBOutlet weak var okButton: NSButton!
+    
+    @IBAction func formCheckChanged(_ sender: NSButton) {
+        updateButtonState()
+    }
+    
     @IBAction func renderModeChanged(_ sender: NSButton) {
     }
     
@@ -48,20 +55,30 @@ class ConfigSheetViewController: NSViewController {
         close()
     }
     
-    private func close() {
-        guard let window = view.window else { return }
-        window.endSheet(window)
+    @IBAction func okButtonTapped(_ sender: NSButton) {
+        defaultsManager.enabledForms = enabledForms
+        defaultsManager.switchInterval = switchIntervalPopUp.selectedTag()
+        defaultsManager.renderMode = drawing2D.state == .on
+            ? RenderMode.drawing2D
+            : RenderMode.projection3D
+        close()
     }
     
-    @IBAction func okButtonTapped(_ sender: NSButton) {
+    private func updateButtonState() {
+        okButton.isEnabled = !enabledForms.isEmpty
+    }
+    
+    private var enabledForms: [Int] {
         var enabledForms = [Int]()
         if form1Check.state == .on { enabledForms.append(1) }
         if form2Check.state == .on { enabledForms.append(2) }
         if form3Check.state == .on { enabledForms.append(3) }
         if form4Check.state == .on { enabledForms.append(4) }
-        defaultsManager.enabledForms = enabledForms
-        defaultsManager.switchInterval = switchIntervalPopUp.selectedTag()
-        defaultsManager.renderMode = drawing2D.state == .on ? RenderMode.drawing2D : RenderMode.projection3D
-        close()
+        return enabledForms
+    }
+    
+    private func close() {
+        guard let window = view.window else { return }
+        window.endSheet(window)
     }
 }
