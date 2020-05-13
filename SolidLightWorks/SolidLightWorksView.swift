@@ -35,7 +35,8 @@ class SolidLightWorksView: ScreenSaverView {
         let settings = Settings(interactive: false,
                                 enabledForms: defaultsManager.enabledForms,
                                 switchInterval: defaultsManager.switchInterval,
-                                renderMode: defaultsManager.renderMode)
+                                renderMode: defaultsManager.renderMode,
+                                enableMSAA: defaultsManager.enableMSAA)
         
         guard let newRenderer = Renderer(mtkView: mtkView, bundle: bundle, settings: settings) else {
             print("Renderer cannot be initialized")

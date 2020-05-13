@@ -22,26 +22,18 @@ class ConfigSheetViewController: NSViewController {
         switchIntervalPopUp.selectItem(withTag: defaultsManager.switchInterval)
         drawing2D.state = defaultsManager.renderMode == RenderMode.drawing2D ? .on : .off
         projection3D.state = defaultsManager.renderMode == RenderMode.projection3D ? .on : .off
+        enableMSAACheck.state = defaultsManager.enableMSAA ? .on : .off
         updateButtonState()
     }
     
-    // Doubling Back
-    @IBOutlet weak var form1Check: NSButton!
-    
-    // Coupling
-    @IBOutlet weak var form2Check: NSButton!
-    
-    // Between You and I
-    @IBOutlet weak var form3Check: NSButton!
-    
-    // Leaving
-    @IBOutlet weak var form4Check: NSButton!
-    
+    @IBOutlet weak var form1Check: NSButton! // Doubling Back
+    @IBOutlet weak var form2Check: NSButton! // Coupling
+    @IBOutlet weak var form3Check: NSButton! // Between You and I
+    @IBOutlet weak var form4Check: NSButton! // Leaving
     @IBOutlet weak var switchIntervalPopUp: NSPopUpButton!
-    
-    @IBOutlet weak var projection3D: NSButton!
     @IBOutlet weak var drawing2D: NSButton!
-    
+    @IBOutlet weak var projection3D: NSButton!
+    @IBOutlet weak var enableMSAACheck: NSButton!
     @IBOutlet weak var okButton: NSButton!
     
     @IBAction func formCheckChanged(_ sender: NSButton) {
@@ -49,6 +41,7 @@ class ConfigSheetViewController: NSViewController {
     }
     
     @IBAction func renderModeChanged(_ sender: NSButton) {
+        updateButtonState()
     }
     
     @IBAction func cancelButtonTapped(_ sender: NSButton) {
@@ -61,10 +54,18 @@ class ConfigSheetViewController: NSViewController {
         defaultsManager.renderMode = drawing2D.state == .on
             ? RenderMode.drawing2D
             : RenderMode.projection3D
+        defaultsManager.enableMSAA = enableMSAACheck.state == .on
         close()
     }
     
     private func updateButtonState() {
+        switchIntervalPopUp.isEnabled = enabledForms.count > 1
+        if drawing2D.state == .on {
+            enableMSAACheck.state = .on
+            enableMSAACheck.isEnabled = false
+        } else {
+            enableMSAACheck.isEnabled = true
+        }
         okButton.isEnabled = !enabledForms.isEmpty
     }
     

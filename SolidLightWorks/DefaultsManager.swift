@@ -12,6 +12,7 @@ import ScreenSaver
 private let KEY_ENABLED_FORMS = "enabled-forms"
 private let KEY_SWITCH_INTERVAL = "switch-interval"
 private let KEY_RENDER_MODE = "render-mode"
+private let KEY_ENABLE_MSAA = "enable-msaa"
 
 private func renderModeToInt(_ renderMode: RenderMode) -> Int {
     switch renderMode {
@@ -31,7 +32,8 @@ private func intToRendeMode(_ int: Int) -> RenderMode {
 private let DEFAULTS: [String: Any] = [
     KEY_ENABLED_FORMS: Settings.defaultEnabledForms,
     KEY_SWITCH_INTERVAL: Settings.defaultSwitchInterval,
-    KEY_RENDER_MODE: renderModeToInt(Settings.defaultRenderMode)
+    KEY_RENDER_MODE: renderModeToInt(Settings.defaultRenderMode),
+    KEY_ENABLE_MSAA: Settings.defaultEnableMSAA
 ]
 
 class DefaultsManager {
@@ -73,6 +75,16 @@ class DefaultsManager {
         set {
             let int = renderModeToInt(newValue)
             screenSaverDefaults.set(int, forKey: KEY_RENDER_MODE)
+            screenSaverDefaults.synchronize()
+        }
+    }
+    
+    var enableMSAA: Bool {
+        get {
+            return screenSaverDefaults.bool(forKey: KEY_ENABLE_MSAA)
+        }
+        set {
+            screenSaverDefaults.set(newValue, forKey: KEY_ENABLE_MSAA)
             screenSaverDefaults.synchronize()
         }
     }

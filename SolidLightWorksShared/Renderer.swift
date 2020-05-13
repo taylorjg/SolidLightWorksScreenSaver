@@ -46,11 +46,13 @@ struct Settings {
     static let defaultEnabledForms = [1, 2, 3, 4]
     static let defaultSwitchInterval = 30
     static let defaultRenderMode = RenderMode.drawing2D
-    
+    static let defaultEnableMSAA = false
+
     let interactive: Bool
     let enabledForms: [Int]
     let switchInterval: Int
     let renderMode: RenderMode
+    let enableMSAA: Bool
 }
 
 extension Settings {
@@ -59,6 +61,7 @@ extension Settings {
         enabledForms = Settings.defaultEnabledForms
         switchInterval = Settings.defaultSwitchInterval
         renderMode = Settings.defaultRenderMode
+        enableMSAA = true
     }
 }
 
@@ -81,7 +84,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private var projectionMatrix: matrix_float4x4
     
     init?(mtkView: MTKView, bundle: Bundle? = nil, settings: Settings) {
-        mtkView.sampleCount = 4
+        if settings.interactive || (settings.renderMode == .projection3D && settings.enableMSAA) {
+            mtkView.sampleCount = 4
+        }
         self.device = mtkView.device!
         guard let queue = self.device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
@@ -198,7 +203,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         pipelineDescriptor.label = "\(name)RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.sampleCount = 4
+        pipelineDescriptor.sampleCount = mtkView.sampleCount
         
         let colorAttachments0 = pipelineDescriptor.colorAttachments[0]!
         colorAttachments0.pixelFormat = mtkView.colorPixelFormat
