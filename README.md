@@ -45,13 +45,13 @@ I have only just started this project. At the moment, all I have done is take th
 * ~~Draw the remaining vocabulary: ellipse, line, circle wave~~
 * ~~Implement the remaining forms (without membrane)~~
 * ~~Periodically switch between forms~~
-* Port the membrane geometry to Metal
+* ~~Port the membrane geometry and shader to Metal~~
 * Implement first of the forms (with membrane): Doubling Back
 * Implement the remaining forms (with membrane)
 * Randomly switch between camera positions
-* Implement camera lookat
+* ~~Implement camera lookat~~
 * Implement rotating camera
-* Add a screensaver configuration sheet with option to show forms without membranes
+* ~~Add a screensaver configuration sheet with option to show forms without membranes~~
 
 # Maths
 

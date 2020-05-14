@@ -43,12 +43,11 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
                                        constant MembraneUniforms &uniforms [[buffer(1)]],
                                        texture2d<half> hazeTexture [[texture(0)]])
 {
-    constexpr sampler defaultSampler;
-    
     float3 v = normalize(in.worldPosition - uniforms.worldCameraPosition);
     float3 n = in.worldNormal;
     float weight = 1 - abs(dot(v, n));
     
+    constexpr sampler defaultSampler;
     float4 hazeValue = float4(hazeTexture.sample(defaultSampler, in.uv));
     hazeValue.a = 0.35;
     

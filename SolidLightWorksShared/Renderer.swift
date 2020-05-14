@@ -351,7 +351,6 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         membraneUniforms.modelMatrix = projectedForm.transform
         membraneUniforms.viewMatrix = viewMatrix
         membraneUniforms.projectionMatrix = projectionMatrix
-        membraneUniforms.normalMatrix = viewMatrix.upperLeft
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
         membraneUniforms.worldCameraPosition = cameraPose.position
         let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride

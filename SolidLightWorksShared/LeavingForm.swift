@@ -79,7 +79,7 @@ private func easeInOutQuint(_ x: Float) -> Float {
 
 class LeavingForm {
     
-    private let MAX_TICKS = 10000
+    private let MAX_TICKS = 20000
     private let STALL_TICKS = 500
     private let ELLIPSE_POINT_COUNT = 100
     private let TRAVELLING_WAVE_POINT_COUNT = 50
