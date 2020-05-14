@@ -20,10 +20,10 @@ typedef struct {
 } MembraneInOut;
 
 vertex MembraneInOut vertexMembraneShader(uint vertexID [[vertex_id]],
-                                          const device MembraneVertex *vertices [[buffer(0)]],
+                                          constant MembraneVertex *vertices [[buffer(0)]],
                                           constant MembraneUniforms &uniforms [[buffer(1)]])
 {
-    const device MembraneVertex &membraneVertex = vertices[vertexID];
+    constant MembraneVertex &membraneVertex = vertices[vertexID];
     
     float4 position = float4(membraneVertex.position, 1);
     float4 normal = float4(membraneVertex.normal, 0);

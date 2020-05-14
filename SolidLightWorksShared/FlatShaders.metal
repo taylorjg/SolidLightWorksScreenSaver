@@ -22,11 +22,15 @@ vertex FlatInOut vertexFlatShader(uint vertexID [[vertex_id]],
                                   constant FlatVertex *vertices [[buffer(0)]],
                                   constant FlatUniforms &uniforms [[buffer(1)]])
 {
+    constant FlatVertex &flatVertex = vertices[vertexID];
+    
+    float4x4 mvp = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix;
+    float4 position = float4(flatVertex.position, 1.0);
+
     FlatInOut out;
     
-    float4 position = float4(vertices[vertexID].position, 1.0);
-    out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * position;
-    out.color = vertices[vertexID].color;
+    out.position = mvp * position;
+    out.color = flatVertex.color;
     
     return out;
 }

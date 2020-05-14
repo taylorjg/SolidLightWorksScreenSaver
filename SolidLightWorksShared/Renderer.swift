@@ -236,7 +236,8 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private func renderAxesHelpers(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
-        flatUniforms.modelViewMatrix = viewMatrix
+        flatUniforms.modelMatrix = matrix_identity_float4x4
+        flatUniforms.viewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
         let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Axes")
@@ -253,7 +254,8 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
                                             vertices: [MembraneVertex],
                                             transform: matrix_float4x4) {
         var flatUniforms = FlatUniforms()
-        flatUniforms.modelViewMatrix = viewMatrix * transform
+        flatUniforms.modelMatrix = matrix_identity_float4x4
+        flatUniforms.viewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
         let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Vertex Normals")
@@ -282,7 +284,8 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
         var flatUniforms = FlatUniforms()
-        flatUniforms.modelViewMatrix = viewMatrix
+        flatUniforms.modelMatrix = matrix_identity_float4x4
+        flatUniforms.viewMatrix = viewMatrix
         flatUniforms.projectionMatrix = projectionMatrix
         let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen")
