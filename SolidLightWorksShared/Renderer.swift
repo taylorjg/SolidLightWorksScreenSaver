@@ -47,7 +47,7 @@ struct Settings {
     static let defaultSwitchInterval = 30
     static let defaultRenderMode = RenderMode.drawing2D
     static let defaultEnableMSAA = false
-
+    
     let interactive: Bool
     let enabledForms: [Int]
     let switchInterval: Int
@@ -80,8 +80,8 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private var renderVertexNormalsHelpers = false
     private var renderMode = RenderMode.drawing2D
     private let hazeTexture: MTLTexture
-    private var viewMatrix: matrix_float4x4
-    private var projectionMatrix: matrix_float4x4
+    private var commonUniforms = CommonUniforms()
+    private let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
     
     init?(mtkView: MTKView, bundle: Bundle? = nil, settings: Settings) {
         if settings.interactive || (settings.renderMode == .projection3D && settings.enableMSAA) {
@@ -127,9 +127,6 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
             print("Unable to load haze texture. Error info: \(error)")
             return nil
         }
-        
-        viewMatrix = matrix_float4x4()
-        projectionMatrix = matrix_float4x4()
         
         self.renderMode = settings.renderMode
         
@@ -235,11 +232,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     }
     
     private func renderAxesHelpers(renderEncoder: MTLRenderCommandEncoder) {
-        var commonUniforms = CommonUniforms()
         commonUniforms.modelMatrix = matrix_identity_float4x4
-        commonUniforms.viewMatrix = viewMatrix
-        commonUniforms.projectionMatrix = projectionMatrix
-        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Axes")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
@@ -252,11 +245,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderVertexNormalsHelpers(renderEncoder: MTLRenderCommandEncoder,
                                             vertices: [MembraneVertex],
                                             transform: matrix_float4x4) {
-        var commonUniforms = CommonUniforms()
         commonUniforms.modelMatrix = transform
-        commonUniforms.viewMatrix = viewMatrix
-        commonUniforms.projectionMatrix = projectionMatrix
-        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Vertex Normals")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let color = simd_float4(0, 0, 1, 1)
@@ -281,11 +270,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     }
     
     private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
-        var commonUniforms = CommonUniforms()
         commonUniforms.modelMatrix = matrix_identity_float4x4
-        commonUniforms.viewMatrix = viewMatrix
-        commonUniforms.projectionMatrix = projectionMatrix
-        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
@@ -298,11 +283,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderScreenFormLine(renderEncoder: MTLRenderCommandEncoder,
                                       screenForm: ScreenForm,
                                       lineIndex: Int) {
-        var commonUniforms = CommonUniforms()
         commonUniforms.modelMatrix = screenForm.transform
-        commonUniforms.viewMatrix = viewMatrix
-        commonUniforms.projectionMatrix = projectionMatrix
-        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         var line2DUniforms = Line2DUniforms()
         line2DUniforms.color = simd_float4(1, 1, 1, 1)
         let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
@@ -348,11 +329,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
                                          cameraPose: CameraPose,
                                          projectedForm: ProjectedForm,
                                          lineIndex: Int) {
-        var commonUniforms = CommonUniforms()
         commonUniforms.modelMatrix = projectedForm.transform
-        commonUniforms.viewMatrix = viewMatrix
-        commonUniforms.projectionMatrix = projectionMatrix
-        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         var membraneUniforms = MembraneUniforms()
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
         membraneUniforms.worldCameraPosition = cameraPose.position
@@ -408,9 +385,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderInstallation2D(renderEncoder: MTLRenderCommandEncoder, installation: Installation) {
         let installationData2D = installation.getInstallationData2D()
         let cameraPose = installationData2D.cameraPose
-        viewMatrix = matrix_lookat(eye: cameraPose.position,
-                                   point: cameraPose.target,
-                                   up: simd_float3(0, 1, 0))
+        commonUniforms.viewMatrix = matrix_lookat(eye: cameraPose.position,
+                                                  point: cameraPose.target,
+                                                  up: simd_float3(0, 1, 0))
         if renderAxesHelpers {
             renderAxesHelpers(renderEncoder: renderEncoder)
         }
@@ -421,9 +398,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         let installationData3D = installation.getInstallationData3D()
         currentCameraPoseCount = installationData3D.cameraPoses.count
         let cameraPose = installationData3D.cameraPoses[currentCameraPoseIndex]
-        viewMatrix = matrix_lookat(eye: cameraPose.position,
-                                   point: cameraPose.target,
-                                   up: simd_float3(0, 1, 0))
+        commonUniforms.viewMatrix = matrix_lookat(eye: cameraPose.position,
+                                                  point: cameraPose.target,
+                                                  up: simd_float3(0, 1, 0))
         if renderAxesHelpers {
             renderAxesHelpers(renderEncoder: renderEncoder)
         }
@@ -459,9 +436,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         let aspect = Float(size.width) / Float(size.height)
-        projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65),
-                                                         aspectRatio:aspect,
-                                                         nearZ: 0.1,
-                                                         farZ: 100.0)
+        commonUniforms.projectionMatrix = matrix_perspective_right_hand(fovyRadians: radians_from_degrees(65),
+                                                                        aspectRatio:aspect,
+                                                                        nearZ: 0.1,
+                                                                        farZ: 100.0)
     }
 }
