@@ -15,11 +15,7 @@ typedef struct {
     vector_float3 position;
 } Line2DVertex;
 
-typedef struct
-{
-    matrix_float4x4 modelMatrix;
-    matrix_float4x4 viewMatrix;
-    matrix_float4x4 projectionMatrix;
+typedef struct {
     vector_float4 color;
 } Line2DUniforms;
 

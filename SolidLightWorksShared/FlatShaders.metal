@@ -20,11 +20,11 @@ typedef struct
 
 vertex FlatInOut vertexFlatShader(uint vertexID [[vertex_id]],
                                   constant FlatVertex *vertices [[buffer(0)]],
-                                  constant FlatUniforms &uniforms [[buffer(1)]])
+                                  constant CommonUniforms &commonUniforms [[buffer(1)]])
 {
     constant FlatVertex &flatVertex = vertices[vertexID];
     
-    float4x4 mvp = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix;
+    float4x4 mvp = commonUniforms.projectionMatrix * commonUniforms.viewMatrix * commonUniforms.modelMatrix;
     float4 position = float4(flatVertex.position, 1.0);
 
     FlatInOut out;

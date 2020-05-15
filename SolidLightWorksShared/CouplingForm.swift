@@ -36,7 +36,7 @@ class CouplingForm {
     func getUpdatedPoints() -> [[simd_float2]] {
         let points = [
             circleWaveOuter.getPoints(divisions: 127, tick: tick),
-            circleWaveInner.getPoints(divisions: 127, tick: tick)
+            circleWaveInner.getPoints(divisions: 127, tick: tick).map { pt in simd_float2(-pt.x, pt.y) }
         ]
         tick += 1
         return points

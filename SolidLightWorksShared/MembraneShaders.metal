@@ -21,29 +21,30 @@ typedef struct {
 
 vertex MembraneInOut vertexMembraneShader(uint vertexID [[vertex_id]],
                                           constant MembraneVertex *vertices [[buffer(0)]],
-                                          constant MembraneUniforms &uniforms [[buffer(1)]])
+                                          constant CommonUniforms &commonUniforms [[buffer(1)]],
+                                          constant MembraneUniforms &membraneUniforms [[buffer(2)]])
 {
     constant MembraneVertex &membraneVertex = vertices[vertexID];
     
     float4 position = float4(membraneVertex.position, 1);
     float4 normal = float4(membraneVertex.normal, 0);
-    float4 projectorPosition = float4(uniforms.projectorPosition, 1);
-    float4x4 mvp = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix;
+    float4 projectorPosition = float4(membraneUniforms.projectorPosition, 1);
+    float4x4 mvp = commonUniforms.projectionMatrix * commonUniforms.viewMatrix * commonUniforms.modelMatrix;
     
     MembraneInOut out;
     out.position = mvp * position;
     out.uv = membraneVertex.uv;
-    out.worldPosition = (uniforms.modelMatrix * position).xyz;
-    out.worldNormal = normalize((uniforms.modelMatrix * normal).xyz);
-    out.worldProjectorPosition = (uniforms.modelMatrix * projectorPosition).xyz;
+    out.worldPosition = (commonUniforms.modelMatrix * position).xyz;
+    out.worldNormal = normalize((commonUniforms.modelMatrix * normal).xyz);
+    out.worldProjectorPosition = (commonUniforms.modelMatrix * projectorPosition).xyz;
     return out;
 }
 
 fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
-                                       constant MembraneUniforms &uniforms [[buffer(1)]],
+                                       constant MembraneUniforms &membraneUniforms [[buffer(0)]],
                                        texture2d<half> hazeTexture [[texture(0)]])
 {
-    float3 v = normalize(in.worldPosition - uniforms.worldCameraPosition);
+    float3 v = normalize(in.worldPosition - membraneUniforms.worldCameraPosition);
     float3 n = in.worldNormal;
     float weight = 1 - abs(dot(v, n));
     

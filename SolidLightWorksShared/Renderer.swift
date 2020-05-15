@@ -235,17 +235,16 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     }
     
     private func renderAxesHelpers(renderEncoder: MTLRenderCommandEncoder) {
-        var flatUniforms = FlatUniforms()
-        flatUniforms.modelMatrix = matrix_identity_float4x4
-        flatUniforms.viewMatrix = viewMatrix
-        flatUniforms.projectionMatrix = projectionMatrix
-        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        var commonUniforms = CommonUniforms()
+        commonUniforms.modelMatrix = matrix_identity_float4x4
+        commonUniforms.viewMatrix = viewMatrix
+        commonUniforms.projectionMatrix = projectionMatrix
+        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Axes")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
         renderEncoder.setVertexBytes(axesVertices, length: axesVerticesLength, index: 0)
-        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
         renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
         renderEncoder.popDebugGroup()
     }
@@ -253,11 +252,11 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderVertexNormalsHelpers(renderEncoder: MTLRenderCommandEncoder,
                                             vertices: [MembraneVertex],
                                             transform: matrix_float4x4) {
-        var flatUniforms = FlatUniforms()
-        flatUniforms.modelMatrix = matrix_identity_float4x4
-        flatUniforms.viewMatrix = viewMatrix
-        flatUniforms.projectionMatrix = projectionMatrix
-        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        var commonUniforms = CommonUniforms()
+        commonUniforms.modelMatrix = transform
+        commonUniforms.viewMatrix = viewMatrix
+        commonUniforms.projectionMatrix = projectionMatrix
+        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Vertex Normals")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let color = simd_float4(0, 0, 1, 1)
@@ -276,24 +275,22 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
             let verticesBuffer = device.makeBuffer(bytes: vertexNormalVertices, length: vertexNormalVerticesLength, options: [])!
             renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
         }
-        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
         renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: vertexNormalVertices.count)
         renderEncoder.popDebugGroup()
     }
     
     private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
-        var flatUniforms = FlatUniforms()
-        flatUniforms.modelMatrix = matrix_identity_float4x4
-        flatUniforms.viewMatrix = viewMatrix
-        flatUniforms.projectionMatrix = projectionMatrix
-        let flatUniformsLength = MemoryLayout<FlatUniforms>.stride
+        var commonUniforms = CommonUniforms()
+        commonUniforms.modelMatrix = matrix_identity_float4x4
+        commonUniforms.viewMatrix = viewMatrix
+        commonUniforms.projectionMatrix = projectionMatrix
+        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen")
         renderEncoder.setRenderPipelineState(flatPipelineState)
         let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
         renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
-        renderEncoder.setVertexBytes(&flatUniforms, length: flatUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&flatUniforms, length: flatUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
         renderEncoder.popDebugGroup()
     }
@@ -301,10 +298,14 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderScreenFormLine(renderEncoder: MTLRenderCommandEncoder,
                                       screenForm: ScreenForm,
                                       lineIndex: Int) {
+        var commonUniforms = CommonUniforms()
+        commonUniforms.modelMatrix = screenForm.transform
+        commonUniforms.viewMatrix = viewMatrix
+        commonUniforms.projectionMatrix = projectionMatrix
+        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         var line2DUniforms = Line2DUniforms()
-        line2DUniforms.viewMatrix = viewMatrix
-        line2DUniforms.projectionMatrix = projectionMatrix
         line2DUniforms.color = simd_float4(1, 1, 1, 1)
+        let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen Form Line")
         renderEncoder.setRenderPipelineState(line2DPipelineState)
         let lineThickness: Float = 0.05
@@ -317,9 +318,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
             let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
             renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
         }
-        let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
-        line2DUniforms.modelMatrix = screenForm.transform
-        renderEncoder.setVertexBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
         renderEncoder.setFragmentBytes(&line2DUniforms, length: line2DUniformsLength, index: 1)
         let indicesLength = MemoryLayout<UInt16>.stride * indices.count
         let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
@@ -349,23 +348,26 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
                                          cameraPose: CameraPose,
                                          projectedForm: ProjectedForm,
                                          lineIndex: Int) {
-        let line = projectedForm.lines[lineIndex]
+        var commonUniforms = CommonUniforms()
+        commonUniforms.modelMatrix = projectedForm.transform
+        commonUniforms.viewMatrix = viewMatrix
+        commonUniforms.projectionMatrix = projectionMatrix
+        let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
         var membraneUniforms = MembraneUniforms()
-        membraneUniforms.modelMatrix = projectedForm.transform
-        membraneUniforms.viewMatrix = viewMatrix
-        membraneUniforms.projectionMatrix = projectionMatrix
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
         membraneUniforms.worldCameraPosition = cameraPose.position
         let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Projected Form Line")
         renderEncoder.setRenderPipelineState(membranePipelineState)
+        let line = projectedForm.lines[lineIndex]
         let (vertices, indices) = makeMembraneVertices(points: line.points,
                                                        projectorPosition: projectedForm.projectorPosition)
         let verticesLength = MemoryLayout<MembraneVertex>.stride * vertices.count
         let verticesBuffer = device.makeBuffer(bytes: vertices, length: verticesLength, options: [])!
         renderEncoder.setVertexBuffer(verticesBuffer, offset: 0, index: 0)
-        renderEncoder.setVertexBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
-        renderEncoder.setFragmentBytes(&membraneUniforms, length: membraneUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
+        renderEncoder.setVertexBytes(&membraneUniforms, length: membraneUniformsLength, index: 2)
+        renderEncoder.setFragmentBytes(&membraneUniforms, length: membraneUniformsLength, index: 0)
         renderEncoder.setFragmentTexture(hazeTexture, index: 0)
         let indicesLength = MemoryLayout<UInt16>.stride * indices.count
         let indicesBuffer = device.makeBuffer(bytes: indices, length: indicesLength, options: [])!
@@ -426,10 +428,10 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
             renderAxesHelpers(renderEncoder: renderEncoder)
         }
         renderScreen(renderEncoder: renderEncoder)
-        renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
         renderProjectedForms(renderEncoder: renderEncoder,
                              cameraPose: cameraPose,
                              projectedForms: installationData3D.projectedForms)
+        renderScreenForms(renderEncoder: renderEncoder, screenForms: installationData3D.screenForms)
     }
     
     func draw(in view: MTKView) {

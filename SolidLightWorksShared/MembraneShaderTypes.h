@@ -17,11 +17,7 @@ typedef struct {
     vector_float2 uv;
 } MembraneVertex;
 
-typedef struct
-{
-    matrix_float4x4 modelMatrix;
-    matrix_float4x4 viewMatrix;
-    matrix_float4x4 projectionMatrix;
+typedef struct {
     vector_float3 projectorPosition;
     vector_float3 worldCameraPosition;
 } MembraneUniforms;
