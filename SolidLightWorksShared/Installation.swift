@@ -30,12 +30,13 @@ struct Screen {
 
 struct Floor {
     let width: Float
-    let height: Float
+    let depth: Float
 }
 
 struct LeftWall {
-    let width: Float
+    let length: Float
     let height: Float
+    let distance: Float
 }
 
 struct CameraPose {

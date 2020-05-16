@@ -50,6 +50,6 @@ class DoublingBackInstallation: Installation {
                                   cameraPoses: cameraPoses3D,
                                   screen: Screen(width: 6.4, height: 4.4),
                                   floor: nil,
-                                  leftWall: nil)
+                                  leftWall: LeftWall(length: 10, height: 4.4, distance: 3.2))
     }
 }

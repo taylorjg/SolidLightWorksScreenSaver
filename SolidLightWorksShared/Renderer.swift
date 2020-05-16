@@ -295,11 +295,12 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderFloor(renderEncoder: MTLRenderCommandEncoder, floor: Floor) {
         let grey = Float(0xd0) / Float(0xff)
         let color = simd_float4(grey, grey, grey, 0.2)
-        // TODO: fix transform
-        let transform = matrix_identity_float4x4
+        let rotation = matrix4x4_rotation(radians: -Float.pi / 2, axis: simd_float3(1, 0, 0))
+        let translation = matrix4x4_translation(0, 0, floor.depth / 2)
+        let transform = simd_mul(translation, rotation)
         renderPlane(renderEncoder: renderEncoder,
                     width: floor.width,
-                    height: floor.height,
+                    height: floor.depth,
                     color: color,
                     transform: transform)
     }
@@ -307,10 +308,11 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderLeftWall(renderEncoder: MTLRenderCommandEncoder, leftWall: LeftWall) {
         let grey = Float(0xa0) / Float(0xff)
         let color = simd_float4(grey, grey, grey, 0.2)
-        // TODO: fix transform
-        let transform = matrix_identity_float4x4
+        let rotation = matrix4x4_rotation(radians: Float.pi / 2, axis: simd_float3(0, 1, 0))
+        let translation = matrix4x4_translation(-leftWall.distance, leftWall.height / 2, leftWall.length / 2)
+        let transform = simd_mul(translation, rotation)
         renderPlane(renderEncoder: renderEncoder,
-                    width: leftWall.width,
+                    width: leftWall.length,
                     height: leftWall.height,
                     color: color,
                     transform: transform)
