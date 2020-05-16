@@ -61,6 +61,9 @@ class LeavingInstallation: Installation {
         let projectedForms = [projectedForm1, projectedForm2]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,
-                                  cameraPoses: cameraPoses3D)
+                                  cameraPoses: cameraPoses3D,
+                                  screen: Screen(width: 16, height: 6),
+                                  floor: nil,
+                                  leftWall: nil)
     }
 }

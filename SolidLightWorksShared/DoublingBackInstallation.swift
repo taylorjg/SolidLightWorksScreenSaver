@@ -47,6 +47,9 @@ class DoublingBackInstallation: Installation {
         let projectedForms = [projectedForm]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,
-                                  cameraPoses: cameraPoses3D)
+                                  cameraPoses: cameraPoses3D,
+                                  screen: Screen(width: 6.4, height: 4.4),
+                                  floor: nil,
+                                  leftWall: nil)
     }
 }

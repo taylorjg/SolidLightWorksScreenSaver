@@ -10,33 +10,6 @@ import Metal
 import MetalKit
 import simd
 
-let screenGrey = Float(0xc0) / Float(0xff)
-let screenColor = simd_float4(screenGrey, screenGrey, screenGrey, 0.2)
-
-let screenVertices = [
-    FlatVertex(position: simd_float3(-8, 0, 0), color: screenColor),
-    FlatVertex(position: simd_float3(8, 0, 0), color: screenColor),
-    FlatVertex(position: simd_float3(-8, 6, 0), color: screenColor),
-    FlatVertex(position: simd_float3(-8, 6, 0), color: screenColor),
-    FlatVertex(position: simd_float3(8, 0, 0), color: screenColor),
-    FlatVertex(position: simd_float3(8, 6, 0), color: screenColor)
-]
-
-let xAxisColor = simd_float4(1, 0, 0, 1)
-let yAxisColor = simd_float4(0, 1, 0, 1)
-let zAxisColor = simd_float4(0, 0, 1, 1)
-
-let axesVertices = [
-    FlatVertex(position: simd_float3(0, 0, 0), color: xAxisColor),
-    FlatVertex(position: simd_float3(8, 0, 0), color: xAxisColor),
-    FlatVertex(position: simd_float3(0, 0, 0), color: yAxisColor),
-    FlatVertex(position: simd_float3(0, 6, 0), color: yAxisColor),
-    FlatVertex(position: simd_float3(0, 0, 0), color: zAxisColor),
-    FlatVertex(position: simd_float3(0, 0, 8), color: zAxisColor),
-    FlatVertex(position: simd_float3(0, 0, 0), color: simd_float4(1, 1, 0, 1)),
-    FlatVertex(position: simd_float3(0, 0, -8), color: simd_float4(1, 1, 0, 1))
-]
-
 enum RenderMode {
     case drawing2D
     case projection3D
@@ -233,12 +206,26 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     private func renderAxesHelpers(renderEncoder: MTLRenderCommandEncoder) {
         commonUniforms.modelMatrix = matrix_identity_float4x4
+        let xAxisColor = simd_float4(1, 0, 0, 1)
+        let yAxisColor = simd_float4(0, 1, 0, 1)
+        let zAxisColor = simd_float4(0, 0, 1, 1)
+        let zAxisColor2 = simd_float4(1, 1, 0, 1)
+        let vertices = [
+            FlatVertex(position: simd_float3(0, 0, 0), color: xAxisColor),
+            FlatVertex(position: simd_float3(8, 0, 0), color: xAxisColor),
+            FlatVertex(position: simd_float3(0, 0, 0), color: yAxisColor),
+            FlatVertex(position: simd_float3(0, 6, 0), color: yAxisColor),
+            FlatVertex(position: simd_float3(0, 0, 0), color: zAxisColor),
+            FlatVertex(position: simd_float3(0, 0, 8), color: zAxisColor),
+            FlatVertex(position: simd_float3(0, 0, 0), color: zAxisColor2),
+            FlatVertex(position: simd_float3(0, 0, -8), color: zAxisColor2)
+        ]
+        let verticesLength = MemoryLayout<FlatVertex>.stride * vertices.count
         renderEncoder.pushDebugGroup("Draw Axes")
         renderEncoder.setRenderPipelineState(flatPipelineState)
-        let axesVerticesLength = MemoryLayout<FlatVertex>.stride * axesVertices.count
-        renderEncoder.setVertexBytes(axesVertices, length: axesVerticesLength, index: 0)
+        renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
         renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
-        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: axesVertices.count)
+        renderEncoder.drawPrimitives(type: .line, vertexStart: 0, vertexCount: vertices.count)
         renderEncoder.popDebugGroup()
     }
     
@@ -269,15 +256,64 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         renderEncoder.popDebugGroup()
     }
     
-    private func renderScreen(renderEncoder: MTLRenderCommandEncoder) {
-        commonUniforms.modelMatrix = matrix_identity_float4x4
-        renderEncoder.pushDebugGroup("Draw Screen")
+    private func renderPlane(renderEncoder: MTLRenderCommandEncoder,
+                             width: Float,
+                             height: Float,
+                             color: simd_float4,
+                             transform: matrix_float4x4) {
+        commonUniforms.modelMatrix = transform
+        let halfWidth = width / 2
+        let halfHeight = height / 2
+        let vertices = [
+            FlatVertex(position: simd_float3(-halfWidth, -halfHeight, 0), color: color),
+            FlatVertex(position: simd_float3(halfWidth, -halfHeight, 0), color: color),
+            FlatVertex(position: simd_float3(-halfWidth, halfHeight, 0), color: color),
+            FlatVertex(position: simd_float3(-halfWidth, halfHeight, 0), color: color),
+            FlatVertex(position: simd_float3(halfWidth, -halfHeight, 0), color: color),
+            FlatVertex(position: simd_float3(halfWidth, halfHeight, 0), color: color)
+        ]
+        let verticesLength = MemoryLayout<FlatVertex>.stride * vertices.count
+        renderEncoder.pushDebugGroup("Draw Plane")
         renderEncoder.setRenderPipelineState(flatPipelineState)
-        let screenVerticesLength = MemoryLayout<FlatVertex>.stride * screenVertices.count
-        renderEncoder.setVertexBytes(screenVertices, length: screenVerticesLength, index: 0)
+        renderEncoder.setVertexBytes(vertices, length: verticesLength, index: 0)
         renderEncoder.setVertexBytes(&commonUniforms, length: commonUniformsLength, index: 1)
-        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: screenVertices.count)
+        renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         renderEncoder.popDebugGroup()
+    }
+    
+    private func renderScreen(renderEncoder: MTLRenderCommandEncoder, screen: Screen) {
+        let grey = Float(0xc0) / Float(0xff)
+        let color = simd_float4(grey, grey, grey, 0.2)
+        let transform = matrix4x4_translation(0, screen.height / 2, 0)
+        renderPlane(renderEncoder: renderEncoder,
+                    width: screen.width,
+                    height: screen.height,
+                    color: color,
+                    transform: transform)
+    }
+    
+    private func renderFloor(renderEncoder: MTLRenderCommandEncoder, floor: Floor) {
+        let grey = Float(0xd0) / Float(0xff)
+        let color = simd_float4(grey, grey, grey, 0.2)
+        // TODO: fix transform
+        let transform = matrix_identity_float4x4
+        renderPlane(renderEncoder: renderEncoder,
+                    width: floor.width,
+                    height: floor.height,
+                    color: color,
+                    transform: transform)
+    }
+    
+    private func renderLeftWall(renderEncoder: MTLRenderCommandEncoder, leftWall: LeftWall) {
+        let grey = Float(0xa0) / Float(0xff)
+        let color = simd_float4(grey, grey, grey, 0.2)
+        // TODO: fix transform
+        let transform = matrix_identity_float4x4
+        renderPlane(renderEncoder: renderEncoder,
+                    width: leftWall.width,
+                    height: leftWall.height,
+                    color: color,
+                    transform: transform)
     }
     
     private func renderScreenFormLine(renderEncoder: MTLRenderCommandEncoder,
@@ -404,7 +440,15 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         if renderAxesHelpers {
             renderAxesHelpers(renderEncoder: renderEncoder)
         }
-        renderScreen(renderEncoder: renderEncoder)
+        installationData3D.screen.map { screen in
+            renderScreen(renderEncoder: renderEncoder, screen: screen)
+        }
+        installationData3D.floor.map { floor in
+            renderFloor(renderEncoder: renderEncoder, floor: floor)
+        }
+        installationData3D.leftWall.map { leftWall in
+            renderLeftWall(renderEncoder: renderEncoder, leftWall: leftWall)
+        }
         renderProjectedForms(renderEncoder: renderEncoder,
                              cameraPose: cameraPose,
                              projectedForms: installationData3D.projectedForms)

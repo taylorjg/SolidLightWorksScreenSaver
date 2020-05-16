@@ -23,6 +23,21 @@ struct ProjectedForm {
     let projectorPosition: vector_float3
 }
 
+struct Screen {
+    let width: Float
+    let height: Float
+}
+
+struct Floor {
+    let width: Float
+    let height: Float
+}
+
+struct LeftWall {
+    let width: Float
+    let height: Float
+}
+
 struct CameraPose {
     let position: simd_float3
     let target: simd_float3
@@ -37,7 +52,9 @@ struct InstallationData3D {
     let screenForms: [ScreenForm]
     let projectedForms: [ProjectedForm]
     let cameraPoses: [CameraPose]
-    // TODO: add screen, floor, walls
+    let screen: Screen?
+    let floor: Floor?
+    let leftWall: LeftWall?
 }
 
 protocol Installation {
