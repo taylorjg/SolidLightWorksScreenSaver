@@ -23,7 +23,7 @@ class BetweenYouAndIInstallation: Installation {
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
         let screenForm2 = ScreenForm(lines: lines2, transform: transform2)
         let screenForms = [screenForm1, screenForm2]
-        let cameraPose = CameraPose(position: simd_float3(0, 0, 6), target: simd_float3())
+        let cameraPose = CameraPose(position: simd_float3(0, 0, 5), target: simd_float3())
         return InstallationData2D(screenForms: screenForms, cameraPose: cameraPose)
     }
     
@@ -46,8 +46,7 @@ class BetweenYouAndIInstallation: Installation {
                                            projectorPosition: projectorPosition2)
         let projectedForms = [projectedForm1, projectedForm2]
         let cameraPoses = [
-            CameraPose(position: simd_float3(-2, 10, 20), target: simd_float3(0, 3, 6.5)),
-            CameraPose(position: simd_float3(4.2, 2.7, 23), target: simd_float3(1.2, 2, 9.5))
+            CameraPose(position: simd_float3(2, 3, 14), target: simd_float3(0, 0, 6.5))
         ]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,

@@ -21,15 +21,15 @@ class LeavingInstallation: Installation {
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
         let screenForm2 = ScreenForm(lines: lines2, transform: transform2)
         let screenForms = [screenForm1, screenForm2]
-        let cameraPose = CameraPose(position: simd_float3(0, 0, 6), target: simd_float3())
+        let cameraPose = CameraPose(position: simd_float3(0, 0, 5), target: simd_float3())
         return InstallationData2D(screenForms: screenForms, cameraPose: cameraPose)
     }
     
     func getInstallationData3D() -> InstallationData3D {
         let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
         let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
-        let transform1 = matrix4x4_translation(-2.5, 2, 0)
-        let transform2 = matrix4x4_translation(2.5, 2, 0)
+        let transform1 = matrix4x4_translation(-2.5, 2.4, 0)
+        let transform2 = matrix4x4_translation(2.5, 2.4, 0)
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
         let screenForm2 = ScreenForm(lines: lines2, transform: transform2)
         let screenForms = [screenForm1, screenForm2]
@@ -43,12 +43,12 @@ class LeavingInstallation: Installation {
                                            projectorPosition: projectorPosition2)
         let projectedForms = [projectedForm1, projectedForm2]
         let cameraPoses = [
-            CameraPose(position: simd_float3(-10, 2.5, 8), target: simd_float3(-0.75, 2, 4))
+            CameraPose(position: simd_float3(-10, 2.5, 10), target: simd_float3(0, 2.4, 0))
         ]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,
                                   cameraPoses: cameraPoses,
-                                  screen: Screen(width: 16, height: 6),
+                                  screen: Screen(width: 14, height: 6),
                                   floor: nil,
                                   leftWall: nil)
     }

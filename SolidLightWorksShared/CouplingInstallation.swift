@@ -17,7 +17,7 @@ class CouplingInstallation: Installation {
         let transform = matrix_identity_float4x4
         let screenForm = ScreenForm(lines: lines, transform: transform)
         let screenForms = [screenForm]
-        let cameraPose = CameraPose(position: simd_float3(0, 0, 6), target: simd_float3())
+        let cameraPose = CameraPose(position: simd_float3(0, 0, 5), target: simd_float3())
         return InstallationData2D(screenForms: screenForms, cameraPose: cameraPose)
     }
     
@@ -33,7 +33,7 @@ class CouplingInstallation: Installation {
                                           projectorPosition: projectorPosition)
         let projectedForms = [projectedForm]
         let cameraPoses = [
-            CameraPose(position: simd_float3(0, 2, 12), target: simd_float3(0, 0, 3))
+            CameraPose(position: simd_float3(0, 1, 8), target: simd_float3(0, 0, 0))
         ]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,
