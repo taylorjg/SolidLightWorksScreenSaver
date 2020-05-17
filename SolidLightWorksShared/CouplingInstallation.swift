@@ -33,7 +33,7 @@ class CouplingInstallation: Installation {
                                           projectorPosition: projectorPosition)
         let projectedForms = [projectedForm]
         let cameraPoses = [
-            CameraPose(position: simd_float3(0, 1, 8), target: simd_float3(0, 0, 0))
+            CameraPose(position: simd_float3(0, 1, 8.5), target: simd_float3(0, 0, 0))
         ]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,

@@ -14,7 +14,6 @@ import Foundation
 
 class CircleWave {
     
-    let R: Float
     let A: Float
     let F: Float
     let S: Float
@@ -22,8 +21,7 @@ class CircleWave {
     let rotationPhase: Float
     let oscillationPhase: Float
     
-    init(R: Float, A: Float, F: Float, S: Float, f: Float, rotationPhase: Float, oscillationPhase: Float) {
-        self.R = R
+    init(A: Float, F: Float, S: Float, f: Float, rotationPhase: Float, oscillationPhase: Float) {
         self.A = A
         self.F = F
         self.S = S
@@ -37,18 +35,18 @@ class CircleWave {
         return A * sin(F * theta + S * t + rotationPhase) * cos(f * t + oscillationPhase)
     }
     
-    private func getPoint(theta: Float, tick: Int) -> simd_float2 {
+    private func getPoint(R: Float, theta: Float, tick: Int) -> simd_float2 {
         let adjustedR = R + omega(theta: theta, tick: tick)
-        let x = adjustedR * cos(theta)
+        let x = 1.25 * adjustedR * cos(theta)
         let y = adjustedR * sin(theta)
         return simd_float2(x, y)
     }
     
-    func getPoints(divisions: Int, tick: Int) -> [simd_float2] {
+    func getPoints(R: Float, divisions: Int, tick: Int) -> [simd_float2] {
         let deltaAngle = 2 * Float.pi / Float(divisions)
         return (0...divisions).map { index -> simd_float2 in
             let theta = deltaAngle * Float(index)
-            return getPoint(theta: theta, tick: tick)
+            return getPoint(R: R, theta: theta, tick: tick)
         }
     }
 }
