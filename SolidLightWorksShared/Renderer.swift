@@ -57,7 +57,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
     
     init?(mtkView: MTKView, bundle: Bundle? = nil, settings: Settings) {
-        if settings.interactive || (settings.renderMode == .projection3D && settings.enableMSAA) {
+        if settings.interactive ||
+            settings.renderMode == .drawing2D ||
+            (settings.renderMode == .projection3D && settings.enableMSAA) {
             mtkView.sampleCount = 4
         }
         self.device = mtkView.device!

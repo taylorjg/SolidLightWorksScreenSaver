@@ -16,8 +16,8 @@ class LeavingInstallation: Installation {
     func getInstallationData2D() -> InstallationData2D {
         let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
         let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
-        let transform1 = matrix4x4_translation(-2.5, 0, 0)
-        let transform2 = matrix4x4_translation(2.5, 0, 0)
+        let transform1 = matrix4x4_translation(-2.2, 0, 0)
+        let transform2 = matrix4x4_translation(2.2, 0, 0)
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
         let screenForm2 = ScreenForm(lines: lines2, transform: transform2)
         let screenForms = [screenForm1, screenForm2]
@@ -28,13 +28,13 @@ class LeavingInstallation: Installation {
     func getInstallationData3D() -> InstallationData3D {
         let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
         let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
-        let transform1 = matrix4x4_translation(-2.5, 2.4, 0)
-        let transform2 = matrix4x4_translation(2.5, 2.4, 0)
+        let transform1 = matrix4x4_translation(-2.2, 2.4, 0)
+        let transform2 = matrix4x4_translation(2.2, 2.4, 0)
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
         let screenForm2 = ScreenForm(lines: lines2, transform: transform2)
         let screenForms = [screenForm1, screenForm2]
-        let projectorPosition1 = simd_float3(-2.5, -1.8, 10)
-        let projectorPosition2 = simd_float3(2.5, -1.8, 10)
+        let projectorPosition1 = simd_float3(-2.2, -1.8, 10)
+        let projectorPosition2 = simd_float3(2.2, -1.8, 10)
         let projectedForm1 = ProjectedForm(lines: lines1,
                                            transform: transform1,
                                            projectorPosition: projectorPosition1)
