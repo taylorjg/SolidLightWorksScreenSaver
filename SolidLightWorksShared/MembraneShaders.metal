@@ -55,6 +55,6 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
     float d = distance(in.worldPosition, in.worldProjectorPosition);
     float a = 1.0 - (d / length(in.worldProjectorPosition));
     float4 whiteValue = float4(1, 1, 1, a);
-    
+
     return mix(hazeValue, whiteValue, weight);
 }

@@ -24,7 +24,7 @@ class CouplingInstallation: Installation {
     func getInstallationData3D() -> InstallationData3D {
         let lines = form.getUpdatedPoints().map { points in Line(points: points) }
         let rotationX = matrix4x4_rotation(radians: -Float.pi / 2, axis: simd_float3(1, 0, 0))
-        let transform = simd_mul(matrix4x4_translation(0, 0, 4), rotationX)
+        let transform = matrix4x4_translation(0, 0, 4) * rotationX
         let screenForm = ScreenForm(lines: lines, transform: transform)
         let screenForms = [screenForm]
         let projectorPosition = simd_float3(0, 0, 10)

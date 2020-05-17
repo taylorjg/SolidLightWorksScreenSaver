@@ -34,12 +34,21 @@ class BetweenYouAndIForm {
         reset(wipingInEllipse: initiallyWipingInEllipse)
     }
     
+    private func calcEllipseRadius(tickRatio: Float) -> Float {
+        if tickRatio < 0.5 {
+            let t = tickRatio * 2
+            return rx - (rx * 4 / 5 * t)
+        }
+        let t = (1 - tickRatio) * 2
+        return rx - (rx * 4 / 5 * t)
+    }
+    
     private func getEllipsePoints(tickRatio: Float, wipeY: Float) -> [simd_float2] {
         let theta = acos(wipeY / ry)
         let (startAngle, endAngle) = wipingInEllipse
             ? (theta, -theta)
             : (-theta, theta - (Float.pi * 2))
-        let rx = self.rx - sin(Float.pi * tickRatio)
+        let rx = calcEllipseRadius(tickRatio: tickRatio)
         return Ellipse(rx: rx, ry: ry).getPoints(
             startAngle: startAngle + Float.pi / 2,
             endAngle: endAngle + Float.pi / 2,
@@ -78,9 +87,7 @@ class BetweenYouAndIForm {
                                     p1: simd_float2(-px, -py),
                                     rect1: simd_float2(minX, minY),
                                     rect2: simd_float2(maxX, maxY))
-        return clippedLines
-            .map { (a, b) in [a, b] }
-            ?? [simd_float2(), simd_float2()]
+        return clippedLines.map { (a, b) in [a, b] } ?? [simd_float2(), simd_float2()]
     }
     
     func getUpdatedPoints() -> [[simd_float2]] {
