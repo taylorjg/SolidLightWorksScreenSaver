@@ -83,7 +83,6 @@ class LeavingForm {
     private let STALL_TICKS = 500
     private let ELLIPSE_POINT_COUNT = 100
     private let TRAVELLING_WAVE_POINT_COUNT = 50
-    
     private let rx: Float
     private let ry: Float
     private var growing: Bool
@@ -169,7 +168,7 @@ class LeavingForm {
             : travellingWavePointsTail.reversed() + ellipsePoints
     }
     
-    func getUpdatedPoints() -> [[simd_float2]] {
+    func getLines() -> [Line] {
         
         if (tick == MAX_TICKS / 4) {
             if (stalling) {
@@ -243,7 +242,8 @@ class LeavingForm {
         }
         
         let combinedPoints = combinePoints(ellipsePoints, with: travellingWavePoints)
-        return [combinedPoints]
+        let line = Line(points: combinedPoints)
+        return [line]
     }
     
     private func reset(growing: Bool) {

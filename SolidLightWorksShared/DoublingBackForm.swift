@@ -10,9 +10,10 @@ import Foundation
 
 class DoublingBackForm {
     
-    var tick = 0
-    var travellingWaveRight: TravellingWave
-    var travellingWaveUp: TravellingWave
+    private let TRAVELLING_WAVE_POINT_COUNT = 200
+    private let travellingWaveRight: TravellingWave
+    private let travellingWaveUp: TravellingWave
+    private var tick = 0
 
     init(width: Float, height: Float) {
         travellingWaveRight = TravellingWave(cx: 0,
@@ -28,12 +29,14 @@ class DoublingBackForm {
                                           vertical: true)
     }
     
-    func getUpdatedPoints() -> [[simd_float2]] {
+    func getLines() -> [Line] {
         let points = [
-            travellingWaveRight.getPoints(divisions: 127, tick: tick),
-            travellingWaveUp.getPoints(divisions: 127, tick: tick)
+            travellingWaveRight.getPoints(divisions: TRAVELLING_WAVE_POINT_COUNT,
+                                          tick: tick),
+            travellingWaveUp.getPoints(divisions: TRAVELLING_WAVE_POINT_COUNT,
+                                       tick: tick)
         ]
         tick += 1
-        return points
+        return points.map { points in Line(points: points) }
     }
 }

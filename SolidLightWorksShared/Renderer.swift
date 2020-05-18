@@ -323,14 +323,14 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private func renderScreenFormLine(renderEncoder: MTLRenderCommandEncoder,
                                       screenForm: ScreenForm,
                                       lineIndex: Int) {
+        let line = screenForm.lines[lineIndex]
         commonUniforms.modelMatrix = screenForm.transform
         var line2DUniforms = Line2DUniforms()
-        line2DUniforms.color = simd_float4(1, 1, 1, 1)
+        line2DUniforms.color = simd_float4(1, 1, 1, line.opacity)
         let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen Form Line")
         renderEncoder.setRenderPipelineState(line2DPipelineState)
         let lineThickness: Float = 0.05
-        let line = screenForm.lines[lineIndex]
         let (vertices, indices) = makeLine2DVertices(line.points, lineThickness)
         let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
         if (verticesLength <= 4096) {

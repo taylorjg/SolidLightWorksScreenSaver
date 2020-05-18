@@ -10,17 +10,19 @@ import Foundation
 
 class BetweenYouAndIForm {
     
-    let MAX_TICKS = 10000
-    let width: Float
-    let height: Float
-    let rx: Float
-    let ry: Float
-    let minX: Float
-    let maxX: Float
-    let minY: Float
-    let maxY: Float
-    var tick = 0
-    var wipingInEllipse = true
+    private let MAX_TICKS = 10000
+    private let ELLIPSE_POINT_COUNT = 200
+    private let TRAVELLING_WAVE_POINT_COUNT = 200
+    private let width: Float
+    private let height: Float
+    private let rx: Float
+    private let ry: Float
+    private let minX: Float
+    private let maxX: Float
+    private let minY: Float
+    private let maxY: Float
+    private var tick = 0
+    private var wipingInEllipse = true
     
     init(width: Float, height: Float, initiallyWipingInEllipse: Bool) {
         self.width = width
@@ -52,7 +54,7 @@ class BetweenYouAndIForm {
         return Ellipse(rx: rx, ry: ry).getPoints(
             startAngle: startAngle + Float.pi / 2,
             endAngle: endAngle + Float.pi / 2,
-            divisions: 127)
+            divisions: ELLIPSE_POINT_COUNT)
     }
     
     private func getTravellingWavePoints(tickRatio: Float, wipeY: Float, wipeExtent: Float) -> [simd_float2] {
@@ -61,15 +63,15 @@ class BetweenYouAndIForm {
         let f = Float(2)
         let omega = Float.pi * 2.0 * f
         if (wipingInEllipse) {
-            let dy = (height - wipeExtent) / 127
-            return (0...127).map { n in
+            let dy = (height - wipeExtent) / Float(TRAVELLING_WAVE_POINT_COUNT)
+            return (0...TRAVELLING_WAVE_POINT_COUNT).map { n in
                 let y = Float(n) * dy
                 let x = rx * sin(k * y + omega * tickRatio)
                 return simd_float2(x, wipeY - y)
             }
         } else {
-            let dy = wipeExtent / 127
-            return (0...127).map { n in
+            let dy = wipeExtent / Float(TRAVELLING_WAVE_POINT_COUNT)
+            return (0...TRAVELLING_WAVE_POINT_COUNT).map { n in
                 let y = Float(n) * dy
                 let x = rx * sin(k * -y + omega * tickRatio)
                 return simd_float2(x, wipeY + y)
@@ -90,7 +92,7 @@ class BetweenYouAndIForm {
         return clippedLines.map { (a, b) in [a, b] } ?? [simd_float2(), simd_float2()]
     }
     
-    func getUpdatedPoints() -> [[simd_float2]] {
+    func getLines() -> [Line] {
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let wipeExtent = height * Float(tickRatio)
         let wipeY = maxY - wipeExtent
@@ -99,11 +101,12 @@ class BetweenYouAndIForm {
             getTravellingWavePoints(tickRatio: tickRatio, wipeY: wipeY, wipeExtent: wipeExtent),
             getStraightLinePoints(tickRatio: tickRatio, wipeY: wipeY)
         ]
+        let lines = points.map { points in Line(points: points) }
         tick += 1
         if tick > MAX_TICKS {
             reset(wipingInEllipse: !wipingInEllipse)
         }
-        return points
+        return lines
     }
     
     private func reset(wipingInEllipse: Bool) {

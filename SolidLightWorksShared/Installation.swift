@@ -10,6 +10,11 @@ import Foundation
 
 struct Line {
     let points: [simd_float2]
+    let opacity: Float
+    init(points: [simd_float2], opacity: Float = 1) {
+        self.points = points
+        self.opacity = opacity
+    }
 }
 
 struct ScreenForm {

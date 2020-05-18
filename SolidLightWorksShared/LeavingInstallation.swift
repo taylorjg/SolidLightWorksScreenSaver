@@ -14,8 +14,8 @@ class LeavingInstallation: Installation {
     private let form2 = LeavingForm(rx: 2, ry: 1.6, initiallyGrowing: false)
     
     func getInstallationData2D() -> InstallationData2D {
-        let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
-        let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
+        let lines1 = form1.getLines()
+        let lines2 = form2.getLines()
         let transform1 = matrix4x4_translation(-2.2, 0, 0)
         let transform2 = matrix4x4_translation(2.2, 0, 0)
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)
@@ -26,8 +26,8 @@ class LeavingInstallation: Installation {
     }
     
     func getInstallationData3D() -> InstallationData3D {
-        let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
-        let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
+        let lines1 = form1.getLines()
+        let lines2 = form2.getLines()
         let transform1 = matrix4x4_translation(-2.2, 2.4, 0)
         let transform2 = matrix4x4_translation(2.2, 2.4, 0)
         let screenForm1 = ScreenForm(lines: lines1, transform: transform1)

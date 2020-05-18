@@ -80,7 +80,7 @@ class CouplingForm {
         return nil
     }
     
-    func getUpdatedPoints() -> [[simd_float2]] {
+    func getLines() -> [Line] {
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let radiusA = calcRadiusA(tickRatio: tickRatio)
         let radiusB = calcRadiusB(tickRatio: tickRatio)
@@ -94,11 +94,13 @@ class CouplingForm {
                                   divisions: CIRCLE_WAVE_POINT_COUNT,
                                   tick: tick).map(flipX)
         }
-        let points = [pointsA, pointsB].compactMap { points in points }
+        let lineA = pointsA.map { points in Line(points: points) }
+        let lineB = pointsB.map { points in Line(points: points) }
+        let lines = [lineA, lineB].compactMap { line in line }
         tick += 1
         if tick > MAX_TICKS {
             tick = 0
         }
-        return points
+        return lines
     }
 }

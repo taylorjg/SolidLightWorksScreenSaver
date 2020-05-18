@@ -13,7 +13,7 @@ class DoublingBackInstallation: Installation {
     private let form = DoublingBackForm(width: 6, height: 4)
     
     func getInstallationData2D() -> InstallationData2D {
-        let lines = form.getUpdatedPoints().map { points in Line(points: points) }
+        let lines = form.getLines()
         let transform = matrix_identity_float4x4
         let screenForm = ScreenForm(lines: lines, transform: transform)
         let screenForms = [screenForm]
@@ -22,7 +22,7 @@ class DoublingBackInstallation: Installation {
     }
     
     func getInstallationData3D() -> InstallationData3D {
-        let lines = form.getUpdatedPoints().map { points in Line(points: points) }
+        let lines = form.getLines()
         let transform = matrix4x4_translation(0, 2, 0)
         let screenForm = ScreenForm(lines: lines, transform: transform)
         let screenForms = [screenForm]

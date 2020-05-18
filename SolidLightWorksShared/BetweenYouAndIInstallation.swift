@@ -15,8 +15,8 @@ class BetweenYouAndIInstallation: Installation {
     private let form2 = BetweenYouAndIForm(width: 3, height: 4, initiallyWipingInEllipse: true)
     
     func getInstallationData2D() -> InstallationData2D {
-        let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
-        let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
+        let lines1 = form1.getLines()
+        let lines2 = form2.getLines()
         let rotationZ = matrix4x4_rotation(radians: -Float.pi / 2, axis: simd_float3(0, 0, 1))
         let transform1 = matrix4x4_translation(-2.5, 0, 0) * rotationZ
         let transform2 = matrix4x4_translation(2.5, 0, 0) * rotationZ
@@ -28,8 +28,8 @@ class BetweenYouAndIInstallation: Installation {
     }
     
     func getInstallationData3D() -> InstallationData3D {
-        let lines1 = form1.getUpdatedPoints().map { points in Line(points: points) }
-        let lines2 = form2.getUpdatedPoints().map { points in Line(points: points) }
+        let lines1 = form1.getLines()
+        let lines2 = form2.getLines()
         let rotationX = matrix4x4_rotation(radians: -Float.pi / 2, axis: simd_float3(1, 0, 0))
         let rotationY = matrix4x4_rotation(radians: Float.pi, axis: simd_float3(0, 1, 0))
         let rotationZ = matrix4x4_rotation(radians: Float.pi, axis: simd_float3(0, 0, 1))
