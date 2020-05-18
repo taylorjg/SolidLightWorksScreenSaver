@@ -32,7 +32,8 @@ class DoublingBackInstallation: Installation {
                                           projectorPosition: projectorPosition)
         let projectedForms = [projectedForm]
         let cameraPoses = [
-            CameraPose(position: simd_float3(3, 4.5, 11), target: simd_float3(-0.8, 2, 5.5))
+            CameraPose(position: simd_float3(3, 4.5, 11), target: simd_float3(-0.8, 2, 5.5)),
+            CameraPose(position: simd_float3(-2, 2, 8), target: simd_float3(-0.8, 2, 5.5))
         ]
         return InstallationData3D(screenForms: screenForms,
                                   projectedForms: projectedForms,

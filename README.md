@@ -57,7 +57,7 @@ I have only just started this project. At the moment, all I have done is take th
 
 Here are a few notes regarding the maths behind the forms.
 
-Anthony McCall talks about a vocabulary of forms (see [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X) pp. 171-172):
+Anthony McCall talks about a vocabulary of forms (see [Anthony McCall: Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X) pp. 171-172):
 
 * the Circle
 * the Straight Line
@@ -71,9 +71,6 @@ Two travelling waves travelling in opposite directions - one of them to the righ
 I used the following reference for details of an equation for a travelling wave:
 
 * [Traveling waves](http://labman.phys.utk.edu/phys221core/modules/m11/traveling_waves.html)
-
-See [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X) p. 85.
-![_Doubling Back, 2003_ Programming diagrams](readme-images/IMG_5650-768x980.jpg)
 
 ## Coupling
 
@@ -93,7 +90,7 @@ I think this is a travelling wave along the radius of an ellipse which rotates c
 The tricky part was figuring out the point of intersection between the rotating travelling wave and the path of the ellipse.
 I used the following references to achieve this:
 
-* [Newton's method / Newton–Raphson method](https://en.wikipedia.org/wiki/Newton%27s_method)
+* [Newton's method](https://en.wikipedia.org/wiki/Newton%27s_method)
 * [How to find the intersection of two curves](https://uk.mathworks.com/matlabcentral/answers/318475-how-to-find-the-intersection-of-two-curves#answer_249066)
 
 # Links
@@ -104,5 +101,5 @@ I used the following references to achieve this:
     * [ScreenSaverView](https://developer.apple.com/documentation/screensaver/screensaverview)
     * [ScreenSaverDefaults](https://developer.apple.com/documentation/screensaver/screensaverdefaults)
 * Books
-  * [Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X)
+  * [Anthony McCall: Notebooks and Conversations](https://www.amazon.co.uk/Anthony-McCall-Graham-Ellard/dp/184822169X)
 * [solid-light-works](https://github.com/taylorjg/solid-light-works)
