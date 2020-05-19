@@ -29,8 +29,6 @@
 		C3880E272440BD25004A2A82 /* Line2DShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C3880E252440BD25004A2A82 /* Line2DShaders.metal */; };
 		C3880E292441B8E5004A2A82 /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E282441B8E5004A2A82 /* MathUtils.swift */; };
 		C3880E2A2441B8E5004A2A82 /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E282441B8E5004A2A82 /* MathUtils.swift */; };
-		C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */; };
-		C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */; };
 		C3880E2F244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
 		C3880E30244284DF004A2A82 /* CircleWave.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3880E2E244284DF004A2A82 /* CircleWave.swift */; };
 		C3880E322442F5BF004A2A82 /* Line2DShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = C3880E312442F5BF004A2A82 /* Line2DShaderTypes.h */; };
@@ -85,7 +83,6 @@
 		C3880E20243FDCF3004A2A82 /* Line2DGeometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Line2DGeometry.swift; sourceTree = "<group>"; };
 		C3880E252440BD25004A2A82 /* Line2DShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Line2DShaders.metal; sourceTree = "<group>"; };
 		C3880E282441B8E5004A2A82 /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
-		C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravellingWave.swift; sourceTree = "<group>"; };
 		C3880E2E244284DF004A2A82 /* CircleWave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleWave.swift; sourceTree = "<group>"; };
 		C3880E312442F5BF004A2A82 /* Line2DShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Line2DShaderTypes.h; sourceTree = "<group>"; };
 		C3880E332442F68D004A2A82 /* FlatShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FlatShaderTypes.h; sourceTree = "<group>"; };
@@ -147,7 +144,6 @@
 				C3880E422446349E004A2A82 /* LineClip.swift */,
 				C3880E2E244284DF004A2A82 /* CircleWave.swift */,
 				C3880E4B2448EF33004A2A82 /* Ellipse.swift */,
-				C3880E2B2441E8EE004A2A82 /* TravellingWave.swift */,
 				C3880E45244670F5004A2A82 /* DoublingBackForm.swift */,
 				C3880E482446710B004A2A82 /* CouplingForm.swift */,
 				C3880E3F2443CCE8004A2A82 /* BetweenYouAndIForm.swift */,
@@ -360,7 +356,6 @@
 				C3504DCF242D74FF00C03609 /* AppDelegate.swift in Sources */,
 				C371F05E2460CE9900203036 /* KeyboardControlDelegate.swift in Sources */,
 				C3880E412443CCE8004A2A82 /* BetweenYouAndIForm.swift in Sources */,
-				C3880E2D2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +371,6 @@
 				C3880E692455A9CB004A2A82 /* ConfigSheetViewController.swift in Sources */,
 				C3880E5E244BB374004A2A82 /* DoublingBackInstallation.swift in Sources */,
 				C3880E55244B6067004A2A82 /* BetweenYouAndIInstallation.swift in Sources */,
-				C3880E2C2441E8EE004A2A82 /* TravellingWave.swift in Sources */,
 				C32DDEDF24368FB500FB4CB4 /* Renderer.swift in Sources */,
 				C3880E432446349E004A2A82 /* LineClip.swift in Sources */,
 				C3880E19243B9EC7004A2A82 /* FlatShaders.metal in Sources */,
