@@ -170,17 +170,17 @@ class LeavingForm {
     
     func getLines() -> [Line] {
         
-        if (tick == MAX_TICKS / 4) {
-            if (stalling) {
-                stallTick -= 1
-                if (stallTick == 0) {
-                    stalling = false
-                }
-            } else {
-                stalling = true
-                stallTick = STALL_TICKS
-            }
-        }
+//        if (tick == MAX_TICKS / 4) {
+//            if (stalling) {
+//                stallTick -= 1
+//                if (stallTick == 0) {
+//                    stalling = false
+//                }
+//            } else {
+//                stalling = true
+//                stallTick = STALL_TICKS
+//            }
+//        }
         
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let a = travellingWaveAmplitude(tickRatio: tickRatio)

@@ -369,14 +369,15 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
                                          cameraPose: CameraPose,
                                          projectedForm: ProjectedForm,
                                          lineIndex: Int) {
+        let line = projectedForm.lines[lineIndex]
         commonUniforms.modelMatrix = projectedForm.transform
         var membraneUniforms = MembraneUniforms()
         membraneUniforms.projectorPosition = projectedForm.projectorPosition
         membraneUniforms.worldCameraPosition = cameraPose.position
+        membraneUniforms.opacity = line.opacity
         let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Projected Form Line")
         renderEncoder.setRenderPipelineState(membranePipelineState)
-        let line = projectedForm.lines[lineIndex]
         let (vertices, indices) = makeMembraneVertices(points: line.points,
                                                        projectorPosition: projectedForm.projectorPosition)
         let verticesLength = MemoryLayout<MembraneVertex>.stride * vertices.count

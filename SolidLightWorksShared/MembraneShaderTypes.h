@@ -20,6 +20,7 @@ typedef struct {
 typedef struct {
     vector_float3 projectorPosition;
     vector_float3 worldCameraPosition;
+    float opacity;
 } MembraneUniforms;
 
 #endif /* MembraneShaderTypes_h */

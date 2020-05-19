@@ -80,6 +80,32 @@ class CouplingForm {
         return nil
     }
     
+    private func calcOpacityA(tickRatio: Float) -> Float {
+        if tickRatio < 0.225 {
+            return 1
+        }
+        if tickRatio < 0.25 {
+            return (0.25 - tickRatio) * 40
+        }
+        if tickRatio < 0.525 {
+            return (tickRatio - 0.5) * 40
+        }
+        return 1
+    }
+    
+    private func calcOpacityB(tickRatio: Float) -> Float {
+        if tickRatio < 0.025 {
+            return tickRatio * 40
+        }
+        if tickRatio < 0.725 {
+            return 1
+        }
+        if tickRatio < 0.75 {
+            return (0.75 - tickRatio) * 40
+        }
+        return 1
+    }
+    
     func getLines() -> [Line] {
         let tickRatio = Float(tick) / Float(MAX_TICKS)
         let radiusA = calcRadiusA(tickRatio: tickRatio)
@@ -94,8 +120,10 @@ class CouplingForm {
                                   divisions: CIRCLE_WAVE_POINT_COUNT,
                                   tick: tick).map(flipX)
         }
-        let lineA = pointsA.map { points in Line(points: points) }
-        let lineB = pointsB.map { points in Line(points: points) }
+        let opacityA = calcOpacityA(tickRatio: tickRatio)
+        let opacityB = calcOpacityB(tickRatio: tickRatio)
+        let lineA = pointsA.map { points in Line(points: points, opacity: opacityA) }
+        let lineB = pointsB.map { points in Line(points: points, opacity: opacityB) }
         let lines = [lineA, lineB].compactMap { line in line }
         tick += 1
         if tick > MAX_TICKS {

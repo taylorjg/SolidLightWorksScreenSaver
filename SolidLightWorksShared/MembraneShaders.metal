@@ -50,11 +50,15 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
     
     constexpr sampler defaultSampler;
     float4 hazeValue = float4(hazeTexture.sample(defaultSampler, in.uv));
-    hazeValue.a = 0.35;
+    hazeValue.a = 0.5;
     
     float d = distance(in.worldPosition, in.worldProjectorPosition);
-    float a = 1.0 - (d / length(in.worldProjectorPosition));
+    float x = in.worldProjectorPosition.x;
+    float y = in.worldProjectorPosition.y;
+    float z = in.worldProjectorPosition.z;
+    float maxDimension = max(x, max(y, z));
+    float a = 1.0 - (d / (maxDimension * 1.2));
     float4 whiteValue = float4(1, 1, 1, a);
 
-    return mix(hazeValue, whiteValue, weight);
+    return mix(hazeValue, whiteValue, weight) * membraneUniforms.opacity;
 }
