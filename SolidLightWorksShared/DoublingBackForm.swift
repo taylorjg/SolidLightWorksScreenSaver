@@ -10,11 +10,13 @@ import Foundation
 
 class DoublingBackForm {
     
+    private let MAX_TICKS = 8900
     private let TRAVELLING_WAVE_POINT_COUNT = 200
     private let width: Float
     private let height: Float
     private let waveLength: Float
     private var tick = 0
+    private var direction = 1
 
     init(width: Float, height: Float) {
         self.width = width
@@ -56,7 +58,10 @@ class DoublingBackForm {
         let points2 = getTravellingPoints2()
         let points = [points1, points2]
         let lines = points.map { points in Line(points: points) }
-        tick += 1
+        tick += direction
+        if tick == MAX_TICKS || tick == 0 {
+            direction = direction == 1 ? -1 : 1
+        }
         return lines
     }
 }
