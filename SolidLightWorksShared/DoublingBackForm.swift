@@ -11,13 +11,17 @@ import Foundation
 class DoublingBackForm {
     
     private let MAX_TICKS = 8900
+    private let DELAY_TICKS = 120
     private let TRAVELLING_WAVE_POINT_COUNT = 200
     private let width: Float
     private let height: Float
     private let waveLength: Float
     private var tick = 0
     private var direction = 1
-
+    private var delaying = false
+    private var delayTick = 0
+    private var firstTime = true
+    
     init(width: Float, height: Float) {
         self.width = width
         self.height = height
@@ -54,14 +58,30 @@ class DoublingBackForm {
     }
     
     func getLines() -> [Line] {
+        
+        if tick == MAX_TICKS || (tick == 0 && !firstTime) {
+            if (delaying) {
+                delayTick -= 1
+                if (delayTick == 0) {
+                    delaying = false
+                    firstTime = false
+                    direction = direction == 1 ? -1 : 1
+                }
+            } else {
+                delaying = true
+                delayTick = DELAY_TICKS
+            }
+        }
+        
         let points1 = getTravellingPoints1()
         let points2 = getTravellingPoints2()
         let points = [points1, points2]
         let lines = points.map { points in Line(points: points) }
-        tick += direction
-        if tick == MAX_TICKS || tick == 0 {
-            direction = direction == 1 ? -1 : 1
+
+        if (!delaying) {
+            tick += direction
         }
+        
         return lines
     }
 }
