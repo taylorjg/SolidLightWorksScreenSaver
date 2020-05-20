@@ -24,20 +24,20 @@ class CouplingForm {
         self.outerRadius = outerRadius
         self.innerRadius = innerRadius
         
-        let A = (outerRadius - innerRadius) * 0.4
+        let A = (outerRadius - innerRadius) * 0.2
         
         circleWaveA = CircleWave(A: A,
                                  F: 3.5,
-                                 S: 0.001,
-                                 f: 0.001,
+                                 S: 0.0025,
+                                 f: 0.0001,
                                  rotationPhase: Float.pi,
                                  oscillationPhase: Float.pi)
         
         circleWaveB = CircleWave(A: A,
                                  F: 3.5,
-                                 S: 0.001,
-                                 f: 0.001,
-                                 rotationPhase: Float.pi / 2,
+                                 S: 0.0025,
+                                 f: 0.0001,
+                                 rotationPhase: -Float.pi / 2,
                                  oscillationPhase: Float.pi)
     }
     
