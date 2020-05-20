@@ -16,15 +16,15 @@ private let KEY_ENABLE_MSAA = "enable-msaa"
 
 private func renderModeToInt(_ renderMode: RenderMode) -> Int {
     switch renderMode {
-    case .drawing2D: return 0
-    case .projection3D: return 1
+    case .animations2D: return 0
+    case .projections3D: return 1
     }
 }
 
 private func intToRendeMode(_ int: Int) -> RenderMode {
     switch int {
-    case 0: return .drawing2D
-    case 1: return .projection3D
+    case 0: return .animations2D
+    case 1: return .projections3D
     default: fatalError("Unknown render mode int \(int)")
     }
 }

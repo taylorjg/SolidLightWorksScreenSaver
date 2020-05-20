@@ -16,6 +16,7 @@ class CouplingForm {
     private let innerRadius: Float
     private let circleWaveA: CircleWave
     private let circleWaveB: CircleWave
+    private var firstTime = true
     private var tick = 0
     
     init(outerRadius: Float, innerRadius: Float) {
@@ -81,27 +82,31 @@ class CouplingForm {
     }
     
     private func calcOpacityA(tickRatio: Float) -> Float {
-        if tickRatio < 0.225 {
+        let duration = Float(0.01)
+        let scale = 1 / duration
+        if tickRatio < (0.25 - duration) {
             return 1
         }
         if tickRatio < 0.25 {
-            return (0.25 - tickRatio) * 40
+            return (0.25 - tickRatio) * scale
         }
-        if tickRatio < 0.525 {
-            return (tickRatio - 0.5) * 40
+        if tickRatio < (0.5 + duration) {
+            return (tickRatio - 0.5) * scale
         }
         return 1
     }
     
     private func calcOpacityB(tickRatio: Float) -> Float {
-        if tickRatio < 0.025 {
-            return tickRatio * 40
+        let duration = Float(0.01)
+        let scale = 1 / duration
+        if tickRatio < duration {
+            return firstTime ? 1 : tickRatio * scale
         }
-        if tickRatio < 0.725 {
+        if tickRatio < (0.75 - duration) {
             return 1
         }
         if tickRatio < 0.75 {
-            return (0.75 - tickRatio) * 40
+            return (0.75 - tickRatio) * scale
         }
         return 1
     }
@@ -127,6 +132,7 @@ class CouplingForm {
         let lines = [lineA, lineB].compactMap { line in line }
         tick += 1
         if tick > MAX_TICKS {
+            firstTime = false
             tick = 0
         }
         return lines

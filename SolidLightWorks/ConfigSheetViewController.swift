@@ -20,8 +20,8 @@ class ConfigSheetViewController: NSViewController {
         form3Check.state = enabledForms.contains(3) ? .on : .off
         form4Check.state = enabledForms.contains(4) ? .on : .off
         switchIntervalPopUp.selectItem(withTag: defaultsManager.switchInterval)
-        drawing2D.state = defaultsManager.renderMode == RenderMode.drawing2D ? .on : .off
-        projection3D.state = defaultsManager.renderMode == RenderMode.projection3D ? .on : .off
+        animations2DRadio.state = defaultsManager.renderMode == RenderMode.animations2D ? .on : .off
+        projections3DRadio.state = defaultsManager.renderMode == RenderMode.projections3D ? .on : .off
         enableMSAACheck.state = defaultsManager.enableMSAA ? .on : .off
         updateButtonState()
     }
@@ -31,8 +31,8 @@ class ConfigSheetViewController: NSViewController {
     @IBOutlet weak var form3Check: NSButton! // Between You and I
     @IBOutlet weak var form4Check: NSButton! // Leaving
     @IBOutlet weak var switchIntervalPopUp: NSPopUpButton!
-    @IBOutlet weak var drawing2D: NSButton!
-    @IBOutlet weak var projection3D: NSButton!
+    @IBOutlet weak var animations2DRadio: NSButton!
+    @IBOutlet weak var projections3DRadio: NSButton!
     @IBOutlet weak var enableMSAACheck: NSButton!
     @IBOutlet weak var okButton: NSButton!
     
@@ -51,16 +51,16 @@ class ConfigSheetViewController: NSViewController {
     @IBAction func okButtonTapped(_ sender: NSButton) {
         defaultsManager.enabledForms = enabledForms
         defaultsManager.switchInterval = switchIntervalPopUp.selectedTag()
-        defaultsManager.renderMode = drawing2D.state == .on
-            ? RenderMode.drawing2D
-            : RenderMode.projection3D
+        defaultsManager.renderMode = animations2DRadio.state == .on
+            ? RenderMode.animations2D
+            : RenderMode.projections3D
         defaultsManager.enableMSAA = enableMSAACheck.state == .on
         close()
     }
     
     private func updateButtonState() {
         switchIntervalPopUp.isEnabled = enabledForms.count > 1
-        if drawing2D.state == .on {
+        if animations2DRadio.state == .on {
             enableMSAACheck.state = .on
             enableMSAACheck.isEnabled = false
         } else {

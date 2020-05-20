@@ -11,14 +11,14 @@ import MetalKit
 import simd
 
 enum RenderMode {
-    case drawing2D
-    case projection3D
+    case animations2D
+    case projections3D
 }
 
 struct Settings {
     static let defaultEnabledForms = [1, 2, 3, 4]
     static let defaultSwitchInterval = 30
-    static let defaultRenderMode = RenderMode.drawing2D
+    static let defaultRenderMode = RenderMode.animations2D
     static let defaultEnableMSAA = false
     
     let interactive: Bool
@@ -51,15 +51,15 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private var currentCameraPoseIndex = 0
     private var renderAxesHelpers = false
     private var renderVertexNormalsHelpers = false
-    private var renderMode = RenderMode.drawing2D
+    private var renderMode = RenderMode.animations2D
     private let hazeTexture: MTLTexture
     private var commonUniforms = CommonUniforms()
     private let commonUniformsLength = MemoryLayout<CommonUniforms>.stride
     
     init?(mtkView: MTKView, bundle: Bundle? = nil, settings: Settings) {
         if settings.interactive ||
-            settings.renderMode == .drawing2D ||
-            (settings.renderMode == .projection3D && settings.enableMSAA) {
+            settings.renderMode == .animations2D ||
+            (settings.renderMode == .projections3D && settings.enableMSAA) {
             mtkView.sampleCount = 4
         }
         self.device = mtkView.device!
@@ -136,11 +136,11 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     func onToggleRenderMode() {
         switch (renderMode) {
-        case .drawing2D:
-            renderMode = .projection3D
+        case .animations2D:
+            renderMode = .projections3D
             break
-        case .projection3D:
-            renderMode = .drawing2D
+        case .projections3D:
+            renderMode = .animations2D
             break
         }
     }
@@ -469,9 +469,9 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
                 let installation = installations[currentInstallationIndex]
                 
                 switch renderMode {
-                case .drawing2D:
+                case .animations2D:
                     renderInstallation2D(renderEncoder: renderEncoder, installation: installation)
-                case .projection3D:
+                case .projections3D:
                     renderInstallation3D(renderEncoder: renderEncoder, installation: installation)
                 }
                 

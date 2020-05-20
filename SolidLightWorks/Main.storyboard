@@ -123,8 +123,8 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yKf-fG-uBB">
-                                <rect key="frame" x="177" y="118" width="99" height="18"/>
-                                <buttonCell key="cell" type="radio" title="2D Drawings" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="3b1-31-YF1">
+                                <rect key="frame" x="177" y="118" width="110" height="18"/>
+                                <buttonCell key="cell" type="radio" title="2D Animations" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="3b1-31-YF1">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -204,14 +204,14 @@ Gw
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="drawing2D" destination="yKf-fG-uBB" id="gqW-UT-0ki"/>
+                        <outlet property="animations2DRadio" destination="yKf-fG-uBB" id="t3v-cV-b7f"/>
                         <outlet property="enableMSAACheck" destination="TvR-qe-FIg" id="vNN-hQ-SFG"/>
                         <outlet property="form1Check" destination="xeh-Ig-P5m" id="So5-Qu-rpx"/>
                         <outlet property="form2Check" destination="LVU-nJ-dV8" id="zn9-63-cpa"/>
                         <outlet property="form3Check" destination="DJX-HZ-i7d" id="ArG-wH-vYt"/>
                         <outlet property="form4Check" destination="IBP-ln-WgT" id="X3l-09-X1V"/>
                         <outlet property="okButton" destination="eO8-Nv-7O3" id="N87-io-pJq"/>
-                        <outlet property="projection3D" destination="PZU-UP-XQ1" id="kcs-He-OPG"/>
+                        <outlet property="projections3DRadio" destination="PZU-UP-XQ1" id="VOs-qa-ZFu"/>
                         <outlet property="switchIntervalPopUp" destination="oQy-Uv-cn5" id="LR4-Bs-2tS"/>
                     </connections>
                 </viewController>
