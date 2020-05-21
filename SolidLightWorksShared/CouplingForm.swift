@@ -28,15 +28,15 @@ class CouplingForm {
         
         circleWaveA = CircleWave(A: A,
                                  F: 3.5,
-                                 S: 0.0025,
-                                 f: 0.0001,
+                                 S: 2 * Float.pi / (Float(MAX_TICKS) / 4),
+                                 f: 0,
                                  rotationPhase: Float.pi,
                                  oscillationPhase: Float.pi)
         
         circleWaveB = CircleWave(A: A,
                                  F: 3.5,
-                                 S: 0.0025,
-                                 f: 0.0001,
+                                 S: 2 * Float.pi / (Float(MAX_TICKS) / 4),
+                                 f: 0,
                                  rotationPhase: -Float.pi / 2,
                                  oscillationPhase: Float.pi)
     }
