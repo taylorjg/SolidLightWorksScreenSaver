@@ -28,7 +28,7 @@ class DoublingBackForm {
         self.waveLength = width * 4 / 3
     }
     
-    private func getTravellingPoints1() -> [simd_float2] {
+    private func getTravellingWavePoints1() -> [simd_float2] {
         let k = 2 * Float.pi / waveLength
         let frequency = Float(1)
         let omega = 2 * Float.pi * frequency
@@ -42,7 +42,7 @@ class DoublingBackForm {
         }
     }
     
-    private func getTravellingPoints2() -> [simd_float2] {
+    private func getTravellingWavePoints2() -> [simd_float2] {
         let k = 2 * Float.pi / waveLength
         let frequency = Float(1)
         let omega = 2 * Float.pi * frequency
@@ -65,7 +65,7 @@ class DoublingBackForm {
                 if (delayTick == 0) {
                     delaying = false
                     firstTime = false
-                    direction = direction == 1 ? -1 : 1
+                    direction *= -1
                 }
             } else {
                 delaying = true
@@ -73,8 +73,8 @@ class DoublingBackForm {
             }
         }
         
-        let points1 = getTravellingPoints1()
-        let points2 = getTravellingPoints2()
+        let points1 = getTravellingWavePoints1()
+        let points2 = getTravellingWavePoints2()
         let points = [points1, points2]
         let lines = points.map { points in Line(points: points) }
 

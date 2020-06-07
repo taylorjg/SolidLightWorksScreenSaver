@@ -36,12 +36,12 @@ private func parametricEllipseY(ry: Float) -> (Float) -> Float {
     return f
 }
 
-private func parametricWaveX(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricTravellingWaveX(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return t * cos(theta) - a * sin(k * t - wt) * sin(theta) }
     return f
 }
 
-private func parametricWaveY(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricTravellingWaveY(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return t * sin(theta) + a * sin(k * t - wt) * cos(theta) }
     return f
 }
@@ -59,12 +59,12 @@ private func parametricEllipseYDerivative(ry: Float) -> (Float) -> Float {
     return f
 }
 
-private func parametricWaveXDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricTravellingWaveXDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return cos(theta) - a * sin(theta) * cos(k * t - wt) * k}
     return f
 }
 
-private func parametricWaveYDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
+private func parametricTravellingWaveYDerivative(a: Float, k: Float, wt: Float, theta: Float) -> (Float) -> Float {
     func f(t: Float) -> Float { return sin(theta) + a * cos(theta) * cos(k * t - wt) * k }
     return f
 }
@@ -199,12 +199,12 @@ class LeavingForm {
         
         let (t1, t2) = newtonsMethod(f1: parametricEllipseX(rx: rx),
                                      g1: parametricEllipseY(ry: ry),
-                                     f2: parametricWaveX(a: a, k: k, wt: wt, theta: theta),
-                                     g2: parametricWaveY(a: a, k: k, wt: wt, theta: theta),
+                                     f2: parametricTravellingWaveX(a: a, k: k, wt: wt, theta: theta),
+                                     g2: parametricTravellingWaveY(a: a, k: k, wt: wt, theta: theta),
                                      df1dt1: parametricEllipseXDerivative(rx: rx),
                                      dg1dt1: parametricEllipseYDerivative(ry: ry),
-                                     df2dt2: parametricWaveXDerivative(a: a, k: k, wt: wt, theta: theta),
-                                     dg2dt2: parametricWaveYDerivative(a: a, k: k, wt: wt, theta: theta),
+                                     df2dt2: parametricTravellingWaveXDerivative(a: a, k: k, wt: wt, theta: theta),
+                                     dg2dt2: parametricTravellingWaveYDerivative(a: a, k: k, wt: wt, theta: theta),
                                      t1e: t1e,
                                      t2e: t2e)
         
@@ -228,8 +228,8 @@ class LeavingForm {
         let rotation = travellingWaveRotation(tickRatio: tickRatio)
         let travellingWavePoints = (0...TRAVELLING_WAVE_POINT_COUNT).map { n -> simd_float2 in
             let t = t2 + Float(n) * deltaRadius
-            let x = parametricWaveX(a: a, k: k, wt: wt, theta: theta)(t)
-            let y = parametricWaveY(a: a, k: k, wt: wt, theta: theta)(t)
+            let x = parametricTravellingWaveX(a: a, k: k, wt: wt, theta: theta)(t)
+            let y = parametricTravellingWaveY(a: a, k: k, wt: wt, theta: theta)(t)
             let wavePoint = simd_float2(x, y)
             return rotation != 0 ? rotate(wavePoint, around: p, through: rotation) : wavePoint
         }
