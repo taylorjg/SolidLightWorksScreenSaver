@@ -35,6 +35,9 @@ class MyMTKView: MTKView {
         case kVK_ANSI_V:
             keyboardControlDelegate?.onToggleVertexNormalsHelpers()
             break
+        case kVK_ANSI_W:
+            keyboardControlDelegate?.onToggleWireframe()
+            break
         default:
             break
         }

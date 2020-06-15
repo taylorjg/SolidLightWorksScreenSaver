@@ -51,6 +51,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     private var currentCameraPoseIndex = 0
     private var renderAxesHelpers = false
     private var renderVertexNormalsHelpers = false
+    private var wireframe = false
     private var renderMode = RenderMode.animations2D
     private let hazeTexture: MTLTexture
     private var commonUniforms = CommonUniforms()
@@ -151,6 +152,10 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
     
     func onToggleVertexNormalsHelpers() {
         renderVertexNormalsHelpers = !renderVertexNormalsHelpers
+    }
+    
+    func onToggleWireframe() {
+        wireframe = !wireframe
     }
     
     private func switchInstallation(switchInterval: Int) {
@@ -330,6 +335,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         let line2DUniformsLength = MemoryLayout<Line2DUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Screen Form Line")
         renderEncoder.setRenderPipelineState(line2DPipelineState)
+        renderEncoder.setTriangleFillMode(wireframe ? .lines : .fill)
         let lineThickness: Float = 0.05
         let (vertices, indices) = makeLine2DVertices(line.points, lineThickness)
         let verticesLength = MemoryLayout<Line2DVertex>.stride * vertices.count
@@ -378,6 +384,7 @@ class Renderer: NSObject, MTKViewDelegate, KeyboardControlDelegate {
         let membraneUniformsLength = MemoryLayout<MembraneUniforms>.stride
         renderEncoder.pushDebugGroup("Draw Projected Form Line")
         renderEncoder.setRenderPipelineState(membranePipelineState)
+        renderEncoder.setTriangleFillMode(wireframe ? .lines : .fill)
         let (vertices, indices) = makeMembraneVertices(points: line.points,
                                                        projectorPosition: projectedForm.projectorPosition)
         let verticesLength = MemoryLayout<MembraneVertex>.stride * vertices.count

@@ -35,7 +35,7 @@ vertex MembraneInOut vertexMembraneShader(uint vertexID [[vertex_id]],
     out.position = mvp * position;
     out.uv = membraneVertex.uv;
     out.worldPosition = (commonUniforms.modelMatrix * position).xyz;
-    out.worldNormal = normalize((commonUniforms.modelMatrix * normal).xyz);
+    out.worldNormal = (commonUniforms.modelMatrix * normal).xyz;
     out.worldProjectorPosition = (commonUniforms.modelMatrix * projectorPosition).xyz;
     return out;
 }
@@ -45,9 +45,9 @@ fragment float4 fragmentMembraneShader(MembraneInOut in [[stage_in]],
                                        texture2d<half> hazeTexture [[texture(0)]])
 {
     float3 v = normalize(in.worldPosition - membraneUniforms.worldCameraPosition);
-    float3 n = in.worldNormal;
+    float3 n = normalize(in.worldNormal);
     float weight = 1 - abs(dot(v, n));
-    
+
     constexpr sampler defaultSampler;
     float4 hazeValue = float4(hazeTexture.sample(defaultSampler, in.uv));
     hazeValue.a = 0.5;

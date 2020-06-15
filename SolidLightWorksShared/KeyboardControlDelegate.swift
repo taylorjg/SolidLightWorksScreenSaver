@@ -13,5 +13,6 @@ protocol KeyboardControlDelegate {
     func onSwitchCameraPose()
     func onToggleRenderMode()
     func onToggleAxesHelpers()
+    func onToggleWireframe()
     func onToggleVertexNormalsHelpers()
 }
